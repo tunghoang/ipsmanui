@@ -1,0 +1,25 @@
+stages:
+    # - build
+    - deploy
+
+# build:
+#   stage: build
+#   before_script:
+#     - cd $CI_PROJECT_DIR
+#   script:
+#     - npm install
+#   tags:
+#     - backend
+
+deploy:
+    stage: deploy
+    image: ipmanager:0.1.3
+
+    script:
+        - ssh -p 23456 nnhoa@127.0.0.1 "cd /home/nnhoa/KC.01.28/Codes/ipsmanagerui && git fetch && git pull origin master && npm install && npm run build"
+        - sudo systemctl restart ipsmanagerui
+    tags:
+        - ipmanagerui
+
+    environment:
+        name: development

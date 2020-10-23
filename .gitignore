@@ -1,6 +1,12 @@
 .DS_Store
 node_modules
 /dist
+tmp
+src.org
+/coverage
+
+/tests/e2e/reports/
+selenium-debug.log
 
 
 # local env files
