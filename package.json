@@ -9,7 +9,7 @@
     "lint": "vue-cli-service lint",
     "lint:fix": "vue-cli-service lint --fix",
     "start": "npm run build",
-    "heroku-postbuild": "npm build"
+    "heroku-postbuild": "npm run build"
   },
   "dependencies": {
     "axios": "^0.16.2",
