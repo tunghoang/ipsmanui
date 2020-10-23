@@ -1,13 +1,18 @@
 {
-  "name": "ipsmanagerui",
-  "version": "0.1.0",
+  "name": "@uet.dis/ipsmanager",
+   "version": "1.0.1",
+   "description": "UI for Security Operating Center",
+   "author": "Department of Information Systems",
+   "homepage": "http://uet.vnu.edu.vn/",
+   "copyright": "Copyright 2019-2020 @ UET.DIS",
+   "license": "MIT",
   "private": true,
   "scripts": {
     "svgo": "svgo -f src/icons/svg --config=src/icons/svgo.yml",
-    "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint",
-    "lint:fix": "vue-cli-service lint --fix",
+    "serve": "vue-cli-service serve --inline=false --disable-host-check --hot",
+    "build": "vue-cli-service build --inline=false",
+    "lint": "vue-cli-service lint --inline=false",
+    "lint:fix": "vue-cli-service lint --fix --inline=false",
     "start": "npm run build",
     "heroku-postbuild": "npm run build"
   },
@@ -52,5 +57,9 @@
     "sass": "^1.26.5",
     "sass-loader": "^8.0.2",
     "vue-template-compiler": "^2.6.11"
+  },
+  "engines": {
+    "node": ">= 8.10.x",
+    "npm": ">= 5.6.0"
   }
 }
