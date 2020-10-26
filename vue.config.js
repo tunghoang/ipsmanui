@@ -6,7 +6,8 @@ const defaultSettings = require('./src/settings.js')
 // https.globalAgent.options.rejectUnauthorized = false
 const backend = {
     target: 'http://112.137.129.214:15580',
-    secure: false
+    secure: false,
+    changeOrigin: true
 //    pathRewrite: {'^/api' : ''}
 }
 
