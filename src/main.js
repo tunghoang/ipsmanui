@@ -1,27 +1,30 @@
-
-/**
- * First we will load all of this project's JavaScript dependencies which
- * includes Vue and other libraries. It is a great starting point when
- * building robust, powerful web applications using Vue and Laravel.
- */
-import 'common/bootstrap';
-import 'common/Filters';
+// if ((~window.navigator.userAgent.indexOf('MSIE')) ||
+//   (~window.navigator.userAgent.indexOf('Trident/')) ||
+//   (~window.navigator.userAgent.indexOf('Edge/'))) {
+//   window.Promise = require('es6-promise').Promise;
+//   require('es6-object-assign').polyfill();
+// }
 
 import Vue from 'vue';
 
+import AuthenticationUtils from "common/AuthenticationUtils"
+
 import LocalStorage from 'common/LocalStorageUtils'
 
-import 'normalize.css/normalize.css'
+import i18n from "./lang"
+
+
+import VueBroadcast from 'common/VueBroadcast'
+import VueSession from 'vue-session'
+import ClickOutside from 'vue-click-outside'
+
 
 import Element from 'element-ui'
+import 'normalize.css/normalize.css'
 import '@/sass/element/element-variables.scss'
 
 import '@/sass/element/index.scss' // global css
-
-
-import i18n from "./lang";
-
-import App from './App.vue';
+import '@/sass/app.scss' // global css
 
 import store from './store';
 import './permission'
@@ -31,37 +34,31 @@ import router from './router';
 
 import * as filters from './filters' // global filters
 
-import VueBroadcast from 'common/VueBroadcast';
-// import VueRequestCanceler from  'common/VueRequestCanceler';
-// import GlobalSocket from 'common/GlobalSocket';
-// import "common/registerServiceWorker";
-
-
-
-import ClickOutside from 'vue-click-outside';
+import App from './App.vue';
 import './validation';
+import './utils/error-log'
+
+
+window._ = require('lodash');
 
 
 Object.keys(filters).forEach(key => {
   Vue.filter(key, filters[key])
 })
 
-
-Vue.directive('click-outside', ClickOutside);
-
-
-Vue.use(VueBroadcast);
-// Vue.use(VueRequestCanceler);
 Vue.use(Element, {
   size: LocalStorage.getItem('size') || 'medium',
   i18n: (key, value) => i18n.t(key, value)
 })
 
 
-// window.GlobalSocket = new GlobalSocket();
+window.isAuthenticated = AuthenticationUtils.isAuthenticated();
 
 Vue.prototype.$isAuthenticated = window.isAuthenticated;
+Vue.directive('click-outside', ClickOutside);
 
+Vue.use(VueBroadcast);
+Vue.use(VueSession, { persist: true });
 
 
 Vue.mixin({

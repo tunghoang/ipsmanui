@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<svg width="700" height="200" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
+ <style type="text/css">.st0{fill:#1FA8D7;}
+	.st1{fill:#FFFFFF;}
+	.st2{opacity:4.000000e-02;stroke:#FFFFFF;stroke-miterlimit:10;}
+	.st3{opacity:8.000000e-02;stroke:#FFFFFF;stroke-miterlimit:10;}
+	.st4{opacity:0;stroke:#FFFFFF;stroke-miterlimit:10;}
+	.st5{fill:#333333;}
+	.st6{fill:#1EA7D6;}</style>
+
+ <g class="layer" display="inline">
+  <title>Layer 1</title>
+  <text fill="#0000ff" font-family="Fantasy" font-size="24" font-weight="bold" id="svg_16" stroke="#000000" stroke-width="0" style="cursor: move;" text-anchor="middle" transform="matrix(5.3733, 0, 0, 6.13005, -737.023, -425.439)" x="218.702835" xml:space="preserve" y="93.983337">UET.SoC</text>
+  <g id="svg_10"/>
+  <defs transform="translate(0, -1) translate(0, 1) translate(1) translate(0, 43.9531) translate(6.83203) translate(1) translate(1) translate(1) translate(1) translate(1) translate(1) translate(1) translate(1) translate(1) translate(1) translate(1) translate(1) translate(1) translate(1) translate(1) translate(1) translate(1) translate(1) translate(1) translate(1) translate(1) translate(1) translate(1) translate(1) translate(1) translate(1) translate(1) translate(1) translate(1) translate(1) translate(1) translate(1) translate(1) translate(1) translate(1) translate(1) translate(1) translate(1) translate(1) translate(1) translate(1) translate(1) translate(0, 1) translate(0, 1) translate(0, 1) translate(0, 1) translate(0, 1) translate(0, 1) translate(0, 1) translate(0, 1) translate(0, 1) translate(0, 1) translate(0, 1) translate(-0) scale(1.44756, 1.32068) translate(0) translate(-0) scale(1.07135, 1.05077) translate(0)">
+   <style>.cls-1{fill:#737c7f}</style>
+  </defs>
+  <g id="svg_17"/>
+  <g id="svg_26">
+   <path class="cls-1" d="m88.204545,172.478556c-6.297417,3.476399 -11.525461,5.859896 -14.292798,7.05724c-11.16517,-4.826674 -62.414567,-29.004807 -62.414567,-66.245547l0,-79.203713l62.403068,-22.14899l62.414567,22.16764l0,63.526347c1.115367,-0.063411 2.2384,-0.100711 3.369099,-0.100711a55.75686,54.260922 0 0 1 8.14103,0.570696l0,-71.84061l-73.924696,-26.259496l-73.901699,26.259496l0,87.029342c0,11.645191 3.928699,23.0442 11.678776,33.879972c6.009951,8.403785 14.327294,16.479326 24.718223,24.002821c17.447255,12.633653 34.668371,19.366378 35.392785,19.646132l2.123414,0.824339l2.123414,-0.824339a158.217324,153.972407 0 0 0 17.665729,-8.470926a55.419566,53.932678 0 0 1 -5.496345,-9.869691z" fill="#0000ff" id="svg_21" stroke="#2e3ed1" stroke-width="0"/>
+   <path class="cls-1" d="m86.701676,124.670606l-22.997261,0l0,-23.760368l-22.997261,0l0,-24.006551l22.997261,0l0,-22.592865l22.997261,0l0,22.592865l22.997261,0l0,24.006551l-22.997261,0l0,23.760368z" fill="#0000ff" id="svg_22"/>
+  </g>
+  <g id="svg_27">
+   <path d="m121.936146,174.319801l-18.896083,-18.385377l8.133365,-7.911419l10.762718,10.470228l34.277418,-33.361496l8.133365,7.915149l-42.410782,41.272916z" fill="#ff0000" id="svg_23"/>
+   <path d="m131.695413,195.931665a49.562931,48.233174 0 0 1 -49.505437,-48.184684c0,-26.56163 22.207688,-48.173493 49.505437,-48.173493a49.559098,48.229444 0 0 1 49.501605,48.173493c0,26.550439 -22.207688,48.184684 -49.501605,48.184684zm0,-85.160591a38.006807,36.987097 0 1 0 38.002974,36.983367a38.048969,37.028128 0 0 0 -38.002974,-36.990827l0,0.00746z" fill="#7f00ff" id="svg_24"/>
+  </g>
+ </g>
+</svg>

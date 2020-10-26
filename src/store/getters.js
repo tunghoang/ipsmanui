@@ -10,11 +10,9 @@ const getters = {
   /* user module */
   user: state => state.user.user,
   status: state => state.user.status,
-  usersOnline: state => state.user.usersOnline,
   roles: state => state.user.roles,
-  /* masterdata module */
-  masterdata: state => state.data.masterdata,
   /* permission module */
   permission_routes: state => state.permission.routes,
+  errorLogs: state => state.errorLog.logs
 }
 export default getters

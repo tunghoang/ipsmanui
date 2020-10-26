@@ -3,4 +3,16 @@
 
 // Variables
 @import 'variables';
-@import 'icomoon';
+.el-dialog {
+  max-width: 500px;
+}
+@media screen and (max-width: 768px) {
+  .el-dialog {
+    width: 80%;
+  }
+}
+@media screen and (max-width: 546px) {
+  .el-dialog {
+    width: 96%;
+  }
+}

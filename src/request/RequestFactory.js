@@ -1,15 +1,21 @@
 import MasterdataRequest from './MasterdataRequest';
 import DashBoardRequest from './DashBoardRequest';
+import AuthRequest from './AuthRequest';
 import UserRequest from './UserRequest';
+import RoleRequest from './RoleRequest';
 import StudentRequest from './StudentRequest';
 import UniversityRequest from './UniversityRequest';
+import ContainmentRelRequest from './ContainmentRelRequest';
 
 const requestMap = {
   MasterdataRequest,
   DashBoardRequest,
+  AuthRequest,
   UserRequest,
+  RoleRequest,
   StudentRequest,
-  UniversityRequest
+  UniversityRequest,
+  ContainmentRelRequest
 };
 
 const instances = {};

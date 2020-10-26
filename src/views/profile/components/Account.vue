@@ -92,7 +92,7 @@
           email: this.userClone.email,
           dob: this.userClone.dob
         }
-        rf.getRequest('UserRequest').updateCurrentUser(params)
+        rf.getRequest('AuthRequest').updateCurrentUser(params)
         .then(async () => {
           this.$store.dispatch('user/updateUser', this.userClone)
           this.$notify({

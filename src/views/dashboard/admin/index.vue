@@ -1,6 +1,6 @@
 <template>
   <div class="dashboard-editor-container">
-    <el-row style="background:#fff;padding:16px 16px 0;margin-bottom:32px;">
+    <el-row style="background: #4dbd74; padding:16px 16px 0; margin-bottom:32px; color: #ffffff">
       <h1>
         Hệ thống quản trị NetIPS và HostIPS - IPSManager
       </h1>

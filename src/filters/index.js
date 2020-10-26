@@ -4,15 +4,6 @@ import moment from 'moment';
 import i18n from '@/lang'
 
 
-// export default function getPageTitle(key) {
-//   const hasKey = i18n.te(`route.${key}`)
-//   if (hasKey) {
-//     const pageName = i18n.t(`route.${key}`)
-//     return `${pageName} - ${title}`
-//   }
-//   return `${title}`
-// }
-
 /**
  * Show plural label if time is plural number
  * @param {number} time

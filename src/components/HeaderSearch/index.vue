@@ -1,6 +1,6 @@
 <template>
   <div :class="{'show':show}" class="header-search">
-    <i class-name="search-icon" class="icon-search" @click.stop="click" />
+    <svg-icon class-name="search-icon" icon-class="search" @click.stop="click" />
     <el-select
       ref="headerSearchSelect"
       v-model="search"
@@ -109,7 +109,7 @@ export default {
         }
 
         if (router.meta && router.meta.title) {
-          data.title = [...data.title, router.meta.title]
+          data.title = [...data.title, this.$t(`route.${router.meta.title}`)]
 
           if (router.redirect !== 'noRedirect') {
             // only push the routes with title

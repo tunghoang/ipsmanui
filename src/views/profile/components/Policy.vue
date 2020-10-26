@@ -75,7 +75,7 @@
           oldPassword: this.oldPassword,
           confirmPassword: this.confirmPassword
         }
-        rf.getRequest('UserRequest').changePassword(params)
+        rf.getRequest('AuthRequest').changePassword(params)
         .then(async() => {
           this.$notify({
             title: this.$t('notify.success.label'),

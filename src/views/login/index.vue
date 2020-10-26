@@ -8,7 +8,7 @@
 
       <el-form-item prop="username">
         <span class="svg-container">
-          <i class="icon-user"></i>
+          <svg-icon icon-class="user" />
         </span>
         <el-input
           ref="username"
@@ -31,7 +31,7 @@
       <el-tooltip v-model="capsTooltip" content="Caps lock is On" placement="right" manual>
         <el-form-item prop="password">
           <span class="svg-container">
-            <i class="icon-lock"></i>
+            <svg-icon icon-class="password" />
           </span>
           <el-input
             :key="passwordType"
@@ -50,7 +50,7 @@
             data-vv-validate-on="none"
           />
           <span class="show-pwd" @click="showPwd">
-            <i :class="passwordType === 'password' ? 'icon-eye' : 'icon-eye-open'" />
+            <svg-icon :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'" />
           </span>
           <div class="el-form-item__error" v-if="errors.has('password')">
             {{ errors.first('password') }}
@@ -93,8 +93,8 @@ export default {
   name: 'Login',
   data() {
     return {
-      username: 'otto.gislason@example.org',
-      password: '11563516',
+      username: 'admin',
+      password: 'abc123',
       passwordType: 'password',
       capsTooltip: false,
       loading: false,
@@ -162,8 +162,7 @@ export default {
       this.resetError();
       this.startSubmit();
       this.loading = true
-      // debugger
-      rf.getRequest('UserRequest').login(this.username, this.password)
+      rf.getRequest('AuthRequest').login(this.username, this.password)
       .then(response => {
         this.endSubmit();
         this.loading = false
@@ -186,24 +185,6 @@ export default {
         return acc
       }, {})
     }
-    // afterQRScan() {
-    //   if (e.key === 'x-admin-oauth-code') {
-    //     const code = getQueryObject(e.newValue)
-    //     const codeMap = {
-    //       wechat: 'code',
-    //       tencent: 'code'
-    //     }
-    //     const type = codeMap[this.auth_type]
-    //     const codeName = code[type]
-    //     if (codeName) {
-    //       this.$store.dispatch('LoginByThirdparty', codeName).then(() => {
-    //         this.$router.push({ path: this.redirect || '/' })
-    //       })
-    //     } else {
-    //       alert('第三方登录失败')
-    //     }
-    //   }
-    // }
   }
 }
 </script>

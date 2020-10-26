@@ -1,46 +1,25 @@
 import Vue from 'vue';
+import LocalStorage from 'common/LocalStorageUtils'
 
 export default class AuthenticationUtils {
 
   static isAuthenticated () {
-    return true
-    AuthenticationUtils.loadDataIfNeed();
-    return !!AuthenticationUtils.accessToken;
+    return LocalStorage.getItem('auth') || false
   }
 
-  static saveAuthenticationData (data) {
-    AuthenticationUtils.accessToken = data.access_token || '';
-    window.localStorage.setItem('access_token', data.access_token || '');
+  static saveAuthenticationData () {
+    LocalStorage.saveItem('auth', true);
   }
 
   static removeAuthenticationData () {
-    AuthenticationUtils.saveAuthenticationData({});
-    AuthenticationUtils.accessToken = '';
-    AuthenticationUtils.setLocale('en');
-  }
-
-  static getAccessToken () {
-    AuthenticationUtils.loadDataIfNeed();
-
-    return AuthenticationUtils.accessToken;
-  }
-
-
-  static loadData () {
-    AuthenticationUtils.accessToken = window.localStorage.getItem('access_token') || '';
-    AuthenticationUtils.dataLoaded = true;
-  }
-
-  static loadDataIfNeed () {
-    if (AuthenticationUtils.dataLoaded === undefined || !AuthenticationUtils.dataLoaded) {
-      AuthenticationUtils.loadData();
-    }
+    LocalStorage.removeItem('auth');
+    this.setLocale('en');
   }
 
   static setLocale(newLocale = null) {
-    const locale = newLocale || AuthenticationUtils.getLocale();
+    const locale = newLocale || this.getLocale();
 
-    if (locale === AuthenticationUtils.getLocale()) {
+    if (locale === this.getLocale()) {
       return;
     }
 
@@ -50,26 +29,20 @@ export default class AuthenticationUtils {
     window.i18n.locale = locale;
     window.app.$broadcast('UPDATED_LOCALE', locale);
 
-    return window.localStorage.setItem('locale', locale);
+    return LocalStorage.saveItem('locale', locale);
   }
 
   static logout () {
-    window.app.$store.state.user || {};
-
-    AuthenticationUtils.removeAuthenticationData();
+    this.removeAuthenticationData();
     Vue.prototype.$isAuthenticated = window.isAuthenticated = false;
-    window.axios.defaults.headers.common.Authorization = '';
 
     if (window.app.$store) {
       window.app.$store.dispatch('user/logout');
     }
   }
 
-  static login (token) {
-    AuthenticationUtils.saveAuthenticationData(token);
-    window.axios.defaults.headers.common.Authorization = `Bearer ${AuthenticationUtils.getAccessToken()}`;
-
-    window.isAuthenticated = AuthenticationUtils.isAuthenticated();
+  static login (response) {
+    this.saveAuthenticationData();
     Vue.prototype.$isAuthenticated = window.isAuthenticated;
   }
   static getLocale(defaultLocale = 'en') {

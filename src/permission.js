@@ -11,7 +11,6 @@ import Authentication from 'common/AuthenticationUtils'
 NProgress.configure({ showSpinner: false }) // NProgress Configuration
 
 const whiteList = ['/login', '/auth-redirect'] // no redirect whitelist
-const hasAuth = true
 router.beforeEach(async (to, from, next) => {
   // start progress bar
   NProgress.start()
@@ -21,10 +20,10 @@ router.beforeEach(async (to, from, next) => {
 
   // determine whether the user has logged in
 
-  if (hasAuth) {
+  if (Authentication.isAuthenticated()) {
     if (to.path === '/login') {
       // if is logged in, redirect to the home page
-      next({ path: '/' })
+      next()
       NProgress.done()
     } else {
       // determine whether the user has obtained his permission roles through getInfo
@@ -34,13 +33,11 @@ router.beforeEach(async (to, from, next) => {
       } else {
         try {
           // get user info
-          // note: roles must be a object array! such as: ['admin'] or ,['developer','student']
           const roles = await store.dispatch('user/getCurrentUser')
           // generate accessible routes map based on roles
           const accessRoutes = await store.dispatch('permission/generateRoutes', roles)
           // dynamically add accessible routes
           router.addRoutes(accessRoutes)
-          console.log(router)
 
           // hack method to ensure that addRoutes is complete
           // set the replace: true, so the navigation will not leave a history record
@@ -55,9 +52,8 @@ router.beforeEach(async (to, from, next) => {
         }
       }
     }
-  } else {
-    /* has no token*/
-
+  }
+  else {
     if (whiteList.indexOf(to.path) !== -1) {
       // in the free login whitelist, go directly
       next()

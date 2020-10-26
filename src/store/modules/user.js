@@ -25,7 +25,7 @@ const actions = {
   getCurrentUser({ commit }) {
     return new Promise((resolve, reject) => {
       let roles = []
-      rf.getRequest('UserRequest').getCurrentUser().then((res) => {
+      rf.getRequest('AuthRequest').getCurrentUser().then((res) => {
         if (!res) {
           reject('Verification failed, please Login again.')
         }
@@ -59,7 +59,7 @@ const actions = {
   logout ({ commit }) {
     return new Promise((resolve,) => {
       commit('UPDATE_USER', {});
-      commit('UPDATE_ROLES', {});
+      commit('UPDATE_ROLES', []);
       resetRouter()
       this.dispatch('tagsView/delAllViews', null, { root: true })
       resolve()

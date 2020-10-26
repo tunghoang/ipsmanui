@@ -1,4 +1,6 @@
-const path = require("path")
+'use strict'
+const path = require('path')
+const defaultSettings = require('./src/settings.js')
 // const fs = require('fs')
 // var https = require('https')
 // https.globalAgent.options.rejectUnauthorized = false
@@ -7,6 +9,11 @@ const backend = {
     secure: false
 //    pathRewrite: {'^/api' : ''}
 }
+
+function resolve(dir) {
+  return path.join(__dirname, dir)
+}
+
 module.exports = {
   lintOnSave: false,
   runtimeCompiler: true,
@@ -44,17 +51,30 @@ module.exports = {
   configureWebpack: {
     resolve: {
       alias: {
-        "requestfactory": path.resolve(
-          __dirname,
-          "src/request/RequestFactory.js"
-        ),
-        "common": path.resolve(__dirname, 'src/common'),
-        "@": path.resolve(__dirname, 'src')
+        "requestfactory": resolve('src/request/RequestFactory.js'),
+        "common": resolve('src/common'),
+        "@": resolve('src')
       }
     }
   },
   lintOnSave: process.env.NODE_ENV !== "production",
   chainWebpack(config) {
+    // set svg-sprite-loader
+    config.module
+      .rule('svg')
+      .exclude.add(resolve('src/icons'))
+      .end()
+    config.module
+      .rule('icons')
+      .test(/\.svg$/)
+      .include.add(resolve('src/icons'))
+      .end()
+      .use('svg-sprite-loader')
+      .loader('svg-sprite-loader')
+      .options({
+        symbolId: 'icon-[name]'
+      })
+      .end()
     config.when(process.env.NODE_ENV === "development", config =>
       config.devtool("cheap-source-map")
     );

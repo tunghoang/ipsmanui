@@ -2,11 +2,9 @@ import LocalStorage from 'common/LocalStorageUtils'
 import Vue from 'vue'
 import VueI18n from 'vue-i18n'
 import elementEnLocale from 'element-ui/lib/locale/lang/en' // element-ui lang
-import elementJaLocale from 'element-ui/lib/locale/lang/ja'// element-ui lang
 import elementViLocale from 'element-ui/lib/locale/lang/vi'// element-ui lang
 import enLocale from './en'
 import vnLocale from './vi'
-import jaLocale from './ja'
 
 const messages = {
   en: {
@@ -16,10 +14,6 @@ const messages = {
   vi: {
     ...vnLocale,
     ...elementViLocale
-  },
-  ja: {
-    ...jaLocale,
-    ...elementJaLocale
   }
 }
 

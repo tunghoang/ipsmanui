@@ -84,14 +84,15 @@ export const constantRoutes = [
     ]
   },
   {
-    path: '/documentation',
+    path: '/about',
+    hidden: true,
     component: Layout,
     children: [
       {
         path: 'index',
-        component: () => import('@/views/documentation/index'),
+        component: () => import('@/views/about/index'),
         name: 'Documentation',
-        meta: { title: 'documentation', icon: 'documentation' }
+        meta: { title: 'about', icon: 'documentation', affix: true }
       }
     ]
   },
@@ -166,6 +167,99 @@ export const asyncRoutes = [
       }
     ]
   },
+  {
+    path: '/user-managerment',
+    component: Layout,
+    redirect: '/user-managerment/list',
+    alwaysShow: true, // will always show the root menu
+    name: 'UserManagerment',
+    meta: {
+      title: 'user managerment',
+      icon: 'peoples',
+      roles: ['admin', 'editor'] // you can set roles in root nav
+    },
+    children: [
+      {
+        path: 'list',
+        component: () => import('@/views/user-managerment/user-list'),
+        name: 'UserList',
+        meta: {
+          title: 'user list',
+          icon: 'user',
+          roles: ['admin'] // or you can only set roles in sub nav
+        }
+      },
+      {
+        path: 'roles-of-user',
+        component: () => import('@/views/user-managerment/role-of-user'),
+        name: 'RoleOfUser',
+        meta: {
+          icon: 'role',
+          title: 'role of user',
+          roles: ['admin']
+        }
+      }
+    ]
+  },
+  {
+    path: '/role-managerment',
+    component: Layout,
+    redirect: '/role-managerment/list',
+    alwaysShow: true, // will always show the root menu
+    name: 'RoleManagerment',
+    meta: {
+      title: 'role managerment',
+      icon: 'roles',
+      roles: ['admin', 'editor'] // you can set roles in root nav
+    },
+    children: [
+      {
+        path: 'list',
+        component: () => import('@/views/role-managerment/role-list'),
+        name: 'RoleList',
+        meta: {
+          title: 'role list',
+          icon: 'role',
+          roles: ['admin'] // or you can only set roles in sub nav
+        }
+      },
+      {
+        path: 'users-of-role',
+        component: () => import('@/views/role-managerment/users-of-role'),
+        name: 'UsersOfRole',
+        meta: {
+          icon: 'user',
+          title: 'user of role',
+          roles: ['admin']
+        }
+      }
+    ]
+  },
+  {
+    path: '/node-managerment',
+    component: Layout,
+    redirect: '/node-managerment/list',
+    alwaysShow: true, // will always show the root menu
+    name: 'NodeManagerment',
+    meta: {
+      title: 'node managerment',
+      icon: 'nodes',
+      roles: ['admin', 'editor'] // you can set roles in root nav
+    },
+    children: [
+      {
+        path: 'list',
+        component: () => import('@/views/node-managerment/node-list'),
+        name: 'RoleList',
+        meta: {
+          title: 'node list',
+          icon: 'tree',
+          roles: ['admin'] // or you can only set roles in sub nav
+        }
+      }
+    ]
+  },
+
   // {
   //   path: '/error',
   //   component: Layout,
