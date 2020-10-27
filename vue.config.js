@@ -7,8 +7,7 @@ const defaultSettings = require('./src/settings.js')
 const backend = {
     target: 'http://112.137.129.214:15580',
     secure: false,
-    changeOrigin: true,
-    logLevel: 'debug'
+    changeOrigin: true
 //    pathRewrite: {'^/api' : ''}
 }
 
@@ -27,22 +26,22 @@ module.exports = {
     port: 10099,
     // proxy: 'https://ipsmanagerapi.uetis.com/',
     proxy: {
-      // '/users': backend,
-      // '/roles': backend,
-      // '/objects': backend,
-      // '/userRoleRels': backend,
-      // '/login': backend,
-      // '/logout': backend,
-      // '/enginetypes': backend,
-      // '/engines': backend,
-      // '/permissions': backend,
-      '/containmentRels': backend,
-      '/api': {
-          target: 'http://112.137.129.214:15580',
-          pathRewrite: {'^/api' : ''},
-          secure: false,
-          changeOrigin: true
-      }
+      '/users': backend,
+      '/roles': backend,
+      '/objects': backend,
+      '/userRoleRels': backend,
+      '/login': backend,
+      '/logout': backend,
+      '/enginetypes': backend,
+      '/engines': backend,
+      '/permissions': backend,
+      '/containmentRels': backend
+      // '/api': {
+      //     target: 'http://112.137.129.214:15580',
+      //     pathRewrite: {'^/api' : ''},
+      //     secure: false,
+      //     changeOrigin: true
+      // }
     },
     // https: true,
     // key: fs.readFileSync('/home/nnhoa/ca/new/server.key'),
