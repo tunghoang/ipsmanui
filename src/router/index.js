@@ -124,36 +124,36 @@ export const asyncRoutes = [
   // tableRouter,
 
 
-  {
-    path: '/student',
-    component: Layout,
-    meta: {
-      roles: ['admin'] // you can set roles in root nav
-    },
-    children: [
-    {
-      path: 'index',
-      component: () => import('@/views/student/index'),
-      name: 'Student',
-      meta: { title: 'student', icon: 'peoples' }
-    }
-    ]
-  },
-  {
-    path: '/universities',
-    component: Layout,
-    meta: {
-      roles: ['admin'] // you can set roles in root nav
-    },
-    children: [
-    {
-      path: 'index',
-      component: () => import('@/views/universities/index'),
-      name: 'University',
-      meta: { title: 'university', icon: 'table' }
-    }
-    ]
-  },
+  // {
+  //   path: '/student',
+  //   component: Layout,
+  //   meta: {
+  //     roles: ['admin'] // you can set roles in root nav
+  //   },
+  //   children: [
+  //   {
+  //     path: 'index',
+  //     component: () => import('@/views/student/index'),
+  //     name: 'Student',
+  //     meta: { title: 'student', icon: 'peoples' }
+  //   }
+  //   ]
+  // },
+  // {
+  //   path: '/universities',
+  //   component: Layout,
+  //   meta: {
+  //     roles: ['admin'] // you can set roles in root nav
+  //   },
+  //   children: [
+  //   {
+  //     path: 'index',
+  //     component: () => import('@/views/universities/index'),
+  //     name: 'University',
+  //     meta: { title: 'university', icon: 'table' }
+  //   }
+  //   ]
+  // },
   {
     path: '/profile',
     component: Layout,

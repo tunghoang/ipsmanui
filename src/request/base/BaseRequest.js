@@ -90,7 +90,7 @@ window.axios.interceptors.response.use(
 
 export default class BaseRequest {
   getUrlPrefix() {
-    return '';
+    return '/api';
   }
 
   getCurrentLocale() {
