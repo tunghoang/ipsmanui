@@ -49,7 +49,7 @@ module.exports = {
     // ca: fs.readFileSync('/home/nnhoa/ca/new/ca.crt'),
     // key: fs.readFileSync('server.key'),
     // cert: fs.readFileSync('server.crt'),
-    // public: 'https://ipsmanager.uetis.com'
+    public: 'https://ipsmanager.herokuapp.com/'
   },
   configureWebpack: {
     resolve: {
