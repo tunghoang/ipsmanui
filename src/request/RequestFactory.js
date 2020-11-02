@@ -5,7 +5,10 @@ import UserRequest from './UserRequest';
 import RoleRequest from './RoleRequest';
 import StudentRequest from './StudentRequest';
 import UniversityRequest from './UniversityRequest';
+import UserRoleRelRequest from './UserRoleRelRequest';
 import ContainmentRelRequest from './ContainmentRelRequest';
+import EngineRequest from './EngineRequest';
+import EngineTypeRequest from './EngineTypeRequest';
 
 const requestMap = {
   MasterdataRequest,
@@ -15,7 +18,10 @@ const requestMap = {
   RoleRequest,
   StudentRequest,
   UniversityRequest,
-  ContainmentRelRequest
+  UserRoleRelRequest,
+  ContainmentRelRequest,
+  EngineTypeRequest,
+  EngineRequest
 };
 
 const instances = {};

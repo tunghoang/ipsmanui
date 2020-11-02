@@ -3,7 +3,7 @@
     <el-form ref="loginForm" class="login-form" autocomplete="on" label-position="left">
 
       <div class="title-container">
-        <h3 class="title">{{ $t('ExamReg Login') }}</h3>
+        <h3 class="title">{{ $t('IPS Manager Login') }}</h3>
       </div>
 
       <el-form-item prop="username">
@@ -18,7 +18,7 @@
           tabindex="1"
           autocomplete="on"
           @focus="resetError"
-          :placeholder="$t('auth.username')"
+          :placeholder="$t('login.username')"
           :class="{ error: errors.has('username') }"
           data-vv-validate-on="none"
           v-validate="'required'"
@@ -28,7 +28,7 @@
         </div>
       </el-form-item>
 
-      <el-tooltip v-model="capsTooltip" content="Caps lock is On" placement="right" manual>
+      <el-tooltip v-model="capsTooltip" :content="$t('login.capslock_on')" placement="right" manual>
         <el-form-item prop="password">
           <span class="svg-container">
             <svg-icon icon-class="password" />
@@ -45,9 +45,10 @@
             @blur="capsTooltip = false"
             @keyup.enter.native="handleLogin"
             @focus="resetError"
-            :placeholder="$t('auth.password')"
+            :placeholder="$t('login.password')"
             :class="{ error: errors.has('password') }"
             data-vv-validate-on="none"
+            v-validate="'required'"
           />
           <span class="show-pwd" @click="showPwd">
             <svg-icon :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'" />
@@ -58,14 +59,9 @@
         </el-form-item>
       </el-tooltip>
 
-      <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleLogin">{{ $t('auth.login') }}</el-button>
+      <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleLogin">{{ $t('login.logIn') }}</el-button>
 
       <div style="position:relative">
-        <div class="tips">
-<!--           <span>{{ $t('auth.username') }} : xxxxxxxx</span>
-          <span>{{ $t('auth.password') }} : ******</span> -->
-        </div>
-
 <!--         <el-button class="thirdparty-button" type="primary" @click="showDialog=true">
   {{ $t('auth.orConnectWith') }}
 </el-button> -->
@@ -83,8 +79,6 @@
 </template>
 
 <script>
-// import { validUsername } from '@/utils/validate'
-// import SocialSign from './components/SocialSignin'
 import { Message } from 'element-ui'
 import rf from 'requestfactory';
 import AuthenticationUtils from 'common/AuthenticationUtils';
@@ -155,10 +149,10 @@ export default {
       })
     },
     async handleLogin() {
-      // await this.$validator.validateAll();
-      // if (this.errors.any() || this.isSubmitting) {
-      //   return;
-      // }
+      await this.$validator.validateAll();
+      if (this.errors.any() || this.isSubmitting) {
+        return;
+      }
       this.resetError();
       this.startSubmit();
       this.loading = true

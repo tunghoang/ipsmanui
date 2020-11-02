@@ -4,14 +4,19 @@
     about: 'About UET.SoC',
     guide: 'Guide',
     profile: 'Profile',
-    'user managerment': 'User Managerment',
-    'role managerment': 'Role managerment',
-    'node managerment': 'Node Managerment',
-    'roles of user': 'Roles of User',
-    'users of role': 'Users of role',
-    'user list': 'User List',
-    'role list': 'Role List',
-    'node list': 'Node List'
+    user_managerment: 'User Managerment',
+    role_managerment: 'Role managerment',
+    node_managerment: 'Node Managerment',
+    permission_managerment: 'Permission Managerment',
+    roles_of_user: 'Roles of User',
+    users_of_role: 'Users of Role',
+    user_list: 'User List',
+    role_list: 'Role List',
+    node_list: 'Node List',
+    detail_node: 'Detail Node',
+    engine_type_list: 'Engine Type List',
+    engine_list: 'Engine List',
+    engine_managerment: 'Engine Managerment'
   },
   navbar: {
     dashboard: 'Dashboard',
@@ -19,6 +24,7 @@
     logOut: 'Log Out',
     profile: 'Profile',
     theme: 'Theme',
+    router_search: 'Search Router',
     size: 'Global Size'
   },
   login: {
@@ -26,7 +32,7 @@
     logIn: 'Login',
     username: 'Username',
     password: 'Password',
-    any: 'any',
+    capslock_on: 'Capslock is On',
     thirdparty: 'Or connect with',
     thirdpartyTips: 'Can not be simulated on local, so please combine you own business simulation! ! !'
   },
@@ -86,7 +92,21 @@
     prolonged: 'Prolonged',
     expiry: 'Exriry',
     time: 'Time',
-    year: 'Year',
+    year: 'Year'
+  },
+  node: {
+    empty_child_node: 'Empty child Node',
+    detail: 'Detail Node',
+    add_child_node: 'Add Child Node',
+    remove_child_node: 'Remove Child Node'
+  },
+  error_log: {
+    title: 'Error Log',
+    clear_all: 'Clear All',
+    message: 'Message',
+    info: 'Info',
+    url: 'Url',
+    stack: 'Stack'
   },
   time: {
     minute: 'minite',

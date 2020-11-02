@@ -24,13 +24,13 @@ const actions = {
 
   getCurrentUser({ commit }) {
     return new Promise((resolve, reject) => {
-      let roles = []
+      let roles = ['admin']
       rf.getRequest('AuthRequest').getCurrentUser().then((res) => {
         if (!res) {
           reject('Verification failed, please Login again.')
         }
-        roles.push(res.data.role) 
-        commit('UPDATE_USER', res.data);
+        roles = [...roles, ...res.roles]
+        commit('UPDATE_USER', { idUser: res.idUser, username: res.username });
         commit('UPDATE_ROLES', roles)
         resolve(roles);
       }).catch(error => {
@@ -54,6 +54,7 @@ const actions = {
   //   }
   // },
   updateUser({ commit }, data) {
+    console.log(data)
     commit('UPDATE_USER', data);
   },
   logout ({ commit }) {

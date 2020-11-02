@@ -2,9 +2,9 @@
 @import url('https://fonts.googleapis.com/css?family=Nunito');
 
 // Variables
-@import 'variables';
+@import 'mixins';
 .el-dialog {
-  max-width: 500px;
+  max-width: 768px;
 }
 @media screen and (max-width: 768px) {
   .el-dialog {
@@ -13,6 +13,7 @@
 }
 @media screen and (max-width: 546px) {
   .el-dialog {
-    width: 96%;
+    width: 100% !important;
+    max-width: calc(100vw - 20px);
   }
 }

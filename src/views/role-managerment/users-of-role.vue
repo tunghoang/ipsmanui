@@ -1,12 +1,20 @@
 <template>
   <div class="app-container student">
     <div class="filter-container">
-      <el-input style="width: 200px;"
-                v-model="params.key"
-                :placeholder="$t('table.key')"
-                class="filter-item" 
-                @keyup.enter.native="handleRefreshTable" />
-      <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleRefreshTable">
+      <el-autocomplete
+                v-model="roleSelect"
+                class="filter-item"
+                value="name"
+                clearable
+                @select="handleAutocomplete"
+                :fetch-suggestions="querySearchAsync"
+                @keyup.enter.native="handleAutocomplete"
+                :placeholder="$t('table.role')">
+        <template slot-scope="{ item }">
+          <span class="value">{{ item.name }}</span>
+        </template>
+      </el-autocomplete>
+      <el-button v-waves class="filter-item ml-1" type="primary" icon="el-icon-search" @click="handleRefreshTable">
         {{ $t('table.search') }}
       </el-button>
       <el-button v-waves :loading="isSubmitting" style="margin-left: 10px; float: right;" class="filter-item float-right" type="primary" icon="el-icon-download" @click="handleDownload">
@@ -31,16 +39,8 @@
           <span>{{ scope.row.idUser }}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('table.name')" sortable prop="username" align="center">
-        <template slot-scope="scope">
-          <span class="link-type" @click="handleUpdate(scope.row)">{{ scope.row.name }}</span>
-        </template>
-      </el-table-column>
       <el-table-column :label="$t('table.actions')" fixed="right" align="center" width="150" class-name="small-padding fixed-width">
         <template slot-scope="{row}">
-          <el-button type="primary" size="mini" @click="handleUpdate(row)">
-            {{ $t('table.edit') }}
-          </el-button>
           <el-button type="danger" size="mini" @click="handleDelete(row)">
             {{ $t('table.delete') }}
           </el-button>
@@ -117,8 +117,7 @@ export default {
       params: {
         page: 1,
         limit: 20,
-        key: undefined,
-        status: undefined,
+        idRole: undefined,
         sort: 'updated_at',
         order: 'desc'
       },
@@ -135,25 +134,65 @@ export default {
         create: this.$t('table.create'),
         upload: this.$t('upload.title')
       },
-      fileList: [],
+      roles: [],
+      roleSelect: '',
+      options: [],
       isSubmitting: false
     }
   },
-  mounted() {
-    this.getList()
+  async mounted() {
+    await this.getList()
   },
   methods: {
-    getList() {
-      rf.getRequest('RoleRequest').getList(this.params)
+    loadRoles() {
+      let params = {}
+      rf.getRequest('RoleRequest').getList(params)
       .then(async response => {
-        this.listLoading = false
-        this.list = response
-        this.total = response.length
+        this.roles = window._.map(response, role => {
+          return {
+            idRole: role.idRole,
+            value: role.name,
+            name: role.name
+          }
+        })
+        this.options = window._.cloneDeep(response)
       })
       .catch(error => {
         this.errors.add({field: 'error', msg: error.response.data.message});
         Message.error(this.$t(this.errors.first('error')) || this.$t('auth.unknowError'))
-      });
+      })
+    },
+    querySearchAsync(queryString, cb) {
+      var roles = this.roles;
+      var results = queryString ? roles.filter(this.createFilter(queryString)) : roles;
+
+      clearTimeout(this.timeout);
+      this.timeout = setTimeout(() => {
+        cb(results);
+      }, 1000 * Math.random());
+    },
+    createFilter(queryString) {
+      return (link) => {
+        return (link.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0);
+      };
+    },
+    getList() {
+      rf.getRequest('UserRoleRelRequest').getList(this.params)
+      .then(async response => {
+        this.list = response
+        this.total = response.length
+        await this.loadRoles()
+      })
+      .catch(error => {
+        this.errors.add({field: 'error', msg: error.response.data.message});
+        Message.error(this.$t(this.errors.first('error')) || this.$t('auth.unknowError'))
+      })
+      .finally(() => this.listLoading = false)
+    },
+    handleAutocomplete (value) {
+      console.log(value)
+      this.params.idRole = value.idRole
+      this.handleRefreshTable()
     },
     handleRefreshTable() {
       this.listLoading = true
@@ -227,108 +266,12 @@ export default {
       })
 
     },
-    handleRemove(file, fileList) {
-      console.log(file, fileList);
-    },
-    handlePreview(file) {
-      console.log(file);
-    },
-    beforeRemove(file) {
-      return this.$confirm(`Cancel the transfert of ${ file.name } ?`);
-    },
     resetTemp() {
       this.temp = {
         idUser: undefined,
         username: '',
         description: ''
       }
-    },
-    handleUpdate(row) {
-      row = {
-        ...row,
-        password: ''
-      }
-      this.temp = Object.assign({}, row) // copy obj
-      this.dialogStatus = 'update'
-      this.dialogFormVisible = true
-    },
-    async updateData() {
-      this.resetError();
-      if (this.isSubmitting) {
-        return;
-      }
-      await this.$validator.validate('username');
-      await this.$validator.validate('password');
-      if (this.errors.any()) {
-        return;
-      }
-      let params = window._.cloneDeep(this.temp)
-      if(!this.changePassword) {
-        delete params.password
-      }
-      rf.getRequest('RoleRequest').update(params.idUser, params)
-      .then(() => {
-        this.dialogFormVisible = false
-        this.$notify({
-          title: this.$t('notify.success.label'),
-          message: this.$t('notify.success.updateSuccess'),
-          type: 'success',
-          duration: 1000,
-          showClose: false
-        })
-      })
-    },
-    handleDownload() {
-      this.isSubmitting = true
-      rf.getRequest('RoleRequest').export(this.params)
-      .then(async response => {
-        let dataExport = []
-        response.map((item, index) => {item.no = index + 1 ; dataExport.push(item)})
-        this.handleExport(dataExport);
-      })
-      .catch(error => {
-        this.isSubmitting = false
-        this.errors.add({field: 'error', msg: error});
-        this.$notify({
-          title: this.$t('notify.errors.label'),
-          message: this.$t(this.errors.first('error')) || this.$t('notify.errors.unknow'),
-          type: 'error',
-          duration: 1000,
-          showClose: false
-        })
-      });
-    },
-    handleExport(dataExport) {
-      import('@/vendor/Export2Excel').then(excel => {
-        const tHeader = [this.$t('no'), this.$t('table.username')]
-        const filterVal = ['no', 'username']
-        const data = this.formatJson(filterVal, dataExport)
-        excel.export_json_to_excel({
-          header: tHeader,
-          data,
-          filename: `${this.$t('route."user list"')}`
-        })
-        this.isSubmitting = false
-      })
-      .catch(error => {
-        this.isSubmitting = false
-        this.$notify({
-          title: this.$t('notify.errors.label'),
-          message: error,
-          type: 'error',
-          duration: 1000,
-          showClose: false
-        })
-      });
-    },
-    formatJson(filterVal, jsonData) {
-      return jsonData.map(v => filterVal.map(j => {
-        if (j === 'timestamp') {
-          return parseTime(v[j])
-        } else {
-          return v[j]
-        }
-      }))
     },
     handleDelete(row) {
       this.$confirm(this.$t('notify.text.delete'), 'Warning', {

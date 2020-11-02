@@ -6,7 +6,7 @@
                 :placeholder="$t('table.key')"
                 class="filter-item" 
                 @keyup.enter.native="handleRefreshTable" />
-      <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleRefreshTable">
+      <el-button v-waves class="filter-item ml-1" type="primary" icon="el-icon-search" @click="handleRefreshTable">
         {{ $t('table.search') }}
       </el-button>
       <el-button v-waves :loading="isSubmitting" style="margin-left: 10px; float: right;" class="filter-item float-right" type="primary" icon="el-icon-download" @click="handleDownload">
@@ -146,14 +146,14 @@ export default {
     getList() {
       rf.getRequest('RoleRequest').getList(this.params)
       .then(async response => {
-        this.listLoading = false
         this.list = response
         this.total = response.length
       })
       .catch(error => {
         this.errors.add({field: 'error', msg: error.response.data.message});
         Message.error(this.$t(this.errors.first('error')) || this.$t('auth.unknowError'))
-      });
+      })
+      .finally(() => this.listLoading = false)
     },
     handleRefreshTable() {
       this.listLoading = true
@@ -245,8 +245,7 @@ export default {
     },
     handleUpdate(row) {
       row = {
-        ...row,
-        password: ''
+        ...row
       }
       this.temp = Object.assign({}, row) // copy obj
       this.dialogStatus = 'update'

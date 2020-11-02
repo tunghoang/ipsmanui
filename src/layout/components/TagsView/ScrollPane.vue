@@ -72,14 +72,19 @@ export default {
   white-space: nowrap;
   position: relative;
   overflow: hidden;
-  width: calc(100% - 40px);
-  >>> {
+  width: calc(100% - 20px);
+  ::v-deep {
     .el-scrollbar__bar {
       bottom: 0px;
     }
     .el-scrollbar__wrap {
       height: 49px;
     }
+  }
+}
+@media screen and (max-width: 768px) {
+  .scroll-container {
+    height: 100%;
   }
 }
 </style>

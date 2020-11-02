@@ -1,362 +1,301 @@
 <template>
   <div class="app-container node-managerment">
-    <div class="filter-container">
-      <el-input style="width: 200px;"
-                v-model="params.key"
-                :placeholder="$t('table.key')"
-                class="filter-item" 
-                @keyup.enter.native="handleRefreshTable" />
-      <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleRefreshTable">
-        {{ $t('table.search') }}
-      </el-button>
-      <el-button v-waves :loading="isSubmitting" style="margin-left: 10px; float: right;" class="filter-item float-right" type="primary" icon="el-icon-download" @click="handleDownload">
-        {{ $t('table.export') }}
-      </el-button>
-      <el-button style="float: right;" class="filter-item float-right" type="primary" icon="el-icon-plus" @click="handleCreateSingle">
-        {{ $t('table.add') }}
-      </el-button>
-    </div>
-
-    <el-table
-      :key="tableKey"
-      v-loading="listLoading"
-      :data="list"
-      fit
-      stripe
-      style="width: 100%;"
-      @sort-change="sortChange"
-    >
-      <el-table-column :label="$t('table.id')" prop="idContainmentRel" sortable align="center" width="100px">
-        <template slot-scope="scope">
-          <span>{{ scope.row.idContainmentRel }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column :label="$t('table.container')" sortable prop="idContainer" align="center">
-        <template slot-scope="scope">
-          <span class="link-type" @click="handleUpdate(scope.row)">{{ scope.row.idContainer }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column :label="$t('table.containee')" sortable prop="idContainee" align="center">
-        <template slot-scope="scope">
-          <span class="link-type" @click="handleUpdate(scope.row)">{{ scope.row.idContainee }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column :label="$t('table.actions')" fixed="right" align="center" width="150" class-name="small-padding fixed-width">
-        <template slot-scope="{row}">
-          <el-button type="primary" size="mini" @click="handleUpdate(row)">
-            {{ $t('table.edit') }}
-          </el-button>
-          <el-button type="danger" size="mini" @click="handleDelete(row)">
-            {{ $t('table.delete') }}
-          </el-button>
-        </template>
-      </el-table-column> 
-    </el-table>
-
-    <pagination v-show="total>0" :total="total" :page.sync="params.page" :limit.sync="params.limit" @pagination="getList" />
-
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" @close="resetError()">
-      <el-form ref="dataFormSingle" :model="temp" label-position="left" label-width="100px" style="width: 100%">
-        <el-form-item :label="$t('table.username')" prop="username">
-          <el-input v-model="temp.username"
-                    tabindex="1"
-                    @focus="resetError"
-                    name="username"
-                    :placeholder="$t('table.username')"
-                    :class="{ error: errors.has('username') }"
-                    data-vv-validate-on="none"
-                    v-validate="'required|min:2|max:255'"  />
-          <div class="el-form-item__error" v-if="errors.has('username')">
-            {{ errors.first('username') }}
-          </div>
-        </el-form-item>
-        <el-form-item :label="$t('table.change_password')" v-if="dialogStatus !== 'create'">
-          <el-switch v-model="changePassword" />
-        </el-form-item>
-        <el-form-item :label="$t('table.password')" v-if="dialogStatus === 'create' || changePassword">
-          <el-input v-model="temp.password"
-                    tabindex="1"
-                    show-password
-                    @focus="resetError"
-                    name="password"
-                    :placeholder="$t('table.password')"
-                    :class="{ error: errors.has('password') }"
-                    data-vv-validate-on="none"
-                    v-validate="'required|min:4|max:255'" />
-          <div class="el-form-item__error" v-if="errors.has('password')">
-            {{ errors.first('password') }}
-          </div>
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">
-          {{ $t('table.cancel') }}
-        </el-button>
-        <el-button type="primary" @click="dialogStatus==='create'?createData():updateData()">
-          {{ $t('table.confirm') }}
-        </el-button>
-      </div>
-    </el-dialog>
+    <el-row :gutter="10">
+      <el-col :sm="24" :md="6">
+        <el-card shadow="always">
+          <el-form ref="form" :model="treeConfig" label-width="100px">
+            <el-form-item label="Tree type">
+              <el-select v-model="treeConfig.type" placeholder="Select Tree type">
+                <el-option
+                  label="tree"
+                  value="tree">
+                </el-option>
+                <el-option
+                  label="cluster"
+                  value="cluster">
+                </el-option>
+              </el-select>
+            </el-form-item>
+            <el-form-item label="Layout type">
+              <el-select v-model="treeConfig.layoutType" placeholder="Select Layout type">
+                <el-option
+                  label="circular"
+                  value="circular">
+                </el-option>
+                <el-option
+                  label="vertical"
+                  value="vertical">
+                </el-option>
+                <el-option
+                  label="horizontal"
+                  value="horizontal">
+                </el-option>
+              </el-select>
+            </el-form-item>
+            <el-form-item label="Node text display">
+              <el-select v-model="treeConfig.nodeTextDisplay" placeholder="Select Node text display">
+                <el-option
+                  label="all"
+                  value="all">
+                </el-option>
+                <el-option
+                  label="leaves"
+                  value="leaves">
+                </el-option>
+                <el-option
+                  label="extremities"
+                  value="extremities">
+                </el-option>
+              </el-select>
+            </el-form-item>
+            <el-form-item label="Link layout">
+              <el-select v-model="treeConfig.linkLayout" placeholder="Select Node link layout">
+                <el-option
+                  label="bezier"
+                  value="bezier">
+                </el-option>
+                <el-option
+                  label="orthogonal"
+                  value="orthogonal">
+                </el-option>
+              </el-select>
+            </el-form-item>
+            <el-form-item>
+              <el-button type="primary" size="small" plain @click.native="resetZoom">Reset Zoom</el-button>
+            </el-form-item>
+          </el-form>
+        </el-card>
+      </el-col>
+      <el-col :sm="24" :md="18">
+        <el-card shadow="always">
+          <tree ref="tree"
+            v-model="treeConfig.currentData"
+            :nodeTextDisplay="treeConfig.nodeTextDisplay"
+            :identifier="getId"
+            :nodeTextMargin="10"
+            :zoomable="treeConfig.zoomable"
+            :data="tree"
+            :leafTextMargin="10"
+            :node-text="treeConfig.nodeText"
+            :margin-x="30"
+            :margin-y="30"
+            :type="treeConfig.type"
+            :layout-type="treeConfig.layoutType"
+            :linkLayout="treeConfig.linkLayout"
+            popUpPlacement="bottom-end"
+            :minZoom="0.6"
+            :maxZoom="3.6"
+            class="tree"
+            @clickedText="onClick"
+            @expand="onExpand"
+            @retract="onRetract"
+            @clickedNode="onClickNode">
+            <template #node="{ data, node, isRetracted }">
+              <circle r="6" :class="data.status === 'active' ? 'active': 'inactive'">
+                <title>{{data.name}}</title>
+              </circle>
+            </template>
+            <template #popUp="{ data, node }">
+              <div class="btn-group-vertical mt-1">
+                <el-popover
+                  placement="right"
+                  width="300"
+                  trigger="click">
+                  <p>Node: <el-link type="primary">{{ data.name }}</el-link></p>
+                  <p>Status: {{ data.status }}</p>
+                  <el-table :data="data.children">
+                    <el-table-column width="60" property="idContainer" label="idContainer"></el-table-column>
+                    <el-table-column align="center" width="210" property="name" label="name"></el-table-column>
+                    <template slot="empty">{{ $t('node.empty_child_node') }}</template>
+                  </el-table>
+                  <el-button slot="reference"size="mini" type="info" plain data-toggle="tooltip" :title="$t('node.detail')">
+                    <svg-icon icon-class="eye-open" />
+                  </el-button>
+                </el-popover>
+                <el-button @click.native="addFor(data)" size="mini" type="success" plain data-toggle="tooltip" :title="$t('node.add_child_node')" style="margin-left: 10px;">
+                  <svg-icon icon-class="plus" />
+                </el-button>
+                <el-button @click.native="remove(data, node)" size="mini" type="danger" plain data-toggle="tooltip" :title="$t('node.remove_child_node')">
+                  <svg-icon icon-class="delete" />
+                </el-button>
+              </div>
+            </template>
+          </tree>
+        </el-card>
+      </el-col>
+    </el-row>
   </div>
 </template>
 
 <script>
-import waves from '@/directive/waves' // waves directive
-import { parseTime } from '@/utils'
-import Pagination from '@/components/Pagination' // secondary package based on el-pagination
+const removeElement = (arr, element) => {
+  const index = arr.indexOf(element)
+  if (index === -1) {
+    return
+  }
+  arr.splice(index, 1)
+}
+import CollapseOnClick from '@/components/Managerment/CollapseOnClick'
+import { tree } from 'vued3tree'
 import rf from 'requestfactory'
 import { Message } from 'element-ui'
-import RemoveErrorsMixin from 'common/RemoveErrorsMixin'
-
+import { forEach } from 'lodash'
 export default {
-  name: 'UserList',
-  components: { Pagination },
-  directives: { waves },
-  mixins: [RemoveErrorsMixin],
+  name: 'DetailNode',
+  components: {
+    tree,
+    CollapseOnClick
+  },
   data() {
     return {
-      tableKey: 0,
-      list: null,
-      total: 0,
-      listLoading: true,
-      params: {
-        page: 1,
-        limit: 20,
-        key: undefined,
-        status: undefined,
-        sort: 'updated_at',
-        order: 'desc'
+      treeConfig: {
+        type: 'tree',
+        layoutType: 'horizontal',
+        nodeText: 'name',
+        currentData: null,
+        zoomable: true,
+        nodeTextDisplay: 'all',
+        linkLayout: 'bezier',
+        events: []
       },
-      changePassword: false,
-      temp: {
-        idRole: undefined,
-        name: '',
-        description: ''
-      },
-      dialogFormVisible: false,
-      dialogStatus: '',
-      textMap: {
-        update: this.$t('table.edit'),
-        create: this.$t('table.create'),
-        upload: this.$t('upload.title')
-      },
-      fileList: [],
-      isSubmitting: false
+      currentId: 500,
+      isLoading: false,
+      tree: {
+        children: [],
+        idContainer: 0,
+        name: 'Node 1',
+        status: 'active',
+        load: true
+      }
     }
   },
-  mounted() {
+  created () {
     this.getList()
   },
   methods: {
     getList() {
       rf.getRequest('ContainmentRelRequest').getList(this.params)
-      .then(async response => {
-        this.listLoading = false
-        this.list = response
-        this.total = response.length
+      .then(res => {
+        forEach(res, (object) => {
+          const newData = {
+            idContainer: object.idObject,
+            children: [],
+            name: object.name || object.idContainee,
+            status: 'active',
+            load: false
+          }
+          this.tree.children.push(newData)
+        })
       })
       .catch(error => {
         this.errors.add({field: 'error', msg: error.response.data.message});
         Message.error(this.$t(this.errors.first('error')) || this.$t('auth.unknowError'))
-      });
-    },
-    handleRefreshTable() {
-      this.listLoading = true
-      this.params.page = 1
-      this.getList()
-    },
-    sortChange(data) {
-      const { prop, order } = data
-        this.sortBy(prop, order)
-    },
-    getSortClass: function() {
-      const order = this.params.order
-      return order === `asc`
-      ? 'ascending'
-      : order === `desc`
-      ? 'descending'
-      : ''
-    },
-    sortBy(col, order) {
-      this.params.sort = col
-      if (order === 'ascending') {
-        this.params.order = 'asc'
-      } else {
-        this.params.order = 'desc'
-      }
-      this.handleFilter()
-    },
-    handleFilter() {
-      this.params.page = 1
-      this.getList()
-    },
-    handleError(error) {
-      this.convertRemoteErrors(error);
-      if (this.errors.has('error')) {
-        this.errors.add({field: 'error', msg: error.response.data.message});
-        Message.error(this.$t(this.errors.first('error')) || this.$t('auth.unknowError'))
-      }
-    },
-    handleCreateSingle() {
-      this.resetTemp()
-      this.dialogStatus = 'create'
-      this.dialogFormVisible = true
-      this.$nextTick(() => {
-        this.$refs['dataFormSingle'].clearValidate()
       })
+      .finally(() => this.listLoading = false)
     },
-    async createData() {
-      this.resetError();
-      if (this.isSubmitting) {
-        return;
-      }
-      await this.$validator.validate('username');
-      await this.$validator.validate('password');
-      if (this.errors.any()) {
-        return;
-      }
-      rf.getRequest('RoleRequest').create(this.temp)
-      .then(() => {
-        this.dialogFormVisible = false
-        this.$notify({
-          title: this.$t('notify.success.label'),
-          message: this.$t('notify.success.createSuccess'),
-          type: 'success',
-          duration: 1000,
-          showClose: false
-        })
-        this.handleRefreshTable()
-      })
-      .catch(error => {
-        this.handleError(error)
-      })
-
-    },
-    handleRemove(file, fileList) {
-      console.log(file, fileList);
-    },
-    handlePreview(file) {
-      console.log(file);
-    },
-    beforeRemove(file) {
-      return this.$confirm(`Cancel the transfert of ${ file.name } ?`);
-    },
-    resetTemp() {
-      this.temp = {
-        idUser: undefined,
-        username: '',
-        description: ''
+    async do (action) {
+      if (this.treeConfig.currentData) {
+        this.isLoading = true
+        await this.$refs['tree'][action](this.treeConfig.currentData)
+        this.isLoading = false
       }
     },
-    handleUpdate(row) {
-      row = {
-        ...row,
-        password: ''
+    getId (node) {
+      return node.idContainer
+    },
+    expandAll () {
+      this.do('expandAll')
+    },
+    collapseAll () {
+      this.do('collapseAll')
+    },
+    showOnly () {
+      this.do('showOnly')
+    },
+    show () {
+      this.do('show')
+    },
+    onClick (evt) {
+      this.onEvent('clickedText', evt)
+    },
+    onClickNode (evt) {
+      // console.log(evt)
+      // return
+      if (evt.data.load) return
+      const params = {
+        idContainer: evt.data.idContainer
       }
-      this.temp = Object.assign({}, row) // copy obj
-      this.dialogStatus = 'update'
-      this.dialogFormVisible = true
-    },
-    async updateData() {
-      this.resetError();
-      if (this.isSubmitting) {
-        return;
-      }
-      await this.$validator.validate('username');
-      await this.$validator.validate('password');
-      if (this.errors.any()) {
-        return;
-      }
-      let params = window._.cloneDeep(this.temp)
-      if(!this.changePassword) {
-        delete params.password
-      }
-      rf.getRequest('RoleRequest').update(params.idUser, params)
-      .then(() => {
-        this.dialogFormVisible = false
-        this.$notify({
-          title: this.$t('notify.success.label'),
-          message: this.$t('notify.success.updateSuccess'),
-          type: 'success',
-          duration: 1000,
-          showClose: false
-        })
-      })
-    },
-    handleDownload() {
-      this.isSubmitting = true
-      rf.getRequest('RoleRequest').export(this.params)
-      .then(async response => {
-        let dataExport = []
-        response.map((item, index) => {item.no = index + 1 ; dataExport.push(item)})
-        this.handleExport(dataExport);
-      })
-      .catch(error => {
-        this.isSubmitting = false
-        this.errors.add({field: 'error', msg: error});
-        this.$notify({
-          title: this.$t('notify.errors.label'),
-          message: this.$t(this.errors.first('error')) || this.$t('notify.errors.unknow'),
-          type: 'error',
-          duration: 1000,
-          showClose: false
-        })
-      });
-    },
-    handleExport(dataExport) {
-      import('@/vendor/Export2Excel').then(excel => {
-        const tHeader = [this.$t('no'), this.$t('table.username')]
-        const filterVal = ['no', 'username']
-        const data = this.formatJson(filterVal, dataExport)
-        excel.export_json_to_excel({
-          header: tHeader,
-          data,
-          filename: `${this.$t('route."user list"')}`
-        })
-        this.isSubmitting = false
-      })
-      .catch(error => {
-        this.isSubmitting = false
-        this.$notify({
-          title: this.$t('notify.errors.label'),
-          message: error,
-          type: 'error',
-          duration: 1000,
-          showClose: false
-        })
-      });
-    },
-    formatJson(filterVal, jsonData) {
-      return jsonData.map(v => filterVal.map(j => {
-        if (j === 'timestamp') {
-          return parseTime(v[j])
-        } else {
-          return v[j]
-        }
-      }))
-    },
-    handleDelete(row) {
-      this.$confirm(this.$t('notify.text.delete'), 'Warning', {
-        confirmButtonText: this.$t('action.ok'),
-        cancelButtonText: this.$t('action.cancel'),
-        type: 'warning',
-        center: true
-      }).then(() => {
-        rf.getRequest('RoleRequest').delete(row.idUser)
-          .then(() => {
-            this.$message({
-              type: 'success',
-              message: this.$t('notify.success.deleteSuccess')
-            })
-            this.handleRefreshTable()
+      rf.getRequest('ContainmentRelRequest').getChildNode(params)
+        .then((res) => {
+          forEach(res, (object) => {
+            const newData = {
+              idContainer: object.idObject,
+              children: [],
+              name: object.name || object.idContainee,
+              status: 'active'
+            }
+            evt.data.load = true
+            evt.data.children.push(newData)
           })
-      }).catch(() => {
-        this.$message({
-          type: 'info',
-          message: this.$t('notify.info.cancel'),
-        });
-      });
+        })
+      this.onEvent('clickedNode', evt)
+    },
+    onExpand (evt) {
+      this.onEvent('onExpand', evt)
+    },
+    onRetract (evt) {
+      this.onEvent('onRetract', evt)
+    },
+    onEvent (eventName, data) {
+      this.treeConfig.events.push({eventName, data: data.data})
+    },
+    addFor (data) {
+      const newData = {
+        id: this.currentId++,
+        children: [],
+        name: Math.random().toString(36).substring(7),
+        status: 'active'
+      }
+      data.children.push(newData)
+    },
+    remove (data, node) {
+      const parent = node.parent.data
+      removeElement(parent.children, data)
+    },
+    resetZoom () {
+      if (!this.$refs['tree']) {
+        return
+      }
+      this.isLoading = true
+      this.$refs['tree'].resetZoom().then(() => { this.isLoading = false })
     }
   },
 }
 </script>
+
+<style lang="scss" scoped>
+  .tree {
+    height: 800px;
+    ::v-deep.nodetree {
+      circle {
+        &.active {
+          fill: #67c23a;
+        }
+        &.inactive {
+          fill: #f56c6c;
+        }
+      }
+      &.node--internal {
+        >text {
+          font-weight: bold;
+          transform: rotateZ( -20deg);
+        }
+      }
+      &.selected {
+        >text {
+          fill: #409eff;
+        }
+      }
+    }
+  }
+</style>

@@ -1,0 +1,136 @@
+@import 'variables';
+
+.fh {
+  height: 100% !important;
+}
+
+.d-block {
+  display: block!important;
+}
+
+.d-inline-block {
+  display: inline-block;
+}
+
+.d-flex {
+  display: flex;
+}
+
+.fw {
+  display: block;
+  width: 100% !important;
+}
+
+.w-fix-content {
+  width: fit-content;
+}
+.m-auto {
+  margin: auto;
+}
+
+.text-overflow {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+
+// border left 
+.border-left {
+  border-left: 1px solid #ccc;
+}
+
+.no-scroll {
+  height: 100%;
+  overflow: hidden;
+}
+
+.hidden {
+  display: none;
+}
+
+.clearfix {
+  clear: both;
+  &:after {
+    content: '';
+    display: table;
+    clear: both;
+  }
+}
+
+/* -- floats -- */
+
+.ffluid { display: table-cell; *display:block; width:auto }
+.cr { clear: right }
+.cl { clear: left }
+.cb { clear: both }
+.l { float: left }
+.r { float: right }
+
+.tb { font-weight: bold; }
+
+.tl { text-align: left !important; }
+.tr { text-align: right !important; }
+
+.tr { text-align: right; }
+.tl { text-align: left; }
+.tj { text-align: justify; }
+.ib { display: inline-block; }
+.nw { white-space: nowrap; }
+
+.vam { vertical-align: middle; }
+
+.fs-0 { font-size: 0; }
+
+@for $i from 0 to 5 {
+  .m-#{$i} {
+    margin: $i * 0.5em !important;
+  }
+  .mt-#{$i} {
+    margin-top: $i * 0.5em !important;
+  }
+  .mb-#{$i} {
+    margin-bottom: $i * 0.5em !important;
+  }
+  .ml-#{$i} {
+    margin-left: $i * 0.5em !important;
+  }
+  .mr-#{$i} {
+    margin-right: $i * 0.5em !important;
+  }
+  .mx-#{$i} {
+    margin-left: $i * 0.5em !important;
+    margin-right: $i * 0.5em !important;
+  }
+  .my-#{$i} {
+    margin-top: $i * 0.5em !important;
+    margin-bottom: $i * 0.5em !important;
+  }
+  .p-#{$i} {
+    padding: $i * 0.5em !important;
+  }
+  .pt-#{$i} {
+    padding-top: $i * 0.5em !important;
+  }
+  .pb-#{$i} {
+    padding-bottom: $i * 0.5em !important;
+  }
+  .pl-#{$i} {
+    padding-left: $i * 0.5em !important;
+  }
+  .pr-#{$i} {
+    padding-right: $i * 0.5em !important;
+  }
+  .px-#{$i} {
+    padding-left: $i * 0.5em !important;
+    padding-right: $i * 0.5em !important;
+  }
+  .py-#{$i} {
+    padding-top: $i * 0.5em !important;
+    padding-bottom: $i * 0.5em !important;
+  }
+  .br-#{$i * 2} {
+    border-radius: $i * 2px;
+  }
+}

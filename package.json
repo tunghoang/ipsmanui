@@ -1,11 +1,11 @@
 {
   "name": "@uet.dis/ipsmanager",
-   "version": "1.0.1",
-   "description": "UI for Security Operating Center",
-   "author": "Department of Information Systems",
-   "homepage": "http://uet.vnu.edu.vn/",
-   "copyright": "Copyright 2019-2020 @ UET.DIS",
-   "license": "MIT",
+  "version": "1.0.1",
+  "description": "UI for Security Operating Center",
+  "author": "Department of Information Systems",
+  "homepage": "http://uet.vnu.edu.vn/",
+  "copyright": "Copyright 2019-2020 @ UET.DIS",
+  "license": "MIT",
   "private": true,
   "scripts": {
     "svgo": "svgo -f src/icons/svg --config=src/icons/svgo.yml",
@@ -41,6 +41,7 @@
     "vue-i18n": "^8.9.0",
     "vue-router": "^3.0.2",
     "vue-session": "^1.0.0",
+    "vued3tree": "^5.1.0",
     "vuex": "^3.1.0",
     "xlsx": "^0.15.3"
   },

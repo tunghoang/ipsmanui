@@ -9,7 +9,7 @@ export default class ContainmentRelRequest extends BaseModelRequest {
     return this.get('/containmentRels/', params);
   }
 
-  find(params) {
+  getChildNode(params) {
     return this.put(`/containmentRels/`, params);
   }
 
@@ -17,11 +17,15 @@ export default class ContainmentRelRequest extends BaseModelRequest {
     return this.post('/users/', params);
   }
 
+  update(roleId, params) {
+    return this.put(`/objects/${roleId}`, params);
+  }
+
   export(params) {
-    return this.get('/users/', params);
+    return this.get('/containmentRels/', params);
   }
 
   delete(userId) {
-    return this.del(`/users/${userId}`);
+    return this.del(`/objects/${userId}`);
   }
 }

@@ -160,7 +160,7 @@ export const asyncRoutes = [
     hidden: true,
     children: [
       {
-        path: '/index',
+        path: '',
         component: () => import('@/views/profile/index'),
         name: 'Profile',
         meta: { title: 'profile', icon: 'user' }
@@ -174,7 +174,7 @@ export const asyncRoutes = [
     alwaysShow: true, // will always show the root menu
     name: 'UserManagerment',
     meta: {
-      title: 'user managerment',
+      title: 'user_managerment',
       icon: 'peoples',
       roles: ['admin', 'editor'] // you can set roles in root nav
     },
@@ -184,7 +184,7 @@ export const asyncRoutes = [
         component: () => import('@/views/user-managerment/user-list'),
         name: 'UserList',
         meta: {
-          title: 'user list',
+          title: 'user_list',
           icon: 'user',
           roles: ['admin'] // or you can only set roles in sub nav
         }
@@ -195,7 +195,7 @@ export const asyncRoutes = [
         name: 'RoleOfUser',
         meta: {
           icon: 'role',
-          title: 'role of user',
+          title: 'roles_of_user',
           roles: ['admin']
         }
       }
@@ -208,7 +208,7 @@ export const asyncRoutes = [
     alwaysShow: true, // will always show the root menu
     name: 'RoleManagerment',
     meta: {
-      title: 'role managerment',
+      title: 'role_managerment',
       icon: 'roles',
       roles: ['admin', 'editor'] // you can set roles in root nav
     },
@@ -218,7 +218,7 @@ export const asyncRoutes = [
         component: () => import('@/views/role-managerment/role-list'),
         name: 'RoleList',
         meta: {
-          title: 'role list',
+          title: 'role_list',
           icon: 'role',
           roles: ['admin'] // or you can only set roles in sub nav
         }
@@ -229,7 +229,7 @@ export const asyncRoutes = [
         name: 'UsersOfRole',
         meta: {
           icon: 'user',
-          title: 'user of role',
+          title: 'users_of_role',
           roles: ['admin']
         }
       }
@@ -239,10 +239,9 @@ export const asyncRoutes = [
     path: '/node-managerment',
     component: Layout,
     redirect: '/node-managerment/list',
-    alwaysShow: true, // will always show the root menu
     name: 'NodeManagerment',
     meta: {
-      title: 'node managerment',
+      title: 'node_managerment',
       icon: 'nodes',
       roles: ['admin', 'editor'] // you can set roles in root nav
     },
@@ -250,11 +249,62 @@ export const asyncRoutes = [
       {
         path: 'list',
         component: () => import('@/views/node-managerment/node-list'),
-        name: 'RoleList',
+        name: 'NodeList',
         meta: {
-          title: 'node list',
+          title: 'node_list',
           icon: 'tree',
           roles: ['admin'] // or you can only set roles in sub nav
+        }
+      }
+    ]
+  },
+  {
+    path: '/engine-managerment',
+    component: Layout,
+    redirect: '/engine-managerment/engine',
+    alwaysShow: true, // will always show the root menu
+    name: 'EngineManagerment',
+    meta: {
+      title: 'engine_managerment',
+      icon: 'engines',
+      roles: ['admin', 'editor'] // you can set roles in root nav
+    },
+    children: [
+      {
+        path: 'engine-type',
+        component: () => import('@/views/engine-managerment/engine-type-list'),
+        name: 'EngineTypeList',
+        meta: {
+          title: 'engine_type_list',
+          icon: 'engine-type',
+          roles: ['admin'] // or you can only set roles in sub nav
+        }
+      },
+      {
+        path: 'engine',
+        component: () => import('@/views/engine-managerment/engine-list'),
+        name: 'EngineList',
+        meta: {
+          title: 'engine_list',
+          icon: 'server',
+          roles: ['admin'] // or you can only set roles in sub nav
+        }
+      }
+    ]
+  },
+  {
+    path: '/permission-managerment',
+    component: Layout,
+    name: 'UserManagerment',
+    children: [
+      {
+        path: '',
+        component: () => import('@/views/permission-managerment/index'),
+        name: 'UserList',
+        meta: {
+          title: 'permission_managerment',
+          icon: 'permissions',
+          roles: ['admin']
         }
       }
     ]

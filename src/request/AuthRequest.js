@@ -37,24 +37,16 @@ export default class AuthRequest extends BaseModelRequest {
 
   getCurrentUser(params) {
     return new Promise((resolve, reject) => {
-      let url = '/user/profile';
+      let url = '/users/current';
       var self = this;
-      resolve({
-        success: true,
-        message: 'success',
-        data: {
-          name: 'khiem',
-          role: 'admin'
-        }
-      });
-      // this.get(url, params)
-      //     .then(function (user) {
-      //       self.user = user;
-      //       resolve(user);
-      //     })
-      //     .catch(function (error) {
-      //       reject(error);
-      //     });
+      this.get(url, params)
+          .then(function (res) {
+            self.res = res;
+            resolve(res);
+          })
+          .catch(function (error) {
+            reject(error);
+          });
     });
   }
 
@@ -79,6 +71,6 @@ export default class AuthRequest extends BaseModelRequest {
   }
 
   getUserProfile() {
-    return this.get('/user/profile');
+    return this.get('/users/current');
   }
 }
