@@ -1,5 +1,6 @@
 import Vue from 'vue';
 import LocalStorage from 'common/LocalStorageUtils'
+import { deleteAllCookies } from '../utils'
 
 export default class AuthenticationUtils {
 
@@ -12,6 +13,7 @@ export default class AuthenticationUtils {
   }
 
   static removeAuthenticationData () {
+    deleteAllCookies()
     LocalStorage.removeItem('auth');
     this.setLocale('en');
   }
@@ -41,7 +43,7 @@ export default class AuthenticationUtils {
     }
   }
 
-  static login (response) {
+  static login () {
     this.saveAuthenticationData();
     Vue.prototype.$isAuthenticated = window.isAuthenticated;
   }

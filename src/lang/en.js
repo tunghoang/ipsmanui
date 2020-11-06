@@ -58,6 +58,7 @@
     dynamicTips2: 'Not fixed header, sorted by click order',
     dragTips1: 'The default order',
     dragTips2: 'The after dragging order',
+    edit_permission: 'Edit Permission',
     title: 'Title',
     key: 'Key...',
     importance: 'Imp',

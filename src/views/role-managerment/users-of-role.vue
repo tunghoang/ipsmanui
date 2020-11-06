@@ -9,16 +9,14 @@
                 @select="handleAutocomplete"
                 :fetch-suggestions="querySearchAsync"
                 @keyup.enter.native="handleAutocomplete"
+                @clear="handleRefreshTable"
                 :placeholder="$t('table.role')">
         <template slot-scope="{ item }">
           <span class="value">{{ item.name }}</span>
         </template>
       </el-autocomplete>
-      <el-button v-waves class="filter-item ml-1" type="primary" icon="el-icon-search" @click="handleRefreshTable">
+      <el-button v-waves class="filter-item ml-1" type="primary" icon="el-icon-search" @click="handleFindTable">
         {{ $t('table.search') }}
-      </el-button>
-      <el-button v-waves :loading="isSubmitting" style="margin-left: 10px; float: right;" class="filter-item float-right" type="primary" icon="el-icon-download" @click="handleDownload">
-        {{ $t('table.export') }}
       </el-button>
       <el-button style="float: right;" class="filter-item float-right" type="primary" icon="el-icon-plus" @click="handleCreateSingle">
         {{ $t('table.add') }}
@@ -34,13 +32,16 @@
       style="width: 100%;"
       @sort-change="sortChange"
     >
-      <el-table-column :label="$t('table.id')" prop="idUser" sortable align="center" width="100px">
+      <el-table-column :label="$t('table.id')" prop="idUser" sortable align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.idUser }}</span>
         </template>
       </el-table-column>
       <el-table-column :label="$t('table.actions')" fixed="right" align="center" width="150" class-name="small-padding fixed-width">
         <template slot-scope="{row}">
+          <el-button type="primary" size="mini" @click="handleUpdate(row)">
+            {{ $t('table.edit') }}
+          </el-button>
           <el-button type="danger" size="mini" @click="handleDelete(row)">
             {{ $t('table.delete') }}
           </el-button>
@@ -97,7 +98,6 @@
 
 <script>
 import waves from '@/directive/waves' // waves directive
-import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 import rf from 'requestfactory'
 import { Message } from 'element-ui'
@@ -141,7 +141,7 @@ export default {
     }
   },
   async mounted() {
-    await this.getList()
+    await this.loadRoles()
   },
   methods: {
     loadRoles() {
@@ -155,6 +155,7 @@ export default {
             name: role.name
           }
         })
+        await this.getList()
         this.options = window._.cloneDeep(response)
       })
       .catch(error => {
@@ -181,7 +182,6 @@ export default {
       .then(async response => {
         this.list = response
         this.total = response.length
-        await this.loadRoles()
       })
       .catch(error => {
         this.errors.add({field: 'error', msg: error.response.data.message});
@@ -189,14 +189,32 @@ export default {
       })
       .finally(() => this.listLoading = false)
     },
+    find() {
+      rf.getRequest('UserRoleRelRequest').find(this.params)
+      .then(async response => {
+        this.list = response
+        this.total = response.length
+      })
+      .catch(error => {
+        this.errors.add({field: 'error', msg: error.response.data.message});
+        Message.error(this.$t(this.errors.first('error')) || this.$t('auth.unknowError'))
+      })
+      .finally(() => this.listLoading = false)
+    },
+    handleFindTable () {
+      this.listLoading = true
+      this.params.page = 1
+      this.find()
+    },
     handleAutocomplete (value) {
       console.log(value)
       this.params.idRole = value.idRole
-      this.handleRefreshTable()
+      this.handleFindTable()
     },
     handleRefreshTable() {
       this.listLoading = true
       this.params.page = 1
+      this.params.idRole = undefined
       this.getList()
     },
     sortChange(data) {
@@ -272,6 +290,39 @@ export default {
         username: '',
         description: ''
       }
+    },
+    handleUpdate(row) {
+      row = {
+        ...row
+      }
+      this.temp = Object.assign({}, row) // copy obj
+      this.dialogStatus = 'update'
+      this.dialogFormVisible = true
+    },
+    async updateData() {
+      this.resetError();
+      if (this.isSubmitting) {
+        return;
+      }
+      await this.$validator.validate('name');
+      await this.$validator.validate('description');
+      if (this.errors.any()) {
+        return;
+      }
+      let params = window._.cloneDeep(this.temp)
+      rf.getRequest('RoleRequest').update(params)
+      // rf.getRequest('RoleRequest').update(params.idRole, params)
+      // .then(() => {
+      //   this.dialogFormVisible = false
+      //   this.$notify({
+      //     title: this.$t('notify.success.label'),
+      //     message: this.$t('notify.success.updateSuccess'),
+      //     type: 'success',
+      //     duration: 1000,
+      //     showClose: false
+      //   })
+      //   this.handleRefreshTable()
+      // })
     },
     handleDelete(row) {
       this.$confirm(this.$t('notify.text.delete'), 'Warning', {

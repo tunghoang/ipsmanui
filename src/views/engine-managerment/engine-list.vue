@@ -146,7 +146,6 @@ export default {
     }
   },
   async mounted() {
-    await this.getList()
     await this.loadEngineTypes()
   },
   methods: {
@@ -166,6 +165,7 @@ export default {
       let params = {}
       rf.getRequest('EngineTypeRequest').getList(params)
       .then(async response => {
+        await this.getList()
         this.engineTypes = window._.map(response, engineType => {
           return {
             idEnginetype: engineType.idEnginetype,

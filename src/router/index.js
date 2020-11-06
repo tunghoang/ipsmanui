@@ -53,6 +53,7 @@ export const constantRoutes = [
   {
     path: '/login',
     component: () => import('@/views/login/index'),
+    name: 'Login',
     hidden: true
   },
   {
@@ -176,7 +177,7 @@ export const asyncRoutes = [
     meta: {
       title: 'user_managerment',
       icon: 'peoples',
-      roles: ['admin', 'editor'] // you can set roles in root nav
+      roles: ['admin', 'superadmin'] // you can set roles in root nav
     },
     children: [
       {
@@ -186,7 +187,7 @@ export const asyncRoutes = [
         meta: {
           title: 'user_list',
           icon: 'user',
-          roles: ['admin'] // or you can only set roles in sub nav
+          roles: ['admin', 'superadmin'] // or you can only set roles in sub nav
         }
       },
       {
@@ -196,7 +197,7 @@ export const asyncRoutes = [
         meta: {
           icon: 'role',
           title: 'roles_of_user',
-          roles: ['admin']
+          roles: ['admin', 'superadmin']
         }
       }
     ]
@@ -210,7 +211,7 @@ export const asyncRoutes = [
     meta: {
       title: 'role_managerment',
       icon: 'roles',
-      roles: ['admin', 'editor'] // you can set roles in root nav
+      roles: ['admin', 'superadmin'] // you can set roles in root nav
     },
     children: [
       {
@@ -220,7 +221,7 @@ export const asyncRoutes = [
         meta: {
           title: 'role_list',
           icon: 'role',
-          roles: ['admin'] // or you can only set roles in sub nav
+          roles: ['admin', 'superadmin'] // or you can only set roles in sub nav
         }
       },
       {
@@ -230,7 +231,7 @@ export const asyncRoutes = [
         meta: {
           icon: 'user',
           title: 'users_of_role',
-          roles: ['admin']
+          roles: ['admin', 'superadmin']
         }
       }
     ]
@@ -243,7 +244,7 @@ export const asyncRoutes = [
     meta: {
       title: 'node_managerment',
       icon: 'nodes',
-      roles: ['admin', 'editor'] // you can set roles in root nav
+      roles: ['admin', 'superadmin'] // you can set roles in root nav
     },
     children: [
       {
@@ -253,7 +254,7 @@ export const asyncRoutes = [
         meta: {
           title: 'node_list',
           icon: 'tree',
-          roles: ['admin'] // or you can only set roles in sub nav
+          roles: ['admin', 'superadmin'] // or you can only set roles in sub nav
         }
       }
     ]
@@ -267,7 +268,7 @@ export const asyncRoutes = [
     meta: {
       title: 'engine_managerment',
       icon: 'engines',
-      roles: ['admin', 'editor'] // you can set roles in root nav
+      roles: ['admin', 'superadmin'] // you can set roles in root nav
     },
     children: [
       {
@@ -277,7 +278,7 @@ export const asyncRoutes = [
         meta: {
           title: 'engine_type_list',
           icon: 'engine-type',
-          roles: ['admin'] // or you can only set roles in sub nav
+          roles: ['admin', 'superadmin'] // or you can only set roles in sub nav
         }
       },
       {
@@ -287,7 +288,7 @@ export const asyncRoutes = [
         meta: {
           title: 'engine_list',
           icon: 'server',
-          roles: ['admin'] // or you can only set roles in sub nav
+          roles: ['admin', 'superadmin'] // or you can only set roles in sub nav
         }
       }
     ]
@@ -295,16 +296,18 @@ export const asyncRoutes = [
   {
     path: '/permission-managerment',
     component: Layout,
-    name: 'UserManagerment',
+    redirect: '/permission-managerment/:id',
+    name: 'Permission',
+    hidden: true,
     children: [
       {
-        path: '',
+        path: '/permission-managerment/:id',
         component: () => import('@/views/permission-managerment/index'),
-        name: 'UserList',
+        name: 'PermissionOfRole',
         meta: {
           title: 'permission_managerment',
           icon: 'permissions',
-          roles: ['admin']
+          roles: ['admin', 'superadmin']
         }
       }
     ]

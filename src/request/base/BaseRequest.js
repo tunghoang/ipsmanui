@@ -1,9 +1,10 @@
-import AuthenticationUtils from 'common/AuthenticationUtils';
-import { MessageBox } from "element-ui";
-import store from "@/store";
-window.axios = require("axios");
+import AuthenticationUtils from 'common/AuthenticationUtils'
+import { MessageBox } from "element-ui"
+import store from "@/store"
+import router from '../../router'
+window.axios = require("axios")
 
-window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest'
 
 window.axios.create({
   baseURL: 'http://112.137.129.214:15580',
@@ -74,7 +75,7 @@ window.axios.interceptors.response.use(
         window.app.$broadcast("UserSessionRegistered");
         store.dispatch("user/logout").then(() => {
           AuthenticationUtils.removeAuthenticationData();
-          location.reload();
+          router.push({ name: 'Login'})
         });
       });
     }

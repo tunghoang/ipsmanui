@@ -9,6 +9,10 @@ export default class UserRoleRelRequest extends BaseModelRequest {
     return this.get('/userRoleRels/', params);
   }
 
+  find(params) {
+    return this.put('/userRoleRels/', params);
+  }
+
   delete(userId) {
     return this.del(`/users/${userId}`);
   }

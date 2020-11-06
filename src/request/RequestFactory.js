@@ -9,6 +9,7 @@ import UserRoleRelRequest from './UserRoleRelRequest';
 import ContainmentRelRequest from './ContainmentRelRequest';
 import EngineRequest from './EngineRequest';
 import EngineTypeRequest from './EngineTypeRequest';
+import PermissionRequest from './PermissionRequest';
 
 const requestMap = {
   MasterdataRequest,
@@ -21,7 +22,8 @@ const requestMap = {
   UserRoleRelRequest,
   ContainmentRelRequest,
   EngineTypeRequest,
-  EngineRequest
+  EngineRequest,
+  PermissionRequest
 };
 
 const instances = {};

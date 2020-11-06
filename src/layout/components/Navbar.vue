@@ -20,7 +20,8 @@
 
       <el-dropdown class="avatar-container right-menu-item hover-effect" trigger="click">
         <div class="avatar-wrapper">
-          <img :src="user.avatar+'?imageView2/1/w/80/h/80'" class="user-avatar">
+          <!-- <img :src="user.avatar+'?imageView2/1/w/80/h/80'" class="user-avatar"> -->
+          <svg-icon class-name="user-icon user-avatar" icon-class="user" />
           <i class="el-icon-caret-bottom" />
         </div>
         <el-dropdown-menu slot="dropdown">
@@ -146,13 +147,13 @@ export default {
       margin-right: 30px;
 
       .avatar-wrapper {
-        margin-top: 5px;
+        margin-top: 2px;
         position: relative;
 
         .user-avatar {
           cursor: pointer;
-          width: 40px;
-          height: 40px;
+          width: 20px;
+          height: 20px;
           border-radius: 10px;
         }
 

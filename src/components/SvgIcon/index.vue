@@ -45,13 +45,22 @@ export default {
 }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .svg-icon {
   width: 1em;
   height: 1em;
   vertical-align: -0.15em;
   fill: currentColor;
   overflow: hidden;
+  &.size-1 {
+    font-size: 1rem;
+  }
+  &.size-1_5 {
+    font-size: 1.5rem;
+  }
+  &.size-2 {
+    font-size: 2rem;
+  }
 }
 
 .svg-external-icon {

@@ -90,7 +90,7 @@
             @expand="onExpand"
             @retract="onRetract"
             @clickedNode="onClickNode">
-            <template #node="{ data, node, isRetracted }">
+            <template #node="{ data }">
               <circle r="6" :class="data.status === 'active' ? 'active': 'inactive'">
                 <title>{{data.name}}</title>
               </circle>
@@ -108,7 +108,7 @@
                     <el-table-column align="center" width="210" property="name" label="name"></el-table-column>
                     <template slot="empty">{{ $t('node.empty_child_node') }}</template>
                   </el-table>
-                  <el-button slot="reference"size="mini" type="info" plain data-toggle="tooltip" :title="$t('node.detail')">
+                  <el-button slot="reference" size="mini" type="info" plain data-toggle="tooltip" :title="$t('node.detail')">
                     <svg-icon icon-class="eye-open" />
                   </el-button>
                 </el-popover>
@@ -135,7 +135,6 @@ const removeElement = (arr, element) => {
   }
   arr.splice(index, 1)
 }
-import CollapseOnClick from '@/components/Managerment/CollapseOnClick'
 import { tree } from 'vued3tree'
 import rf from 'requestfactory'
 import { Message } from 'element-ui'
@@ -143,8 +142,7 @@ import { forEach } from 'lodash'
 export default {
   name: 'DetailNode',
   components: {
-    tree,
-    CollapseOnClick
+    tree
   },
   data() {
     return {
@@ -163,7 +161,7 @@ export default {
       tree: {
         children: [],
         idContainer: 0,
-        name: 'Node 1',
+        name: 'IPS Manager',
         status: 'active',
         load: true
       }

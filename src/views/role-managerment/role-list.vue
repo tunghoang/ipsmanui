@@ -41,8 +41,11 @@
           <span class="el-link--info" @click="handleUpdate(scope.row)">{{ scope.row.description }}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('table.actions')" fixed="right" align="center" width="150" class-name="small-padding fixed-width">
+      <el-table-column :label="$t('table.actions')" fixed="right" align="center" width="300" class-name="small-padding fixed-width">
         <template slot-scope="{row}">
+          <el-button type="primary" size="mini" class="w-auto" @click.native="$router.push({ name: 'PermissionOfRole', params: { id: row.idRole } })">
+            {{ $t('table.edit_permission') }}
+          </el-button>
           <el-button type="primary" size="mini" @click="handleUpdate(row)">
             {{ $t('table.edit') }}
           </el-button>

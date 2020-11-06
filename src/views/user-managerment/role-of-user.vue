@@ -9,12 +9,13 @@
                 @select="handleAutocomplete"
                 :fetch-suggestions="querySearchAsync"
                 @keyup.enter.native="handleAutocomplete"
+                @clear="handleRefreshTable"
                 :placeholder="$t('table.user')">
         <template slot-scope="{ item }">
           <span class="value">{{ item.username }}</span>
         </template>
       </el-autocomplete>
-      <el-button v-waves class="filter-item ml-1" type="primary" icon="el-icon-search" @click="handleRefreshTable">
+      <el-button v-waves class="filter-item ml-1" type="primary" icon="el-icon-search" @click="handleFindTable">
         {{ $t('table.search') }}
       </el-button>
       <el-button style="float: right;" class="filter-item float-right" type="primary" icon="el-icon-plus" @click="handleCreateSingle">
@@ -31,7 +32,7 @@
       style="width: 100%;"
       @sort-change="sortChange"
     >
-      <el-table-column :label="$t('table.id')" prop="idUser" sortable align="center" width="100px">
+      <el-table-column :label="$t('table.id')" prop="idUser" sortable align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.idUser }}</span>
         </template>
@@ -94,7 +95,6 @@
 
 <script>
 import waves from '@/directive/waves' // waves directive
-import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 import rf from 'requestfactory'
 import { Message } from 'element-ui'
@@ -139,7 +139,7 @@ export default {
     }
   },
   async mounted() {
-    await this.getList()
+    await this.loadUsers()
   },
   methods: {
     loadUsers() {
@@ -153,7 +153,8 @@ export default {
             username: user.username
           }
         })
-        this.options = window._.cloneDeep(response)
+        await this.getList()
+        this.options = window._.cloneDeep(this.users)
       })
       .catch(error => {
         this.errors.add({field: 'error', msg: error.response.data.message});
@@ -179,7 +180,18 @@ export default {
       .then(async response => {
         this.list = response
         this.total = response.length
-        await this.loadUsers()
+      })
+      .catch(error => {
+        this.errors.add({field: 'error', msg: error.response.data.message});
+        Message.error(this.$t(this.errors.first('error')) || this.$t('auth.unknowError'))
+      })
+      .finally(() => this.listLoading = false)
+    },
+    find() {
+      rf.getRequest('UserRoleRelRequest').find(this.params)
+      .then(async response => {
+        this.list = response
+        this.total = response.length
       })
       .catch(error => {
         this.errors.add({field: 'error', msg: error.response.data.message});
@@ -189,11 +201,17 @@ export default {
     },
     handleAutocomplete (value) {
       this.params.idUser = value.idUser
-      this.handleRefreshTable()
+      this.handleFindTable()
+    },
+    handleFindTable () {
+      this.listLoading = true
+      this.params.page = 1
+      this.find()
     },
     handleRefreshTable() {
       this.listLoading = true
       this.params.page = 1
+      this.params.idUser = undefined
       this.getList()
     },
     sortChange(data) {
