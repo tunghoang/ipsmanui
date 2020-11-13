@@ -59,6 +59,7 @@
     dragTips1: 'The default order',
     dragTips2: 'The after dragging order',
     edit_permission: 'Edit Permission',
+    edit_role: "Edit Role",
     title: 'Title',
     key: 'Key...',
     importance: 'Imp',
@@ -75,6 +76,7 @@
     status: 'Status',
     actions: 'Actions',
     edit: 'Edit',
+    update: 'Update',
     publish: 'Publish',
     draft: 'Draft',
     delete: 'Delete',
@@ -93,7 +95,10 @@
     prolonged: 'Prolonged',
     expiry: 'Exriry',
     time: 'Time',
-    year: 'Year'
+    year: 'Year',
+    assign_role: 'Assign The Role',
+    revoke_role: 'Revoke The Role',
+    all_user: 'All Users'
   },
   node: {
     empty_child_node: 'Empty child Node',
@@ -191,5 +196,8 @@
     confirm: 'Xác nhận',
     ok: 'OK',
     add: 'Thêm',
+  },
+  error: {
+    "Internal Server Error": "Action can't complete"
   }
 }

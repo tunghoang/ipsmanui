@@ -1,5 +1,10 @@
 <template>
   <div class="app-container role-managerment">
+    <div class="filter-container">
+      <el-button style="float: right;" class="filter-item float-right" type="primary" icon="el-icon-plus" @click="handleCreateSingle">
+        {{ $t('table.add') }}
+      </el-button>
+    </div>
     <el-table
       :key="tableKey"
       v-loading="listLoading"
@@ -20,7 +25,7 @@
         </template>
       </el-table-column>
       <el-table-column :label="$t('table.object_name')" sortable prop="objectName" align="center">
-        <template slot-scope="scope">
+        <template slot-scope="scope" v-if="scope.row.idObject !== null">
           <span v-if="scope.row.idEngine === null" :title="$t('table.node')">
             <svg-icon class-name="pc-icon size-1_5" icon-class="pc" />
           </span>
@@ -29,42 +34,66 @@
           </span>
           <span class="el-link--info ml-2">{{ scope.row.objectName }}</span>
         </template>
+        <template v-else>
+          <span></span>
+        </template>
       </el-table-column>
       <el-table-column :label="$t('table.action')" sortable prop="action" align="center">
         <template slot-scope="scope">
           <span class="el-link--info">{{ scope.row.action }}</span>
         </template>
       </el-table-column>
+      <el-table-column :label="$t('table.actions')" fixed="right" align="center" width="100" class-name="small-padding fixed-width">
+        <template slot-scope="{row}">
+          <el-button type="danger" size="mini" @click="handleDelete(row)">
+            {{ $t('table.delete') }}
+          </el-button>
+        </template>
+      </el-table-column> 
     </el-table>
 
     <pagination v-show="total>0" :total="total" :page.sync="params.page" :limit.sync="params.limit" @pagination="getList" />
 
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" @close="resetError()">
       <el-form ref="dataFormSingle" :model="temp" label-position="left" label-width="100px" style="width: 100%">
-        <el-form-item :label="$t('table.name')" prop="name">
-          <el-input v-model="temp.name"
-                    tabindex="1"
-                    @focus="resetError"
-                    name="name"
-                    :placeholder="$t('table.name')"
-                    :class="{ error: errors.has('name') }"
-                    data-vv-validate-on="none"
-                    v-validate="'required|min:2|max:255'"  />
-          <div class="el-form-item__error" v-if="errors.has('name')">
-            {{ errors.first('name') }}
+        <el-form-item :label="$t('table.object')" prop="idObject">
+          <el-select v-model="temp.idObject" class="filter-item" placeholder="Please select">
+            <el-option :key="0" :label="$t('table.not_interactive_object')" value="" selected/>
+            <el-option v-for="item in objects" :key="item.idObject" :label="item.name" :value="item.value" />
+          </el-select>
+        </el-form-item>
+        <el-form-item :label="$t('table.action')" prop="action" v-if="temp.idObject">
+          <el-select
+            v-model="temp.action"
+            class="filter-item" 
+            tabindex="1"
+            @focus="resetError"
+            name="action"
+            :placeholder="$t('select.action')"
+            :class="{ error: errors.has('action') }"
+            data-vv-validate-on="none"
+            v-validate="'required'">
+            <el-option v-for="item in actionObjectList" :key="item.value" :label="item.name" :value="item.value" />
+          </el-select>
+          <div class="el-form-item__error" v-if="errors.has('action')">
+            {{ errors.first('action') }}
           </div>
         </el-form-item>
-        <el-form-item :label="$t('table.description')">
-          <el-input v-model="temp.description"
-                    tabindex="1"
-                    @focus="resetError"
-                    name="description"
-                    :placeholder="$t('table.description')"
-                    :class="{ error: errors.has('description') }"
-                    data-vv-validate-on="none"
-                    v-validate="'required|min:4|max:255'" />
-          <div class="el-form-item__error" v-if="errors.has('description')">
-            {{ errors.first('description') }}
+        <el-form-item :label="$t('table.action')" prop="action" v-else>
+          <el-select
+            v-model="temp.action"
+            class="filter-item"
+            tabindex="1"
+            @focus="resetError"
+            name="action"
+            :placeholder="$t('select.action')"
+            :class="{ error: errors.has('action') }"
+            data-vv-validate-on="none"
+            v-validate="'required'">
+            <el-option v-for="item in actionList" :key="item.value" :label="item.name" :value="item.value" />
+          </el-select>
+          <div class="el-form-item__error" v-if="errors.has('action')">
+            {{ errors.first('action') }}
           </div>
         </el-form-item>
       </el-form>
@@ -72,7 +101,7 @@
         <el-button @click="dialogFormVisible = false">
           {{ $t('table.cancel') }}
         </el-button>
-        <el-button type="primary" @click="dialogStatus==='create'?createData():updateData()">
+        <el-button type="primary" @click="createData()">
           {{ $t('table.confirm') }}
         </el-button>
       </div>
@@ -86,7 +115,34 @@ import Pagination from '@/components/Pagination' // secondary package based on e
 import rf from 'requestfactory'
 import { Message } from 'element-ui'
 import RemoveErrorsMixin from 'common/RemoveErrorsMixin'
-
+const actionList = [
+  {
+    name: window.i18n.t('table.create_group'),
+    value: 'create-group'
+  },
+  {
+    name: window.i18n.t('table.create_node'),
+    value: 'create-node'
+  },
+  {
+    name: window.i18n.t('table.create_role'),
+    value: 'create-role'
+  },
+  {
+    name: window.i18n.t('table.create_user'),
+    value: 'create-user'
+  },
+]
+const actionObjectList = [
+  {
+    name: window.i18n.t('table.update'),
+    value: 'update'
+  },
+  {
+    name: window.i18n.t('table.read'),
+    value: 'read'
+  }
+]
 export default {
   name: 'PermissionOfRole',
   components: { Pagination },
@@ -101,14 +157,14 @@ export default {
       params: {
         page: 1,
         limit: 20,
-        idRole: 1,
+        idRole: null,
         sort: 'updated_at',
         order: 'desc'
       },
       temp: {
         idRole: undefined,
-        name: '',
-        description: ''
+        idObject: '',
+        action: ''
       },
       dialogFormVisible: false,
       dialogStatus: '',
@@ -120,14 +176,22 @@ export default {
       roles: [],
       objects: [],
       fileList: [],
+      actionList,
+      actionObjectList,
       isSubmitting: false
     }
   },
   async created() {
-    await this.getList()
+    this.params.idRole = this.$route.params.id
+    this.temp.idRole = this.$route.params.id
   },
   async mounted() {
     await this.loadRoles()
+  },
+  watch: {
+    'temp.idObject' () {
+      this.temp.action = ''
+    }
   },
   methods: {
     loadRoles() {
@@ -142,7 +206,6 @@ export default {
           }
         })
         await this.loadObjects()
-        this.options = window._.cloneDeep(response)
       })
       .catch(error => {
         this.errors.add({field: 'error', msg: error.response.data.message});
@@ -151,16 +214,16 @@ export default {
     },
     loadObjects() {
       let params = {}
-      rf.getRequest('ContainmentRelRequest').getList(params)
+      rf.getRequest('ContainmentRelRequest').allObjects(params)
       .then(async response => {
-        this.objects = window._.map(response, role => {
+        this.objects = window._.map(response, object => {
           return {
-            idRole: role.idObject,
-            value: role.name,
-            name: role.name
+            idObject: object.idObject,
+            value: object.idObject,
+            name: object.name
           }
         })
-        this.options = window._.cloneDeep(response)
+        await this.getList()
       })
       .catch(error => {
         this.errors.add({field: 'error', msg: error.response.data.message});
@@ -229,12 +292,15 @@ export default {
       if (this.isSubmitting) {
         return;
       }
-      await this.$validator.validate('name');
-      await this.$validator.validate('description');
+      await this.$validator.validate('action');
       if (this.errors.any()) {
         return;
       }
-      rf.getRequest('PermissionRequest').create(this.temp)
+      const params = window._.cloneDeep(this.temp)
+      if(window._.isEmpty(`${this.temp.idObject}`)) {
+        delete params.idObject
+      }
+      rf.getRequest('PermissionRequest').create(params)
       .then(() => {
         this.dialogFormVisible = false
         this.$notify({
@@ -251,22 +317,35 @@ export default {
       })
 
     },
-    handleRemove(file, fileList) {
-      console.log(file, fileList);
-    },
-    handlePreview(file) {
-      console.log(file);
-    },
-    beforeRemove(file) {
-      return this.$confirm(`Cancel the transfert of ${ file.name } ?`);
-    },
     resetTemp() {
       this.temp = {
-        idRole: undefined,
-        name: '',
-        description: ''
+        idRole: this.$route.params.id,
+        idObject: '',
+        action: ''
       }
     },
+    handleDelete(row) {
+      this.$confirm(this.$t('notify.text.delete'), 'Warning', {
+        confirmButtonText: this.$t('action.ok'),
+        cancelButtonText: this.$t('action.cancel'),
+        type: 'warning',
+        center: true
+      }).then(() => {
+        rf.getRequest('PermissionRequest').delete(row.idPermission)
+          .then(() => {
+            this.$message({
+              type: 'success',
+              message: this.$t('notify.success.deleteSuccess')
+            })
+            this.handleRefreshTable()
+          })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: this.$t('notify.info.cancel')
+        })
+      })
+    }
   },
 }
 </script>

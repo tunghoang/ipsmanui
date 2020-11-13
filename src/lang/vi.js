@@ -68,6 +68,7 @@ export default {
     dragTips2: 'The after dragging order',
     name: 'Tên',
     edit_permission: 'Sừa quyền',
+    edit_role: "Sửa vai trò",
     title: 'Tiêu đề',
     key: 'Từ khóa...',
     importance: 'IMP',
@@ -85,6 +86,7 @@ export default {
     status: 'Trạng thái',
     actions: 'Actions',
     edit: 'Sửa',
+    update: 'Cập nhật',
     publish: 'Publish',
     draft: 'Draft',
     delete: 'Xóa',
@@ -109,7 +111,10 @@ export default {
     emptyData: 'Dữ liệu trống',
     password: 'Mật khẩu',
     change_password: 'Đổi mật khẩu',
-    empty_node: 'Không có node con'
+    empty_node: 'Không có node con',
+    assign_role: 'Chỉ định vai trò',
+    revoke_role: 'Thu hồi',
+    all_user: 'Người dùng'
   },
   node: {
     empty_child_node: 'Không có Node con',
@@ -176,9 +181,6 @@ export default {
   "Switch Size Success": "Chuyển cỡ chữ thành công",
   "el.colorpicker.confirm": "Xác nhận",
   "Global Size": "Cỡ chữ",
-  "Current Password Is Wrong": "Mật khẩu hiện tại không đúng",
-  "The user credentials were incorrect.": "Thông tin đăng nhập của người dùng không chính xác.",
-  "New password Is same current password": "Mật khẩu mới giống mật khẩu cũ",
   "Open && Close sidebar": 'Mở và đóng thanh ứng dụng bên trái',
   "Indicate the current page location": "Cho biết vị trí trang hiện tại đang mở",
   "Page search, quick navigation": "Tìm kiếm trang, điều hướng nhanh",
@@ -237,5 +239,11 @@ export default {
     attributes: {
       username: 'Người dùng'
     }
+  },
+  error: {
+    "Internal Server Error": "Thao tác thực hiện không thành công",
+    "Current Password Is Wrong": "Mật khẩu hiện tại không đúng",
+    "The user credentials were incorrect.": "Thông tin đăng nhập của người dùng không chính xác.",
+    "New password Is same current password": "Mật khẩu mới giống mật khẩu cũ"
   }
 };

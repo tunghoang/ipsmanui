@@ -13,7 +13,15 @@ export default class UserRoleRelRequest extends BaseModelRequest {
     return this.put('/userRoleRels/', params);
   }
 
-  delete(userId) {
-    return this.del(`/users/${userId}`);
+  create(params) {
+    return this.post('/userRoleRels/', params);
+  }
+
+  update(userRoleRelId, params) {
+    return this.put(`/userRoleRels/${userRoleRelId}`, params);
+  }
+
+  delete(userRoleRelId) {
+    return this.del(`/userRoleRels/${userRoleRelId}`);
   }
 }

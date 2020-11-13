@@ -60,14 +60,14 @@
                 </el-option>
               </el-select>
             </el-form-item>
-            <el-form-item>
+            <el-form-item label-width="0">
               <el-button type="primary" size="small" plain @click.native="resetZoom">Reset Zoom</el-button>
             </el-form-item>
           </el-form>
         </el-card>
       </el-col>
       <el-col :sm="24" :md="18">
-        <el-card shadow="always">
+        <el-card shadow="always" v-loading="isLoading">
           <tree ref="tree"
             v-model="treeConfig.currentData"
             :nodeTextDisplay="treeConfig.nodeTextDisplay"
@@ -75,9 +75,9 @@
             :nodeTextMargin="10"
             :zoomable="treeConfig.zoomable"
             :data="tree"
-            :leafTextMargin="10"
+            :leafTextMargin="30"
             :node-text="treeConfig.nodeText"
-            :margin-x="30"
+            :margin-x="150"
             :margin-y="30"
             :type="treeConfig.type"
             :layout-type="treeConfig.layoutType"
@@ -91,7 +91,9 @@
             @retract="onRetract"
             @clickedNode="onClickNode">
             <template #node="{ data }">
-              <circle r="6" :class="data.status === 'active' ? 'active': 'inactive'">
+                <GroupIcon class="node-icon" :class="data.status" v-if="data.idEngine === null"></GroupIcon>
+                <NodeIcon class="node-icon" :class="data.status" v-else></NodeIcon>
+              <circle r="6" :class="data.status">
                 <title>{{data.name}}</title>
               </circle>
             </template>
@@ -103,7 +105,14 @@
                   trigger="click">
                   <p>Node: <el-link type="primary">{{ data.name }}</el-link></p>
                   <p>Status: {{ data.status }}</p>
-                  <el-table :data="data.children">
+                  <el-switch
+                    v-model="data.status"
+                    active-value="active"
+                    inactive-value="inactive"
+                    />
+                  <p>Endpoint: {{ data.specs.endpoint || null }}</p>
+                  <p>Username: {{ data.specs.username || null }}</p>
+                  <el-table :data="data.children" v-if="data.children.length > 0">
                     <el-table-column width="60" property="idContainer" label="idContainer"></el-table-column>
                     <el-table-column align="center" width="210" property="name" label="name"></el-table-column>
                     <template slot="empty">{{ $t('node.empty_child_node') }}</template>
@@ -139,10 +148,14 @@ import { tree } from 'vued3tree'
 import rf from 'requestfactory'
 import { Message } from 'element-ui'
 import { forEach } from 'lodash'
+import GroupIcon from './GroupIcon'
+import NodeIcon from './NodeIcon'
 export default {
   name: 'DetailNode',
   components: {
-    tree
+    tree,
+    GroupIcon,
+    NodeIcon
   },
   data() {
     return {
@@ -163,6 +176,7 @@ export default {
         idContainer: 0,
         name: 'IPS Manager',
         status: 'active',
+        idEngine: null,
         load: true
       }
     }
@@ -174,12 +188,14 @@ export default {
     getList() {
       rf.getRequest('ContainmentRelRequest').getList(this.params)
       .then(res => {
-        forEach(res, (object) => {
+        forEach(res, async (object) => {
           const newData = {
             idContainer: object.idObject,
             children: [],
             name: object.name || object.idContainee,
-            status: 'active',
+            status: await this.fakeStatus(),
+            idEngine: object.idEngine,
+            specs: await this.getDetailEngine(object.idEngine),
             load: false
           }
           this.tree.children.push(newData)
@@ -223,16 +239,18 @@ export default {
       const params = {
         idContainer: evt.data.idContainer
       }
+      evt.data.load = true
       rf.getRequest('ContainmentRelRequest').getChildNode(params)
         .then((res) => {
-          forEach(res, (object) => {
+          forEach(res, async (object) => {
             const newData = {
               idContainer: object.idObject,
               children: [],
               name: object.name || object.idContainee,
-              status: 'active'
+              status: await this.fakeStatus(),
+              specs: await this.getDetailEngine(object.idEngine),
+              load: false
             }
-            evt.data.load = true
             evt.data.children.push(newData)
           })
         })
@@ -247,12 +265,12 @@ export default {
     onEvent (eventName, data) {
       this.treeConfig.events.push({eventName, data: data.data})
     },
-    addFor (data) {
+    async addFor (data) {
       const newData = {
         id: this.currentId++,
         children: [],
         name: Math.random().toString(36).substring(7),
-        status: 'active'
+        status: await this.fakeStatus()
       }
       data.children.push(newData)
     },
@@ -264,8 +282,37 @@ export default {
       if (!this.$refs['tree']) {
         return
       }
-      this.isLoading = true
-      this.$refs['tree'].resetZoom().then(() => { this.isLoading = false })
+      this.$refs['tree'].resetZoom()
+    },
+    fakeStatus () {
+      return new Promise((resolver) => {
+        const statusList = ['active', 'inactive', 'unknow']
+        setTimeout(() => {
+          resolver(statusList[Math.floor((Math.random() * 3))])
+        }, 500)
+      })
+    },
+    fakeSpecs () {
+      return new Promise((resolver) => {
+        setTimeout(() => {
+          resolver({
+            endpoint: 'google.com',
+            username: Math.random().toString(36).substring(8),
+            password: Math.random().toString(36).substring(8)
+          })
+        }, 500)
+      })
+    },
+    async getDetailEngine (id) {
+      if(id === null) return {}
+      let { specs } = await rf.getRequest('EngineRequest').detail(id)
+      specs = JSON.parse(specs.replaceAll('\'', '\"'))
+      const specsFake = await this.fakeSpecs()
+      specs = {
+        ...specs,
+        ...specsFake
+      }
+      return specs
     }
   },
 }
@@ -275,13 +322,37 @@ export default {
   .tree {
     height: 800px;
     ::v-deep.nodetree {
-      circle {
+      g.node {
+        cursor: pointer;
+      }
+      circle, svg {
         &.active {
           fill: #67c23a;
+          path {
+            fill: #67c23a;
+          }
         }
         &.inactive {
           fill: #f56c6c;
+          path {
+            fill: #f56c6c;
+          }
         }
+        &.unknow {
+          fill: #8d8d8d;
+          path {
+            fill: #8d8d8d;
+          }
+        }
+      }
+      svg.node-icon {
+        overflow: inherit;
+        >g {
+          transform: translate(-24px, -24px);
+        }
+      }
+      circle {
+        visibility: hidden;
       }
       &.node--internal {
         >text {

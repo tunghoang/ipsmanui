@@ -172,12 +172,11 @@ export const asyncRoutes = [
     path: '/user-managerment',
     component: Layout,
     redirect: '/user-managerment/list',
-    alwaysShow: true, // will always show the root menu
     name: 'UserManagerment',
     meta: {
       title: 'user_managerment',
       icon: 'peoples',
-      roles: ['admin', 'superadmin'] // you can set roles in root nav
+      roles: ['superadmin'] // you can set roles in root nav
     },
     children: [
       {
@@ -186,18 +185,19 @@ export const asyncRoutes = [
         name: 'UserList',
         meta: {
           title: 'user_list',
-          icon: 'user',
-          roles: ['admin', 'superadmin'] // or you can only set roles in sub nav
+          icon: 'peoples',
+          roles: ['superadmin'] // or you can only set roles in sub nav
         }
       },
       {
-        path: 'roles-of-user',
+        path: ':id/roles',
         component: () => import('@/views/user-managerment/role-of-user'),
         name: 'RoleOfUser',
+        hidden: true,
         meta: {
           icon: 'role',
           title: 'roles_of_user',
-          roles: ['admin', 'superadmin']
+          roles: ['superadmin']
         }
       }
     ]
@@ -206,7 +206,6 @@ export const asyncRoutes = [
     path: '/role-managerment',
     component: Layout,
     redirect: '/role-managerment/list',
-    alwaysShow: true, // will always show the root menu
     name: 'RoleManagerment',
     meta: {
       title: 'role_managerment',
@@ -220,18 +219,30 @@ export const asyncRoutes = [
         name: 'RoleList',
         meta: {
           title: 'role_list',
-          icon: 'role',
+          icon: 'roles',
           roles: ['admin', 'superadmin'] // or you can only set roles in sub nav
         }
       },
       {
-        path: 'users-of-role',
+        path: ':id/users',
         component: () => import('@/views/role-managerment/users-of-role'),
         name: 'UsersOfRole',
+        hidden: true,
         meta: {
           icon: 'user',
           title: 'users_of_role',
           roles: ['admin', 'superadmin']
+        }
+      },
+      {
+        path: ':id/permissions',
+        component: () => import('@/views/permission-managerment/index'),
+        name: 'PermissionOfRole',
+        hidden: true,
+        meta: {
+          title: 'permission_managerment',
+          icon: 'permissions',
+          roles: ['superadmin']
         }
       }
     ]
@@ -293,25 +304,25 @@ export const asyncRoutes = [
       }
     ]
   },
-  {
-    path: '/permission-managerment',
-    component: Layout,
-    redirect: '/permission-managerment/:id',
-    name: 'Permission',
-    hidden: true,
-    children: [
-      {
-        path: '/permission-managerment/:id',
-        component: () => import('@/views/permission-managerment/index'),
-        name: 'PermissionOfRole',
-        meta: {
-          title: 'permission_managerment',
-          icon: 'permissions',
-          roles: ['admin', 'superadmin']
-        }
-      }
-    ]
-  },
+  // {
+  //   path: '/permission-managerment',
+  //   component: Layout,
+  //   redirect: '/permission-managerment/:id',
+  //   name: 'Permission',
+  //   hidden: true,
+  //   children: [
+  //     {
+  //       path: ':id',
+  //       component: () => import('@/views/permission-managerment/index'),
+  //       name: 'PermissionOfRole',
+  //       meta: {
+  //         title: 'permission_managerment',
+  //         icon: 'permissions',
+  //         roles: ['admin', 'superadmin']
+  //       }
+  //     }
+  //   ]
+  // },
 
   // {
   //   path: '/error',

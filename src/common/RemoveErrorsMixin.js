@@ -11,8 +11,12 @@ export default {
           this.errors.add({field: field, msg: error});
         }
       }
+      // if (errors.any()) {
+      //   this.errors.add({field: 'error', msg: 'Some error occurred. Please try again later'})
+      //   return
+      // }
       if (!this.errors.any()) {
-        this.errors.add({field: 'error', msg: 'Some error occurred. Please try again later'});
+        this.errors.add({field: 'error', msg: this.$t(`${error.response.statusText}`)});
       }
     },
   },

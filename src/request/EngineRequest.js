@@ -21,6 +21,10 @@ export default class EngineRequest extends BaseModelRequest {
     return this.post('/engines/', params);
   }
 
+  detail(engineId) {
+    return this.get(`/engines/${engineId}`);
+  }
+
   export(params) {
     return this.get('/engines/', params);
   }

@@ -32,8 +32,8 @@
         </template>
       </el-table-column>
       <el-table-column :label="$t('table.name')" sortable prop="name" align="center">
-        <template slot-scope="scope">
-          <span class="link-type" @click="handleUpdate(scope.row)">{{ scope.row.name }}</span>
+        <template slot-scope="{row}">
+          <span class="link-type">{{ row.name }}</span>
         </template>
       </el-table-column>
       <el-table-column :label="$t('table.description')" sortable prop="description" align="center">
@@ -41,17 +41,24 @@
           <span class="el-link--info" @click="handleUpdate(scope.row)">{{ scope.row.description }}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('table.actions')" fixed="right" align="center" width="300" class-name="small-padding fixed-width">
+      <el-table-column :label="$t('table.actions')" fixed="right" align="center" width="200" class-name="small-padding fixed-width">
         <template slot-scope="{row}">
-          <el-button type="primary" size="mini" class="w-auto" @click.native="$router.push({ name: 'PermissionOfRole', params: { id: row.idRole } })">
-            {{ $t('table.edit_permission') }}
-          </el-button>
-          <el-button type="primary" size="mini" @click="handleUpdate(row)">
-            {{ $t('table.edit') }}
-          </el-button>
-          <el-button type="danger" size="mini" @click="handleDelete(row)">
-            {{ $t('table.delete') }}
-          </el-button>
+          <div class="d-flex">
+            <el-button type="primary" size="mini" class="w-auto" @click="$router.push({ name: 'UsersOfRole', params: { id: row.idRole } })">
+              {{ $t('table.all_user') }}
+            </el-button>
+            <el-button type="primary" size="mini" class="w-auto" @click.native="$router.push({ name: 'PermissionOfRole', params: { id: row.idRole } })">
+              {{ $t('table.edit_permission') }}
+            </el-button>
+          </div>
+          <div class="d-flex mt-1">
+            <el-button type="primary" size="mini" @click="handleUpdate(row)">
+              {{ $t('table.edit') }}
+            </el-button>
+            <el-button type="danger" size="mini" @click="handleDelete(row)">
+              {{ $t('table.delete') }}
+            </el-button>
+          </div>
         </template>
       </el-table-column> 
     </el-table>

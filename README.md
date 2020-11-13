@@ -1,5 +1,7 @@
 # ipsmanagerui
 
+UI is based on Vue.js and Vue Element Admin.
+
 ## Project setup
 ```
 yarn install
@@ -19,6 +21,3 @@ yarn build
 ```
 yarn lint
 ```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).

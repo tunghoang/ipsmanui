@@ -5,6 +5,10 @@ export default class ContainmentRelRequest extends BaseModelRequest {
   getModelName() {
     return 'containmentRels'
   }
+  allObjects(params) {
+    return this.get('/objects/', params);
+  }
+
   getList(params) {
     return this.get('/containmentRels/', params);
   }

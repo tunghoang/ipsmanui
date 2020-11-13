@@ -1,23 +1,6 @@
 <template>
   <div class="app-container student">
     <div class="filter-container">
-      <el-autocomplete
-                v-model="roleSelect"
-                class="filter-item"
-                value="name"
-                clearable
-                @select="handleAutocomplete"
-                :fetch-suggestions="querySearchAsync"
-                @keyup.enter.native="handleAutocomplete"
-                @clear="handleRefreshTable"
-                :placeholder="$t('table.role')">
-        <template slot-scope="{ item }">
-          <span class="value">{{ item.name }}</span>
-        </template>
-      </el-autocomplete>
-      <el-button v-waves class="filter-item ml-1" type="primary" icon="el-icon-search" @click="handleFindTable">
-        {{ $t('table.search') }}
-      </el-button>
       <el-button style="float: right;" class="filter-item float-right" type="primary" icon="el-icon-plus" @click="handleCreateSingle">
         {{ $t('table.add') }}
       </el-button>
@@ -32,16 +15,18 @@
       style="width: 100%;"
       @sort-change="sortChange"
     >
-      <el-table-column :label="$t('table.id')" prop="idUser" sortable align="center">
+      <el-table-column :label="$t('table.id')" prop="idUserrolerel" sortable align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.idUser }}</span>
+          <span>{{ scope.row.idUserrolerel }}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('table.actions')" fixed="right" align="center" width="150" class-name="small-padding fixed-width">
+      <el-table-column :label="$t('table.username')" prop="username" sortable align="center">
+        <template slot-scope="scope">
+          <span>{{ scope.row.username }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column :label="$t('table.actions')" fixed="right" align="center" width="100" class-name="small-padding fixed-width">
         <template slot-scope="{row}">
-          <el-button type="primary" size="mini" @click="handleUpdate(row)">
-            {{ $t('table.edit') }}
-          </el-button>
           <el-button type="danger" size="mini" @click="handleDelete(row)">
             {{ $t('table.delete') }}
           </el-button>
@@ -53,34 +38,26 @@
 
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" @close="resetError()">
       <el-form ref="dataFormSingle" :model="temp" label-position="left" label-width="100px" style="width: 100%">
-        <el-form-item :label="$t('table.username')" prop="username">
-          <el-input v-model="temp.username"
-                    tabindex="1"
-                    @focus="resetError"
-                    name="username"
-                    :placeholder="$t('table.username')"
-                    :class="{ error: errors.has('username') }"
-                    data-vv-validate-on="none"
-                    v-validate="'required|min:2|max:255'"  />
+        <el-form-item :label="$t('table.username')" prop="idUser">
+          <el-select
+            data-vv-validate-on="none"
+            v-validate="'required'"
+            :class="{ error: errors.has('username') }"
+            v-model="temp.idUser"
+            tabindex="1"
+            @focus="resetError"
+            name="role"
+            :placeholder="$t('table.username')">
+            <el-option
+              v-for="item in users"
+              :key="item.idUser"
+              :label="item.username"
+              :value="item.idUser">
+              <!-- :disabled="idRoleAssigned.includes(item.idRole)" -->
+            </el-option>
+          </el-select>
           <div class="el-form-item__error" v-if="errors.has('username')">
             {{ errors.first('username') }}
-          </div>
-        </el-form-item>
-        <el-form-item :label="$t('table.change_password')" v-if="dialogStatus !== 'create'">
-          <el-switch v-model="changePassword" />
-        </el-form-item>
-        <el-form-item :label="$t('table.password')" v-if="dialogStatus === 'create' || changePassword">
-          <el-input v-model="temp.password"
-                    tabindex="1"
-                    show-password
-                    @focus="resetError"
-                    name="password"
-                    :placeholder="$t('table.password')"
-                    :class="{ error: errors.has('password') }"
-                    data-vv-validate-on="none"
-                    v-validate="'required|min:4|max:255'" />
-          <div class="el-form-item__error" v-if="errors.has('password')">
-            {{ errors.first('password') }}
           </div>
         </el-form-item>
       </el-form>
@@ -88,7 +65,7 @@
         <el-button @click="dialogFormVisible = false">
           {{ $t('table.cancel') }}
         </el-button>
-        <el-button type="primary" @click="dialogStatus==='create'?createData():updateData()">
+        <el-button type="primary" @click="createData()" :loading="isSubmitting">
           {{ $t('table.confirm') }}
         </el-button>
       </div>
@@ -104,7 +81,7 @@ import { Message } from 'element-ui'
 import RemoveErrorsMixin from 'common/RemoveErrorsMixin'
 
 export default {
-  name: 'UserList',
+  name: 'UserOfRole',
   components: { Pagination },
   directives: { waves },
   mixins: [RemoveErrorsMixin],
@@ -124,8 +101,7 @@ export default {
       changePassword: false,
       temp: {
         idRole: undefined,
-        name: '',
-        description: ''
+        idUser: undefined
       },
       dialogFormVisible: false,
       dialogStatus: '',
@@ -134,62 +110,37 @@ export default {
         create: this.$t('table.create'),
         upload: this.$t('upload.title')
       },
-      roles: [],
-      roleSelect: '',
-      options: [],
+      users: [],
       isSubmitting: false
     }
   },
+  created () {
+    this.params.idRole = this.$route.params.id
+    this.temp.idRole = this.$route.params.id
+  },
   async mounted() {
-    await this.loadRoles()
+    await this.loadUsers()
   },
   methods: {
-    loadRoles() {
+    loadUsers() {
       let params = {}
-      rf.getRequest('RoleRequest').getList(params)
+      rf.getRequest('UserRequest').getList(params)
       .then(async response => {
-        this.roles = window._.map(response, role => {
+        this.users = window._.map(response, user => {
           return {
-            idRole: role.idRole,
-            value: role.name,
-            name: role.name
+            idUser: user.idUser,
+            value: user.idUser,
+            username: user.username
           }
         })
         await this.getList()
-        this.options = window._.cloneDeep(response)
       })
       .catch(error => {
         this.errors.add({field: 'error', msg: error.response.data.message});
         Message.error(this.$t(this.errors.first('error')) || this.$t('auth.unknowError'))
       })
-    },
-    querySearchAsync(queryString, cb) {
-      var roles = this.roles;
-      var results = queryString ? roles.filter(this.createFilter(queryString)) : roles;
-
-      clearTimeout(this.timeout);
-      this.timeout = setTimeout(() => {
-        cb(results);
-      }, 1000 * Math.random());
-    },
-    createFilter(queryString) {
-      return (link) => {
-        return (link.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0);
-      };
     },
     getList() {
-      rf.getRequest('UserRoleRelRequest').getList(this.params)
-      .then(async response => {
-        this.list = response
-        this.total = response.length
-      })
-      .catch(error => {
-        this.errors.add({field: 'error', msg: error.response.data.message});
-        Message.error(this.$t(this.errors.first('error')) || this.$t('auth.unknowError'))
-      })
-      .finally(() => this.listLoading = false)
-    },
-    find() {
       rf.getRequest('UserRoleRelRequest').find(this.params)
       .then(async response => {
         this.list = response
@@ -201,20 +152,9 @@ export default {
       })
       .finally(() => this.listLoading = false)
     },
-    handleFindTable () {
-      this.listLoading = true
-      this.params.page = 1
-      this.find()
-    },
-    handleAutocomplete (value) {
-      console.log(value)
-      this.params.idRole = value.idRole
-      this.handleFindTable()
-    },
     handleRefreshTable() {
       this.listLoading = true
       this.params.page = 1
-      this.params.idRole = undefined
       this.getList()
     },
     sortChange(data) {
@@ -262,12 +202,12 @@ export default {
       if (this.isSubmitting) {
         return;
       }
-      await this.$validator.validate('username');
-      await this.$validator.validate('password');
+      await this.$validator.validate('role');
       if (this.errors.any()) {
         return;
       }
-      rf.getRequest('RoleRequest').create(this.temp)
+      this.isSubmitting = true
+      rf.getRequest('UserRoleRelRequest').create(this.temp)
       .then(() => {
         this.dialogFormVisible = false
         this.$notify({
@@ -282,47 +222,15 @@ export default {
       .catch(error => {
         this.handleError(error)
       })
-
+      .finally(() => {
+        this.isSubmitting = false
+      })
     },
     resetTemp() {
       this.temp = {
-        idUser: undefined,
-        username: '',
-        description: ''
+        ...this.temp,
+        idUser: undefined
       }
-    },
-    handleUpdate(row) {
-      row = {
-        ...row
-      }
-      this.temp = Object.assign({}, row) // copy obj
-      this.dialogStatus = 'update'
-      this.dialogFormVisible = true
-    },
-    async updateData() {
-      this.resetError();
-      if (this.isSubmitting) {
-        return;
-      }
-      await this.$validator.validate('name');
-      await this.$validator.validate('description');
-      if (this.errors.any()) {
-        return;
-      }
-      let params = window._.cloneDeep(this.temp)
-      rf.getRequest('RoleRequest').update(params)
-      // rf.getRequest('RoleRequest').update(params.idRole, params)
-      // .then(() => {
-      //   this.dialogFormVisible = false
-      //   this.$notify({
-      //     title: this.$t('notify.success.label'),
-      //     message: this.$t('notify.success.updateSuccess'),
-      //     type: 'success',
-      //     duration: 1000,
-      //     showClose: false
-      //   })
-      //   this.handleRefreshTable()
-      // })
     },
     handleDelete(row) {
       this.$confirm(this.$t('notify.text.delete'), 'Warning', {
@@ -331,7 +239,7 @@ export default {
         type: 'warning',
         center: true
       }).then(() => {
-        rf.getRequest('RoleRequest').delete(row.idUser)
+        rf.getRequest('UserRoleRelRequest').delete(row.idUserrolerel)
           .then(() => {
             this.$message({
               type: 'success',
