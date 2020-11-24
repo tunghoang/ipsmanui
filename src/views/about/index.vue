@@ -42,7 +42,6 @@
         <br />&emsp;&emsp; 4. Trung tâm Tin học – Công báo Hà Nội, UBND TP Hà Nội
       </p>
     </el-row>
-    <dropdown-menu :items="articleList" style="float:left;margin-left:50px;" title="系列文章" />
   </div>
 </template>
 

@@ -66,11 +66,19 @@
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" @close="resetError()">
       <el-form ref="dataFormSingle" :model="temp" label-position="left" label-width="100px" style="width: 100%">
         <el-form-item :label="$t('table.name')" prop="idEnginetype">
-          <el-select v-model="temp.status" class="filter-item" placeholder="Please select">
+          <el-select
+                v-model="temp.idEnginetype"
+                class="filter-item"
+                placeholder="Please select"
+                name="enginetype"
+                @focus="resetError"
+                :class="{ error: errors.has('enginetype') }"
+                data-vv-validate-on="none"
+                v-validate="'required'">
             <el-option v-for="item in engineTypes" :key="item.idEnginetype" :label="item.name" :value="item.idEnginetype" />
           </el-select>
-          <div class="el-form-item__error" v-if="errors.has('idEnginetype')">
-            {{ errors.first('idEnginetype') }}
+          <div class="el-form-item__error" v-if="errors.has('enginetype')">
+            {{ errors.first('enginetype') }}
           </div>
         </el-form-item>
         <el-form-item :label="$t('table.specs')" props="specs">
@@ -250,7 +258,7 @@ export default {
       if (this.isSubmitting) {
         return;
       }
-      await this.$validator.validate('idEnginetype');
+      await this.$validator.validate('enginetype');
       await this.$validator.validate('specs');
       if (this.errors.any()) {
         return;
@@ -301,7 +309,7 @@ export default {
       if (this.isSubmitting) {
         return;
       }
-      await this.$validator.validate('idEnginetype');
+      await this.$validator.validate('enginetype');
       await this.$validator.validate('specs');
       if (this.errors.any()) {
         return;
