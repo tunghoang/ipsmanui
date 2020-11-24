@@ -19,7 +19,9 @@ function resolve(dir) {
 module.exports = {
   lintOnSave: false,
   runtimeCompiler: true,
-  publicPath: '/ipsman-fe/',
+  publicPath: process.env.NODE_ENV === 'production'
+    ? '/ipsman-fe/'
+    : '/',
   devServer: {
     disableHostCheck: true,
     injectClient: false,

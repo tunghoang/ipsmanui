@@ -306,7 +306,7 @@ export default {
     async getDetailEngine (id) {
       if(id === null) return {}
       let { specs } = await rf.getRequest('EngineRequest').detail(id)
-      specs = JSON.parse(specs.replaceAll('\'', '\"'))
+      specs = JSON.parse(specs.replaceAll('\'', '"'))
       const specsFake = await this.fakeSpecs()
       specs = {
         ...specs,
