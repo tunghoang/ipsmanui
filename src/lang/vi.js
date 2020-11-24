@@ -20,8 +20,8 @@ export default {
     role_list: 'Danh sách vai trò',
     node_list: 'Danh sách node',
     detail_node: 'Chi tiết Node',
-    engine_type_list: 'Engine Type List',
-    engine_list: 'Engine List',
+    engine_type_list: 'Danh sách loại Engine',
+    engine_list: 'Danh sách Engine',
     engine_managerment: 'Quản lý Engine'
   },
   navbar: {
@@ -59,13 +59,11 @@ export default {
     show: 'Xem hướng dẫn'
   },
   table: {
+    group: 'Nhóm',
     description: 'Mô tả',
+    engine: 'Engine',
     container: 'Container',
     containee: 'Containee',
-    dynamicTips1: 'Fixed header, sorted by header order',
-    dynamicTips2: 'Not fixed header, sorted by click order',
-    dragTips1: 'The default order',
-    dragTips2: 'The after dragging order',
     name: 'Tên',
     edit_permission: 'Sừa quyền',
     edit_role: "Sửa vai trò",
@@ -93,7 +91,6 @@ export default {
     cancel: 'Hủy bỏ',
     confirm: 'Xác nhận',
     keyword: 'Từ khóa',
-    role: 'Vai trò',
     updatedAt: 'Cập nhật lúc',
     username: 'Tài khoản',
     user: 'Người dùng',
@@ -110,11 +107,27 @@ export default {
     time: 'Thời gian',
     emptyData: 'Dữ liệu trống',
     password: 'Mật khẩu',
-    change_password: 'Đổi mật khẩu',
     empty_node: 'Không có node con',
     assign_role: 'Chỉ định vai trò',
     revoke_role: 'Thu hồi',
-    all_user: 'Người dùng'
+    all_user: 'Người dùng',
+    change_password: 'Đổi mật khẩu',
+    role: 'Vai trò',
+    role_name: 'Tên vai trò',
+    role_description: 'Mô tả',
+    action: 'Action',
+    object_name: 'Tên Object',
+    node: 'Node',
+    object: 'Object',
+    not_interactive_object: 'Không tương tác Object',
+    create_node: 'Tạo Node',
+    create_group: 'Tạo Group',
+    create_user: 'Tạo người dùng',
+    create_role: 'Tạo vai trò',
+    read: 'Đọc',
+    specs: 'Specs',
+    engine_type: 'Loại Engine',
+    idEnginetype: 'idEnginetype'
   },
   node: {
     empty_child_node: 'Không có Node con',
@@ -245,5 +258,8 @@ export default {
     "Current Password Is Wrong": "Mật khẩu hiện tại không đúng",
     "The user credentials were incorrect.": "Thông tin đăng nhập của người dùng không chính xác.",
     "New password Is same current password": "Mật khẩu mới giống mật khẩu cũ"
+  },
+  select: {
+    action: 'Chọn Action'
   }
-};
+}

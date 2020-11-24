@@ -17,19 +17,27 @@ export default class ContainmentRelRequest extends BaseModelRequest {
     return this.put(`/containmentRels/`, params);
   }
 
+  addToGroup(params) {
+    return this.post('/containmentRels/', params);
+  }
+
+  moveToGroup(params) {
+    return this.post('/containmentRels/', params);
+  }
+
   create(params) {
-    return this.post('/users/', params);
+    return this.post('/objects/', params);
   }
 
-  update(roleId, params) {
-    return this.put(`/objects/${roleId}`, params);
+  detail(objectId) {
+    return this.get(`objects/${objectId}`);
   }
 
-  export(params) {
-    return this.get('/containmentRels/', params);
+  update(objectId, params) {
+    return this.put(`/objects/${objectId}`, params);
   }
 
-  delete(userId) {
-    return this.del(`/objects/${userId}`);
+  delete(objectId) {
+    return this.del(`/objects/${objectId}`);
   }
 }

@@ -110,21 +110,23 @@
                     active-value="active"
                     inactive-value="inactive"
                     />
-                  <p>Endpoint: {{ data.specs.endpoint || null }}</p>
-                  <p>Username: {{ data.specs.username || null }}</p>
-                  <el-table :data="data.children" v-if="data.children.length > 0">
+                  <template v-if="data.idEngine">
+                    <p>Endpoint: {{ data.specs.endpoint || null }}</p>
+                    <p>Username: {{ data.specs.username || null }}</p>
+                  </template>
+<!--                   <el-table :data="data.children" v-if="data.children.length > 0">
                     <el-table-column width="60" property="idContainer" label="idContainer"></el-table-column>
                     <el-table-column align="center" width="210" property="name" label="name"></el-table-column>
                     <template slot="empty">{{ $t('node.empty_child_node') }}</template>
-                  </el-table>
-                  <el-button slot="reference" size="mini" type="info" plain data-toggle="tooltip" :title="$t('node.detail')">
+                  </el-table> -->
+                  <el-button slot="reference" size="mini" type="info" plain data-toggle="tooltip" :title="$t('node.detail')" v-if="!data.root">
                     <svg-icon icon-class="eye-open" />
                   </el-button>
                 </el-popover>
-                <el-button @click.native="addFor(data)" size="mini" type="success" plain data-toggle="tooltip" :title="$t('node.add_child_node')" style="margin-left: 10px;">
+                <el-button @click.native="addFor(data)" v-if="!data.idEngine" size="mini" type="success" plain data-toggle="tooltip" :title="$t('node.add_child_node')" style="margin-left: 10px;">
                   <svg-icon icon-class="plus" />
                 </el-button>
-                <el-button @click.native="remove(data, node)" size="mini" type="danger" plain data-toggle="tooltip" :title="$t('node.remove_child_node')">
+                <el-button @click.native="remove(data, node)" v-if="!data.root" size="mini" type="danger" plain data-toggle="tooltip" :title="$t('node.remove_child_node')" style="margin-left: 10px;">
                   <svg-icon icon-class="delete" />
                 </el-button>
               </div>
@@ -133,16 +135,75 @@
         </el-card>
       </el-col>
     </el-row>
+    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" @close="resetError()">
+      <el-form ref="dataFormSingle" :model="temp" label-position="left" label-width="100px" style="width: 100%">
+        <el-form-item :label="$t('table.engine')" prop="idEngine">
+          <el-select
+                v-model="temp.idEngine"
+                class="filter-item"
+                placeholder="Please select"
+                name="engine"
+                clearable
+                @clear="temp.idEngine = undefined"
+                @focus="resetError"
+                :class="{ error: errors.has('engine') }"
+                data-vv-validate-on="none"
+                v-validate="'required'">
+            <el-option v-for="item in engines" :key="item.idEngine" :label="item.specs" :value="item.idEngine" />
+          </el-select>
+          <div class="el-form-item__error" v-if="errors.has('engine')">
+            {{ errors.first('engine') }}
+          </div>
+        </el-form-item>
+        <el-form-item :label="$t('table.name')" props="name">
+          <el-input v-model="temp.name"
+                    tabindex="1"
+                    @focus="resetError"
+                    name="name"
+                    :placeholder="$t('table.name')"
+                    :class="{ error: errors.has('name') }"
+                    data-vv-validate-on="none"
+                    v-validate="'required|min:4|max:255'" />
+          <div class="el-form-item__error" v-if="errors.has('name')">
+            {{ errors.first('name') }}
+          </div>
+        </el-form-item>
+        <el-form-item :label="$t('table.description')" props="description">
+          <el-input v-model="temp.description"
+                    tabindex="1"
+                    @focus="resetError"
+                    name="description"
+                    :placeholder="$t('table.description')"
+                    :class="{ error: errors.has('description') }"
+                    data-vv-validate-on="none"
+                    v-validate="'required|min:4|max:255'" />
+          <div class="el-form-item__error" v-if="errors.has('description')">
+            {{ errors.first('description') }}
+          </div>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisible = false">
+          {{ $t('table.cancel') }}
+        </el-button>
+        <el-button type="primary" @click="dialogStatus==='create'?createData():updateData()">
+          {{ $t('table.confirm') }}
+        </el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
-const removeElement = (arr, element) => {
+const removeChild = (arr, element) => {
   const index = arr.indexOf(element)
   if (index === -1) {
     return
   }
   arr.splice(index, 1)
+}
+const removeAllChild = (arr) => {
+  arr.splice(0, arr.length)
 }
 import { tree } from 'vued3tree'
 import rf from 'requestfactory'
@@ -150,13 +211,19 @@ import { Message } from 'element-ui'
 import { forEach } from 'lodash'
 import GroupIcon from './GroupIcon'
 import NodeIcon from './NodeIcon'
+import RemoveErrorsMixin from 'common/RemoveErrorsMixin'
+
 export default {
-  name: 'DetailNode',
+  name: 'NodeManagerment',
+
   components: {
     tree,
     GroupIcon,
     NodeIcon
   },
+
+  mixins: [RemoveErrorsMixin],
+
   data() {
     return {
       treeConfig: {
@@ -169,23 +236,49 @@ export default {
         linkLayout: 'bezier',
         events: []
       },
-      currentId: 500,
       isLoading: false,
       tree: {
+        root: true,
         children: [],
         idContainer: 0,
         name: 'IPS Manager',
         status: 'active',
         idEngine: null,
         load: true
-      }
+      },
+      dialogFormVisible: false,
+      dialogStatus: '',
+      textMap: {
+        update: this.$t('table.edit'),
+        create: this.$t('table.create')
+      },
+      engines: [],
+      temp: {
+        idObject: undefined,
+        idEngine: undefined,
+        name: '',
+        description: ''
+      },
+      objectCanAdd: {}
     }
   },
+
   created () {
-    this.getList()
+  rf.getRequest('EngineRequest').getList(this.params)
+    .then(async response => {
+      this.engines = response
+      this.getList()
+    })
   },
+
+  // watch: {
+  //   'temp.idEngine' (val) {
+  //     this.idEngine = val === null || val === '' ? undefined : val
+  //   }
+  // },
+
   methods: {
-    getList() {
+    getList () {
       rf.getRequest('ContainmentRelRequest').getList(this.params)
       .then(res => {
         forEach(res, async (object) => {
@@ -198,7 +291,7 @@ export default {
             specs: await this.getDetailEngine(object.idEngine),
             load: false
           }
-          this.tree.children.push(newData)
+          await this.tree.children.push(newData)
         })
       })
       .catch(error => {
@@ -242,14 +335,16 @@ export default {
       evt.data.load = true
       rf.getRequest('ContainmentRelRequest').getChildNode(params)
         .then((res) => {
+          removeAllChild(evt.data.children)
           forEach(res, async (object) => {
             const newData = {
               idContainer: object.idObject,
               children: [],
               name: object.name || object.idContainee,
               status: await this.fakeStatus(),
-              specs: await this.getDetailEngine(object.idEngine),
-              load: false
+              idEngine: object.idEngine,
+              specs: object.idEngine && await this.getDetailEngine(object.idEngine),
+              load: object.idEngine ? false : true
             }
             evt.data.children.push(newData)
           })
@@ -266,16 +361,64 @@ export default {
       this.treeConfig.events.push({eventName, data: data.data})
     },
     async addFor (data) {
-      const newData = {
-        id: this.currentId++,
-        children: [],
-        name: Math.random().toString(36).substring(7),
-        status: await this.fakeStatus()
+      this.dialogStatus = 'create'
+      this.dialogFormVisible = true
+      this.objectCanAdd = data
+    },
+    resetTemp () {
+      return this.temp = {
+        idObject: undefined,
+        idEngine: undefined,
+        name: '',
+        description: ''
       }
-      data.children.push(newData)
+    },
+    async createData() {
+      this.resetError();
+      if (this.isSubmitting) {
+        return;
+      }
+      await this.$validator.validate('name');
+      await this.$validator.validate('description');
+      if (this.errors.any()) {
+        return;
+      }
+      rf.getRequest('ContainmentRelRequest').create(this.temp)
+      .then(async (object) => {
+        this.dialogFormVisible = false
+        const newData = {
+          idContainer: object.idObject,
+          children: [],
+          name: object.name || object.idContainee,
+          status: await this.fakeStatus(),
+          idEngine: object.idEngine,
+          specs: object.idEngine && await this.getDetailEngine(object.idEngine),
+          load: object.idEngine ? false : true
+        }
+        await this.objectCanAdd.children.push(newData)
+        if (this.objectCanAdd.root) return
+        rf.getRequest('ContainmentRelRequest').addToGroup({
+          idContainer: this.objectCanAdd.idContainer,
+          idContainee: object.idObject
+        })
+          .then(() => {
+            this.$notify({
+              title: this.$t('notify.success.label'),
+              message: this.$t('notify.success.createSuccess'),
+              type: 'success',
+              duration: 1000,
+              showClose: false
+            })
+            this.resetTemp()
+            this.objectCanAdd = {}
+          })
+      })
+      .catch(error => {
+        this.handleError(error)
+      })
     },
     remove (data, node) {
-       this.$confirm('Xóa node?', 'Warning', {
+       this.$confirm(this.$t('notify.text.delete'), 'Warning', {
           confirmButtonText: 'OK',
           cancelButtonText: 'Cancel',
           type: 'warning'
@@ -283,7 +426,7 @@ export default {
           rf.getRequest('ContainmentRelRequest').delete(data.idContainer)
             .then(() => {
               const parent = node.parent.data
-              removeElement(parent.children, data)
+              removeChild(parent.children, data)
             })
           this.$message({
             type: 'success',

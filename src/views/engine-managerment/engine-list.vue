@@ -9,7 +9,7 @@
                 @select="handleAutocomplete"
                 :fetch-suggestions="querySearchAsync"
                 @keyup.enter.native="handleAutocomplete"
-                :placeholder="$t('table.engine-type')">
+                :placeholder="$t('table.engine_type')">
         <template slot-scope="{ item }">
           <span class="value">{{ item.name }}</span>
         </template>
@@ -144,8 +144,7 @@ export default {
       dialogStatus: '',
       textMap: {
         update: this.$t('table.edit'),
-        create: this.$t('table.create'),
-        upload: this.$t('upload.title')
+        create: this.$t('table.create')
       },
       engineTypes: [],
       engineTypeSelect: '',
@@ -279,15 +278,6 @@ export default {
         this.handleError(error)
       })
 
-    },
-    handleRemove(file, fileList) {
-      console.log(file, fileList);
-    },
-    handlePreview(file) {
-      console.log(file);
-    },
-    beforeRemove(file) {
-      return this.$confirm(`Cancel the transfert of ${ file.name } ?`);
     },
     resetTemp() {
       this.temp = {

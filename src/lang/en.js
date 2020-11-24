@@ -51,13 +51,11 @@
     button: 'Show Guide'
   },
   table: {
+    group: 'Group',
     description: 'Description',
+    engine: 'Engine',
     container: 'Container',
     containee: 'Containee',
-    dynamicTips1: 'Fixed header, sorted by header order',
-    dynamicTips2: 'Not fixed header, sorted by click order',
-    dragTips1: 'The default order',
-    dragTips2: 'The after dragging order',
     edit_permission: 'Edit Permission',
     edit_role: "Edit Role",
     title: 'Title',
@@ -86,6 +84,7 @@
     username: 'Username',
     email: 'Email',
     name: 'Name',
+    create: 'Create',
     active: 'Active',
     inactive: 'Inactive',
     shortName: 'Short Name',
@@ -98,7 +97,24 @@
     year: 'Year',
     assign_role: 'Assign The Role',
     revoke_role: 'Revoke The Role',
-    all_user: 'All Users'
+    all_user: 'All Users',
+    change_password: 'Change Password',
+    role: 'Role',
+    role_name: 'Role Name',
+    role_description: 'Role Description',
+    action: 'Action',
+    object: 'Object',
+    object_name: 'Object Name',
+    node: 'Node',
+    not_interactive_object: 'Not Interactive Object',
+    create_node: 'Create Node',
+    create_group: 'Create Group',
+    create_user: 'Create User',
+    create_role: 'Create Role',
+    read: 'Read',
+    specs: 'Specs',
+    engine_type: 'Engine Type',
+    idEnginetype: 'idEnginetype'
   },
   node: {
     empty_child_node: 'Empty child Node',
@@ -178,26 +194,29 @@
       label: 'Error'
     },
     success: {
-      label: 'Thành công',
-      createSuccess: 'Thêm mới thành công',
-      updateSuccess: 'Cập nhật thành công',
-      deleteSuccess: 'Xóa thành công'
+      label: 'Success',
+      createSuccess: 'creatted successfully',
+      updateSuccess: 'updated successfully',
+      deleteSuccess: 'deleted successfully'
     },
     info: {
       cancel: 'Canceled'
     }
   },
   action: {
-    delete: 'Xóa',
-    edit: 'Sửa',
-    update: 'Cập nhật',
-    submit: 'Gửi',
-    cancel: 'Hủy bỏ',
-    confirm: 'Xác nhận',
+    delete: 'Delete',
+    edit: 'Edit',
+    update: 'Update',
+    submit: 'Submit',
+    cancel: 'Cancel',
+    confirm: 'Confirm',
     ok: 'OK',
-    add: 'Thêm',
+    add: 'Add',
   },
   error: {
     "Internal Server Error": "Action can't complete"
+  },
+  select: {
+    action: 'Select Action'
   }
 }
