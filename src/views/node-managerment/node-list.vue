@@ -275,8 +275,22 @@ export default {
       data.children.push(newData)
     },
     remove (data, node) {
-      const parent = node.parent.data
-      removeElement(parent.children, data)
+       this.$confirm('Xóa node?', 'Warning', {
+          confirmButtonText: 'OK',
+          cancelButtonText: 'Cancel',
+          type: 'warning'
+        }).then(() => {
+          rf.getRequest('ContainmentRelRequest').delete(data.idContainer)
+            .then(() => {
+              const parent = node.parent.data
+              removeElement(parent.children, data)
+            })
+          this.$message({
+            type: 'success',
+            message: 'Delete completed'
+          });
+        }).catch(() => {       
+        })
     },
     resetZoom () {
       if (!this.$refs['tree']) {

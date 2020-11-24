@@ -1,10 +1,7 @@
 import MasterdataRequest from './MasterdataRequest';
-import DashBoardRequest from './DashBoardRequest';
 import AuthRequest from './AuthRequest';
 import UserRequest from './UserRequest';
 import RoleRequest from './RoleRequest';
-import StudentRequest from './StudentRequest';
-import UniversityRequest from './UniversityRequest';
 import UserRoleRelRequest from './UserRoleRelRequest';
 import ContainmentRelRequest from './ContainmentRelRequest';
 import EngineRequest from './EngineRequest';
@@ -13,12 +10,9 @@ import PermissionRequest from './PermissionRequest';
 
 const requestMap = {
   MasterdataRequest,
-  DashBoardRequest,
   AuthRequest,
   UserRequest,
   RoleRequest,
-  StudentRequest,
-  UniversityRequest,
   UserRoleRelRequest,
   ContainmentRelRequest,
   EngineTypeRequest,

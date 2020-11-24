@@ -6,11 +6,11 @@ window.axios = require("axios")
 
 window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest'
 
-window.axios.create({
-  baseURL: 'http://112.137.129.214:15580',
-  withCredentials: true,
-  timeout: 5000
-})
+// window.axios.create({
+//   baseURL: 'http://112.137.129.214:15580',
+//   withCredentials: true,
+//   timeout: 5000
+// })
 
 window.axios.interceptors.request.use(
   config => {
@@ -110,6 +110,7 @@ export default class BaseRequest {
       const config = {
         params: params
       }
+      console.log('get', url)
       const response = await window.axios.get(this.getUrlPrefix('GET') + url, config);
       return this._responseHandler(response);
     } catch (error) {
@@ -119,6 +120,7 @@ export default class BaseRequest {
 
   async put(url, data = {}) {
     try {
+      console.log('put', url)
       const response = await window.axios.put(this.getUrlPrefix() + url, data);
       return this._responseHandler(response);
     } catch (error) {
@@ -128,6 +130,7 @@ export default class BaseRequest {
 
   async post(url, data = {}) {
     try {
+      console.log('post', url)
       const response = await window.axios.post(this.getUrlPrefix() + url, data);
       return this._responseHandler(response);
     } catch (error) {
@@ -137,6 +140,7 @@ export default class BaseRequest {
 
   async del(url, data = {}) {
     try {
+      console.log('delete', url)
       const response = await window.axios.delete(this.getUrlPrefix() + url, {data});
       return this._responseHandler(response);
     } catch (error) {
@@ -145,6 +149,7 @@ export default class BaseRequest {
   }
 
   async _responseHandler(response) {
+    console.log(response)
     const data = response.data;
     if (response.status === 202) {
       data.redirectUrl = '/';

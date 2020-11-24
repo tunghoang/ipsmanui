@@ -10,7 +10,7 @@
   "scripts": {
     "svgo": "svgo -f src/icons/svg --config=src/icons/svgo.yml",
     "serve": "vue-cli-service serve --inline=false --disable-host-check --hot",
-    "build": "vue-cli-service build --inline=false",
+    "build": "vue-cli-service build",
     "lint": "vue-cli-service lint --inline=false",
     "lint:fix": "vue-cli-service lint --fix --inline=false",
     "start": "npm run build",
