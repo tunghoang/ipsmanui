@@ -30,7 +30,7 @@ export default class ContainmentRelRequest extends BaseModelRequest {
   }
 
   detail(objectId) {
-    return this.get(`objects/${objectId}`);
+    return this.get(`/objects/${objectId}`);
   }
 
   update(objectId, params) {
@@ -39,5 +39,17 @@ export default class ContainmentRelRequest extends BaseModelRequest {
 
   delete(objectId) {
     return this.del(`/objects/${objectId}`);
+  }
+
+  checkHostStatus(objectId) {
+    return this.get(`/control/status/${objectId}`);
+  }
+
+  startHost(objectId) {
+    return this.get(`/control/start/${objectId}`);
+  }
+
+  stopHost(objectId) {
+    return this.get(`/control/stop/${objectId}`);
   }
 }

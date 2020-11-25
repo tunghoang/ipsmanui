@@ -38,7 +38,8 @@ module.exports = {
       '/enginetypes': backend,
       '/engines': backend,
       '/permissions': backend,
-      '/containmentRels': backend
+      '/containmentRels': backend,
+      '/control': backend
       // '/api': {
       //     target: 'http://112.137.129.214:15580',
       //     pathRewrite: {'^/api' : ''},

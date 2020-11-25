@@ -366,3 +366,9 @@ export function deleteAllCookies() {
         document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT";
     }
 }
+export function statusDeduce({ success, online, enabled }) {
+  if (!online || !enabled) return 'inactive';
+  if (online) return 'active';
+  if (!success) return 'unknow';
+  return 'unknow';
+}

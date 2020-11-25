@@ -99,30 +99,9 @@
             </template>
             <template #popUp="{ data, node }">
               <div class="btn-group-vertical mt-1">
-                <el-popover
-                  placement="right"
-                  width="300"
-                  trigger="click">
-                  <p>Node: <el-link type="primary">{{ data.name }}</el-link></p>
-                  <p>Status: {{ data.status }}</p>
-                  <el-switch
-                    v-model="data.status"
-                    active-value="active"
-                    inactive-value="inactive"
-                    />
-                  <template v-if="data.idEngine">
-                    <p>Endpoint: {{ data.specs.endpoint || null }}</p>
-                    <p>Username: {{ data.specs.username || null }}</p>
-                  </template>
-<!--                   <el-table :data="data.children" v-if="data.children.length > 0">
-                    <el-table-column width="60" property="idContainer" label="idContainer"></el-table-column>
-                    <el-table-column align="center" width="210" property="name" label="name"></el-table-column>
-                    <template slot="empty">{{ $t('node.empty_child_node') }}</template>
-                  </el-table> -->
-                  <el-button slot="reference" size="mini" type="info" plain data-toggle="tooltip" :title="$t('node.detail')" v-if="!data.root">
+                  <el-button slot="reference" size="mini" type="info" plain data-toggle="tooltip" :title="$t('node.detail')" @click="viewDetailNode(data)" v-if="!data.root">
                     <svg-icon icon-class="eye-open" />
                   </el-button>
-                </el-popover>
                 <el-button @click.native="addFor(data)" v-if="!data.idEngine" size="mini" type="success" plain data-toggle="tooltip" :title="$t('node.add_child_node')" style="margin-left: 10px;">
                   <svg-icon icon-class="plus" />
                 </el-button>
@@ -191,6 +170,28 @@
         </el-button>
       </div>
     </el-dialog>
+    <el-dialog
+      :title="objectCanView.name"
+      :visible.sync="dialogVisible"
+      :before-close="handleClose"
+      width="500px">
+      <p>Status: {{ objectCanView.enabled ? (objectCanView.online ? 'online' : 'offline') : 'disabled' }}</p>
+      <p class="pt-1">
+        <span>Online: {{ objectCanView.online ? 'online' : 'offline' }}</span>
+        <el-button :loading="onlineLoading" size="mini" class="r" :type="objectCanView.online ? 'primary' : 'info'" @click="changeOnline">{{ objectCanView.online ? 'offline' : 'online' }}</el-button>
+      </p>
+      <p class="pt-1">
+        <span>Enabled: {{ objectCanView.enabled ? 'enabled' : 'disabled' }}</span>
+        <el-button size="mini" class="r" :type="objectCanView.enabled ? 'primary' : 'info'" @click="changeLock">{{ objectCanView.enabled ? 'disabled' : 'enabled'  }}</el-button>
+      </p>
+      <template v-if="objectCanView.idEngine">
+        <p>Endpoint: {{ objectCanView.specs.endpoint || null }}</p>
+        <p>Username: {{ objectCanView.specs.username || null }}</p>
+      </template>
+      <el-button>Monitor</el-button>
+      <el-button>Alert</el-button>
+      <el-button></el-button>
+    </el-dialog>
   </div>
 </template>
 
@@ -211,6 +212,7 @@ import { Message } from 'element-ui'
 import { forEach } from 'lodash'
 import GroupIcon from './GroupIcon'
 import NodeIcon from './NodeIcon'
+import { statusDeduce } from '../../utils'
 import RemoveErrorsMixin from 'common/RemoveErrorsMixin'
 
 export default {
@@ -259,7 +261,10 @@ export default {
         name: '',
         description: ''
       },
-      objectCanAdd: {}
+      objectCanAdd: {},
+      objectCanView: {},
+      dialogVisible: false,
+      onlineLoading: false
     }
   },
 
@@ -286,7 +291,7 @@ export default {
             idContainer: object.idObject,
             children: [],
             name: object.name || object.idContainee,
-            status: await this.fakeStatus(),
+            status: 'unknow',
             idEngine: object.idEngine,
             specs: await this.getDetailEngine(object.idEngine),
             load: false
@@ -326,29 +331,56 @@ export default {
       this.onEvent('clickedText', evt)
     },
     onClickNode (evt) {
-      // console.log(evt)
-      // return
+      if (evt.data.idEngine) {
+        this.viewDetailNode(evt.data)
+        return
+      }
       if (evt.data.load) return
       const params = {
         idContainer: evt.data.idContainer
       }
-      evt.data.load = true
-      rf.getRequest('ContainmentRelRequest').getChildNode(params)
-        .then((res) => {
-          removeAllChild(evt.data.children)
-          forEach(res, async (object) => {
-            const newData = {
-              idContainer: object.idObject,
-              children: [],
-              name: object.name || object.idContainee,
-              status: await this.fakeStatus(),
-              idEngine: object.idEngine,
-              specs: object.idEngine && await this.getDetailEngine(object.idEngine),
-              load: object.idEngine ? false : true
-            }
-            evt.data.children.push(newData)
-          })
-        })
+      evt.data.load = true;
+
+      let appendNode = async (object) => {
+        let status = 'unknow';
+        let statusResponse = {}
+        if (object.idEngine) {
+          statusResponse = await rf.getRequest('ContainmentRelRequest').checkHostStatus(object.idObject);
+          status = statusDeduce(statusResponse);
+        }
+        const newData = {
+          idContainer: object.idObject,
+          children: [],
+          name: object.name || object.idContainee,
+          status,
+          online: statusResponse.online,
+          enabled: statusResponse.enabled,
+          idEngine: object.idEngine,
+          specs: this.hasEngine(object) && await this.getDetailEngine(object.idEngine),
+          load: this.hasEngine(object)
+        }
+
+        evt.data.children.push(newData);
+      }
+      rf.getRequest('ContainmentRelRequest').getChildNode(params).then(async (res) => {
+        if (res.length === 0) {
+          evt.data.status = 'inactive';
+          return;
+        }
+        evt.data.status = 'active';
+        removeAllChild(evt.data.children);
+        console.log(res);
+        for (let object of res) {
+          try {
+            await appendNode(object);
+          }
+          catch(e) {
+            console.error(e);
+          }
+        }
+      }).catch(e => console.error(e));
+      
+
       this.onEvent('clickedNode', evt)
     },
     onExpand (evt) {
@@ -373,6 +405,14 @@ export default {
         description: ''
       }
     },
+    viewDetailNode(data) {
+      this.objectCanView = data
+      this.dialogVisible = true
+    },
+    handleClose() {
+      this.objectCanView = {}
+      this.dialogVisible = false
+    },
     async createData() {
       this.resetError();
       if (this.isSubmitting) {
@@ -383,6 +423,7 @@ export default {
       if (this.errors.any()) {
         return;
       }
+      this.startSubmit()
       rf.getRequest('ContainmentRelRequest').create(this.temp)
       .then(async (object) => {
         this.dialogFormVisible = false
@@ -390,10 +431,10 @@ export default {
           idContainer: object.idObject,
           children: [],
           name: object.name || object.idContainee,
-          status: await this.fakeStatus(),
+          status: await this.getNodeStatus(object),
           idEngine: object.idEngine,
-          specs: object.idEngine && await this.getDetailEngine(object.idEngine),
-          load: object.idEngine ? false : true
+          specs: this.hasEngine(object) && await this.getDetailEngine(object.idEngine),
+          load: this.hasEngine(object)
         }
         await this.objectCanAdd.children.push(newData)
         if (this.objectCanAdd.root) return
@@ -416,6 +457,9 @@ export default {
       .catch(error => {
         this.handleError(error)
       })
+      .finally(() => {
+        this.endSubmit()
+      })
     },
     remove (data, node) {
        this.$confirm(this.$t('notify.text.delete'), 'Warning', {
@@ -435,13 +479,51 @@ export default {
         }).catch(() => {       
         })
     },
+    hasEngine (object) {
+      return !!object.idEngine;
+    },
     resetZoom () {
       if (!this.$refs['tree']) {
         return
       }
       this.$refs['tree'].resetZoom()
     },
-    fakeStatus () {
+    changeOnline() {
+      if (this.isSubmitting) return
+      const instence = rf.getRequest('ContainmentRelRequest')
+      this.startSubmit()
+      this.onlineLoading = true
+      if (this.objectCanView.online) {
+        instence.stopHost(this.objectCanView.idContainer)
+          .then((res) => {
+            this.objectCanView.online = res.online
+            this.objectCanView.status = statusDeduce(res)
+            this.objectCanView.enabled = res.enabled
+          })
+          .catch(e => console.log(e))
+          .finally(() => {
+            this.endSubmit()
+            this.onlineLoading = false
+          })
+        return
+      }
+      instence.startHost(this.objectCanView.idContainer)
+        .then((res) => {
+          this.objectCanView.online = res.online
+          this.objectCanView.status = statusDeduce(res)
+          this.objectCanView.enabled = res.enabled
+        })
+        .catch(e => console.log(e))
+        .finally(() => {
+          this.endSubmit()
+          this.onlineLoading = false
+        })
+    },
+    changeLock() {
+      this.objectCanView.enabled = !this.objectCanView.enabled
+    },
+    getNodeStatus (object) {
+      if (!object.idEngine) return 'unknow';
       return new Promise((resolver) => {
         const statusList = ['active', 'inactive', 'unknow']
         setTimeout(() => {
@@ -490,15 +572,15 @@ export default {
           }
         }
         &.inactive {
-          fill: #f56c6c;
-          path {
-            fill: #f56c6c;
-          }
-        }
-        &.unknow {
           fill: #8d8d8d;
           path {
             fill: #8d8d8d;
+          }
+        }
+        &.unknow {
+          fill: rgb(24, 144, 255);
+          path {
+            fill: rgb(24, 144, 255);
           }
         }
       }
