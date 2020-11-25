@@ -190,7 +190,6 @@
       </template>
       <el-button>Monitor</el-button>
       <el-button>Alert</el-button>
-      <el-button></el-button>
     </el-dialog>
   </div>
 </template>
