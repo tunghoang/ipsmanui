@@ -64,7 +64,7 @@
     <pagination v-show="total>0" :total="total" :page.sync="params.page" :limit.sync="params.limit" @pagination="getList" />
 
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" @close="resetError()">
-      <el-form ref="dataFormSingle" :model="temp" label-position="left" label-width="100px" style="width: 100%">
+      <el-form ref="dataFormSingle" :model="temp" label-position="left" label-width="120px" style="width: 100%">
         <el-form-item :label="$t('table.name')" prop="idEnginetype">
           <el-select
                 v-model="temp.idEnginetype"
@@ -81,15 +81,25 @@
             {{ errors.first('enginetype') }}
           </div>
         </el-form-item>
-        <el-form-item :label="$t('table.specs')" props="specs">
-          <el-input v-model="temp.specs"
+        <el-form-item :label="`${$t('table.specs')}(JSON)`" props="specs">
+          <json-editor
+            ref="jsonEditor"
+            v-model="temp.specs"
+            tabindex="1"
+            @focus="resetError"
+            name="specs"
+            :placeholder="$t('table.specs')"
+            :class="{ error: errors.has('specs') }"
+            data-vv-validate-on="none"
+            v-validate="'required|min:4|max:255'" />
+<!--           <el-input v-model="temp.specs"
                     tabindex="1"
                     @focus="resetError"
                     name="specs"
                     :placeholder="$t('table.specs')"
                     :class="{ error: errors.has('specs') }"
                     data-vv-validate-on="none"
-                    v-validate="'required|min:4|max:255'" />
+                    v-validate="'required|min:4|max:255'" /> -->
           <div class="el-form-item__error" v-if="errors.has('specs')">
             {{ errors.first('specs') }}
           </div>
@@ -108,6 +118,7 @@
 </template>
 
 <script>
+import JsonEditor from '@/components/JsonEditor'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
@@ -117,7 +128,7 @@ import RemoveErrorsMixin from 'common/RemoveErrorsMixin'
 
 export default {
   name: 'EngineList',
-  components: { Pagination },
+  components: { Pagination, JsonEditor },
   directives: { waves },
   mixins: [RemoveErrorsMixin],
   data() {
@@ -138,7 +149,7 @@ export default {
         idEngine: undefined,
         idEnginetype: '',
         name: '',
-        specs: ''
+        specs: {}
       },
       dialogFormVisible: false,
       dialogStatus: '',
@@ -159,7 +170,13 @@ export default {
     getList() {
       rf.getRequest('EngineRequest').getList(this.params)
       .then(async response => {
-        this.list = response
+        this.list = window._.map(response, res => {
+          return {
+            idEngine: res.idEngine,
+            idEnginetype: res.idEnginetype,
+            specs: JSON.parse(res.specs)
+          }
+        })
         this.total = response.length
       })
       .catch(error => {
@@ -283,7 +300,7 @@ export default {
       this.temp = {
         idEngine: undefined,
         idEnginetype: '',
-        specs: ''
+        specs: {}
       }
     },
     handleUpdate(row) {

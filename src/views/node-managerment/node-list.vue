@@ -4,7 +4,7 @@
       <el-col :sm="24" :md="6">
         <el-card shadow="always">
           <el-form ref="form" :model="treeConfig" label-width="100px">
-            <el-form-item label="Tree type">
+            <el-form-item :label="$t('node.tree_type')" prop="type">
               <el-select v-model="treeConfig.type" placeholder="Select Tree type">
                 <el-option
                   label="tree"
@@ -16,7 +16,7 @@
                 </el-option>
               </el-select>
             </el-form-item>
-            <el-form-item label="Layout type">
+            <el-form-item :label="$t('node.layout_type')" prop="layoutType">
               <el-select v-model="treeConfig.layoutType" placeholder="Select Layout type">
                 <el-option
                   label="circular"
@@ -32,7 +32,7 @@
                 </el-option>
               </el-select>
             </el-form-item>
-            <el-form-item label="Node text display">
+            <el-form-item :label="$t('node.node_text_display')" prop="nodeTextDisplay">
               <el-select v-model="treeConfig.nodeTextDisplay" placeholder="Select Node text display">
                 <el-option
                   label="all"
@@ -48,7 +48,7 @@
                 </el-option>
               </el-select>
             </el-form-item>
-            <el-form-item label="Link layout">
+            <el-form-item :label="$t('node.link_layout')" prop="linkLayout">
               <el-select v-model="treeConfig.linkLayout" placeholder="Select Node link layout">
                 <el-option
                   label="bezier"
@@ -61,7 +61,7 @@
               </el-select>
             </el-form-item>
             <el-form-item label-width="0">
-              <el-button type="primary" size="small" plain @click.native="resetZoom">Reset Zoom</el-button>
+              <el-button type="primary" size="small" plain @click.native="resetNode">{{ $t('node.reset') }}</el-button>
             </el-form-item>
           </el-form>
         </el-card>
@@ -481,10 +481,11 @@ export default {
     hasEngine (object) {
       return !!object.idEngine;
     },
-    resetZoom () {
+    resetNode () {
       if (!this.$refs['tree']) {
         return
       }
+      this.$refs['form'].resetFields()
       this.$refs['tree'].resetZoom()
     },
     changeOnline() {

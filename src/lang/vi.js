@@ -133,7 +133,12 @@ export default {
     empty_child_node: 'Không có Node con',
     detail: 'Chi tiếtNode',
     add_child_node: 'Thêm Node con',
-    remove_child_node: 'Xóa Node con'
+    remove_child_node: 'Xóa Node con',
+    tree_type: 'Kiểu cây Node',
+    layout_type: 'Kiểu bố trí',
+    node_text_display: 'Bố trí tên Node',
+    link_layout: 'Bố trí đường nối',
+    reset: 'Đặt lại'
   },
   error_log: {
     title: 'Nhật kí lỗi',
@@ -247,6 +252,13 @@ export default {
     confirm: 'Xác nhận',
     ok: 'OK',
     add: 'Thêm',
+  },
+  error_page: {
+    not_found: 'Vui lòng kiểm tra xem URL bạn đã nhập có chính xác không hoặc nhấp vào nút bên dưới để quay lại trang chủ.',
+    back_to_home: 'Về trang chủ',
+    unauthorized:'Bạn không có quyền truy cập trang này',
+    back: 'Quay lại',
+    can_go: 'Hoặc bạn có thể xem'
   },
   validation: {
     attributes: {

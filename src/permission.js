@@ -1,7 +1,5 @@
-import Vue from 'vue'
 import router from './router'
 import store from './store'
-import { Message } from 'element-ui'
 import NProgress from 'nprogress' // progress bar
 import 'nprogress/nprogress.css' // progress bar style
 import getPageTitle from '@/utils/get-page-title'
@@ -46,7 +44,6 @@ router.beforeEach(async (to, from, next) => {
         } catch (error) {
           // remove token and go to login page to re-login
           await Authentication.logout()
-          Vue.use(Message.error('Has Error'))
           next(`/login?redirect=${to.path}`)
           NProgress.done()
         }

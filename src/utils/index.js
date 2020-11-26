@@ -347,25 +347,32 @@ export function removeClass(ele, cls) {
 }
 
 export function trimEndZero(value) {
-    const dot = '.';
-    const strValue = `${value}`;
-    if (strValue.indexOf(dot) === -1) {
-      return strValue;
-    }
-    const trimEndZero = window._.trimEnd(strValue, '0');
-    return window._.trimEnd(trimEndZero, dot);
+  const dot = '.';
+  const strValue = `${value}`;
+  if (strValue.indexOf(dot) === -1) {
+    return strValue;
   }
+  const trimEndZero = window._.trimEnd(strValue, '0');
+  return window._.trimEnd(trimEndZero, dot);
+}
 
 export function deleteAllCookies() {
-    var cookies = document.cookie.split(";");
-
-    for (var i = 0; i < cookies.length; i++) {
-        var cookie = cookies[i];
-        var eqPos = cookie.indexOf("=");
-        var name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
-        document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT";
+  const cookies = document.cookie.split("; ");
+  for (let c = 0; c < cookies.length; c++) {
+    let d = window.location.hostname.split(".");
+    while (d.length > 0) {
+      const cookieBase = encodeURIComponent(cookies[c].split(";")[0].split("=")[0]) + '=; expires=Thu, 01-Jan-1970 00:00:01 GMT; domain=' + d.join('.') + ' ;path=';
+      let p = location.pathname.split('/');
+      document.cookie = cookieBase + '/';
+      while (p.length > 0) {
+          document.cookie = cookieBase + p.join('/');
+          p.pop();
+      }
+      d.shift();
     }
+  }
 }
+
 export function statusDeduce({ success, online, enabled }) {
   if (!online || !enabled) return 'inactive';
   if (online) return 'active';

@@ -120,7 +120,13 @@
     empty_child_node: 'Empty child Node',
     detail: 'Detail Node',
     add_child_node: 'Add Child Node',
-    remove_child_node: 'Remove Child Node'
+    remove_child_node: 'Remove Child Node',
+    tree_type: 'Tree type',
+    layout_type: 'Layout type',
+    node_text_display: 'Node text display',
+    link_layout: 'Link layout',
+    reset: 'Reset'
+
   },
   error_log: {
     title: 'Error Log',
@@ -211,7 +217,14 @@
     cancel: 'Cancel',
     confirm: 'Confirm',
     ok: 'OK',
-    add: 'Add',
+    add: 'Add'
+  },
+  error_page: {
+    not_found: 'Please check that the URL you entered is correct, or click the button below to return to the homepage.',
+    back_to_home: 'Back to home',
+    unauthorized:'You don\'t have permission to go to this page',
+    back: 'Back',
+    can_go: 'Or you can go'
   },
   error: {
     "Internal Server Error": "Action can't complete"
