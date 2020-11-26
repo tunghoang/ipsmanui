@@ -430,7 +430,7 @@ export default {
           idContainer: object.idObject,
           children: [],
           name: object.name || object.idContainee,
-          status: await this.getNodeStatus(object),
+          status: 'unknow',
           idEngine: object.idEngine,
           specs: this.hasEngine(object) && await this.getDetailEngine(object.idEngine),
           load: this.hasEngine(object)

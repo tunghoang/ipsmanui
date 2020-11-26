@@ -169,97 +169,19 @@ export const asyncRoutes = [
     ]
   },
   {
-    path: '/user-managerment',
+    path: '/ips-managerment',
     component: Layout,
-    redirect: '/user-managerment/list',
-    name: 'UserManagerment',
+    redirect: '/ips-managerment/node',
+    alwaysShow: true, // will always show the root menu
+    name: 'EngineManagerment',
     meta: {
-      title: 'user_managerment',
-      icon: 'peoples',
-      roles: ['superadmin'] // you can set roles in root nav
-    },
-    children: [
-      {
-        path: 'list',
-        component: () => import('@/views/user-managerment/user-list'),
-        name: 'UserList',
-        meta: {
-          title: 'user_list',
-          icon: 'peoples',
-          roles: ['superadmin'] // or you can only set roles in sub nav
-        }
-      },
-      {
-        path: ':id/roles',
-        component: () => import('@/views/user-managerment/role-of-user'),
-        name: 'RoleOfUser',
-        hidden: true,
-        meta: {
-          icon: 'role',
-          title: 'roles_of_user',
-          roles: ['superadmin']
-        }
-      }
-    ]
-  },
-  {
-    path: '/role-managerment',
-    component: Layout,
-    redirect: '/role-managerment/list',
-    name: 'RoleManagerment',
-    meta: {
-      title: 'role_managerment',
-      icon: 'roles',
+      title: 'ips_managerment',
+      icon: 'engines',
       roles: ['admin', 'superadmin'] // you can set roles in root nav
     },
     children: [
       {
-        path: 'list',
-        component: () => import('@/views/role-managerment/role-list'),
-        name: 'RoleList',
-        meta: {
-          title: 'role_list',
-          icon: 'roles',
-          roles: ['admin', 'superadmin'] // or you can only set roles in sub nav
-        }
-      },
-      {
-        path: ':id/users',
-        component: () => import('@/views/role-managerment/users-of-role'),
-        name: 'UsersOfRole',
-        hidden: true,
-        meta: {
-          icon: 'user',
-          title: 'users_of_role',
-          roles: ['admin', 'superadmin']
-        }
-      },
-      {
-        path: ':id/permissions',
-        component: () => import('@/views/permission-managerment/index'),
-        name: 'PermissionOfRole',
-        hidden: true,
-        meta: {
-          title: 'permission_managerment',
-          icon: 'permissions',
-          roles: ['superadmin']
-        }
-      }
-    ]
-  },
-  {
-    path: '/node-managerment',
-    component: Layout,
-    redirect: '/node-managerment/list',
-    name: 'NodeManagerment',
-    meta: {
-      title: 'node_managerment',
-      icon: 'nodes',
-      roles: ['admin', 'superadmin'] // you can set roles in root nav
-    },
-    children: [
-      {
-        path: 'list',
+        path: 'node',
         component: () => import('@/views/node-managerment/node-list'),
         name: 'NodeList',
         meta: {
@@ -267,24 +189,10 @@ export const asyncRoutes = [
           icon: 'tree',
           roles: ['admin', 'superadmin'] // or you can only set roles in sub nav
         }
-      }
-    ]
-  },
-  {
-    path: '/engine-managerment',
-    component: Layout,
-    redirect: '/engine-managerment/engine',
-    alwaysShow: true, // will always show the root menu
-    name: 'EngineManagerment',
-    meta: {
-      title: 'engine_managerment',
-      icon: 'engines',
-      roles: ['admin', 'superadmin'] // you can set roles in root nav
-    },
-    children: [
+      },
       {
         path: 'engine-type',
-        component: () => import('@/views/engine-managerment/engine-type-list'),
+        component: () => import('@/views/node-managerment/engine-type-list'),
         name: 'EngineTypeList',
         meta: {
           title: 'engine_type_list',
@@ -294,7 +202,7 @@ export const asyncRoutes = [
       },
       {
         path: 'engine',
-        component: () => import('@/views/engine-managerment/engine-list'),
+        component: () => import('@/views/node-managerment/engine-list'),
         name: 'EngineList',
         meta: {
           title: 'engine_list',
@@ -302,6 +210,221 @@ export const asyncRoutes = [
           roles: ['admin', 'superadmin'] // or you can only set roles in sub nav
         }
       }
+    ]
+  },
+  {
+    path: '/rules-managerment',
+    component: Layout,
+    redirect: '/rules-managerment/role',
+    alwaysShow: true,
+    name: 'RoleManagerment',
+    meta: {
+      title: 'rules_managerment',
+      icon: 'rules-managerment',
+      roles: ['admin', 'superadmin'] // you can set roles in root nav
+    },
+    children: [
+      {
+        path: 'role',
+        component: () => import('@/views/rules-managerment/role-list'),
+        name: 'RoleList',
+        meta: {
+          title: 'role_list',
+          icon: 'roles',
+          roles: ['admin', 'superadmin'] // or you can only set roles in sub nav
+        }
+      },
+      {
+        path: 'role/:id/users',
+        component: () => import('@/views/rules-managerment/users-of-role'),
+        name: 'UsersOfRole',
+        hidden: true,
+        meta: {
+          icon: 'user',
+          title: 'users_of_role',
+          roles: ['admin', 'superadmin']
+        }
+      },
+      {
+        path: 'role/:id/permissions',
+        component: () => import('@/views/permission-managerment/index'),
+        name: 'PermissionOfRole',
+        hidden: true,
+        meta: {
+          title: 'permission_managerment',
+          icon: 'permissions',
+          roles: ['superadmin']
+        }
+      },
+      {
+        path: 'models',
+        component: () => import('@/views/rules-managerment/anomaly-models'),
+        name: 'AnomalyModels',
+        meta: {
+          icon: 'anomalies',
+          title: 'anomaly_models',
+          roles: ['admin', 'superadmin']
+        }
+      },
+      {
+        path: 'specifics',
+        component: () => import('@/views/rules-managerment/specifics'),
+        name: 'Specifics',
+        meta: {
+          icon: 'specifics',
+          title: 'specifics',
+          roles: ['admin', 'superadmin']
+        }
+      },
+    ]
+  },
+  {
+    path: '/intrusion-managerment',
+    component: Layout,
+    redirect: '/intrusion-managerment/intrusion',
+    alwaysShow: true, // will always show the root menu
+    name: 'IntrusionManagerment',
+    meta: {
+      title: 'intrusion_managerment',
+      icon: 'intrusion-management',
+      roles: ['admin', 'superadmin'] // you can set roles in root nav
+    },
+    children: [
+      {
+        path: 'intrusion',
+        component: () => import('@/views/intrusion-managerment/intrusion-monitoring'),
+        name: 'IntrusionMonitoring',
+        meta: {
+          title: 'intrusion_monitoring',
+          icon: 'intrusion-monitoring',
+          roles: ['superadmin'] // or you can only set roles in sub nav
+        }
+      },
+      {
+        path: 'alarm',
+        component: () => import('@/views/intrusion-managerment/alarm'),
+        name: 'Alarm',
+        meta: {
+          title: 'alarm',
+          icon: 'alarm',
+          roles: ['superadmin'] // or you can only set roles in sub nav
+        }
+      },
+      {
+        path: 'anomalies',
+        component: () => import('@/views/intrusion-managerment/anomaly-events'),
+        name: 'Anomalies',
+        meta: {
+          title: 'anomaly_vents',
+          icon: 'anomalies',
+          roles: ['superadmin'] // or you can only set roles in sub nav
+        }
+      },
+      {
+        path: 'impact-analysis',
+        component: () => import('@/views/intrusion-managerment/impact-analysis'),
+        name: 'ImpactAnalysis',
+        meta: {
+          title: 'impact-analysis',
+          icon: 'impact-analysis',
+          roles: ['superadmin'] // or you can only set roles in sub nav
+        }
+      },
+      {
+        path: 'search',
+        component: () => import('@/views/intrusion-managerment/search'),
+        name: 'Search',
+        meta: {
+          title: 'search',
+          icon: 'search',
+          roles: ['superadmin'] // or you can only set roles in sub nav
+        }
+      },
+      {
+        path: 'statistics',
+        component: () => import('@/views/intrusion-managerment/statistics'),
+        name: 'Statistics',
+        meta: {
+          title: 'statistics',
+          icon: 'statistics',
+          roles: ['superadmin'] // or you can only set roles in sub nav
+        }
+      },
+    ]
+  },
+  {
+    path: '/system-managerment',
+    component: Layout,
+    redirect: '/system-managerment/user-list',
+    alwaysShow: true, // will always show the root menu
+    name: 'SystemManagerment',
+    meta: {
+      title: 'system_managerment',
+      icon: 'setting',
+      roles: ['admin', 'superadmin'] // you can set roles in root nav
+    },
+    children: [
+      {
+        path: 'user-list',
+        component: () => import('@/views/system-managerment/user-list'),
+        name: 'UserList',
+        meta: {
+          title: 'user_list',
+          icon: 'peoples',
+          roles: ['superadmin'] // or you can only set roles in sub nav
+        }
+      },
+      {
+        path: 'user/:id/roles',
+        component: () => import('@/views/system-managerment/role-of-user'),
+        name: 'RoleOfUser',
+        hidden: true,
+        meta: {
+          icon: 'role',
+          title: 'roles_of_user',
+          roles: ['superadmin']
+        }
+      },
+      {
+        path: 'organisation-list',
+        component: () => import('@/views/system-managerment/organisation-list'),
+        name: 'OrganisationList',
+        meta: {
+          title: 'organisation_list',
+          icon: 'organization',
+          roles: ['superadmin'] // or you can only set roles in sub nav
+        }
+      },
+      {
+        path: 'siem',
+        component: () => import('@/views/system-managerment/siem'),
+        name: 'SiemInterconnection',
+        meta: {
+          title: 'siem',
+          icon: 'siem',
+          roles: ['superadmin'] // or you can only set roles in sub nav
+        }
+      },
+      {
+        path: 'settings',
+        component: () => import('@/views/system-managerment/settings'),
+        name: 'Settings',
+        meta: {
+          title: 'settings',
+          icon: 'settings',
+          roles: ['superadmin'] // or you can only set roles in sub nav
+        }
+      },
+      {
+        path: 'monitor',
+        component: () => import('@/views/system-managerment/monitor'),
+        name: 'Monitor',
+        meta: {
+          title: 'monitor',
+          icon: 'monitor',
+          roles: ['superadmin'] // or you can only set roles in sub nav
+        }
+      },
     ]
   },
   // {

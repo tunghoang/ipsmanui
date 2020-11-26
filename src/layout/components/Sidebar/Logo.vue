@@ -29,7 +29,7 @@ export default {
   },
   computed: {
     logo () {
-      return this.collapse ? '/img/brand/sygnet.svg': '/img/brand/logo.svg'
+      return this.collapse ? 'img/brand/sygnet.svg': 'img/brand/logo.svg'
     }
   }
 }

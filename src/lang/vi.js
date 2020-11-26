@@ -1,12 +1,7 @@
 export default {
-  common: {
-    back: 'Quay lại',
-    return: 'Trở về',
-  },
   route: {
     dashboard: 'Giao diện chính',
     profile: 'Hồ sơ',
-    introduction: 'Giới thiệu',
     about: 'Về UET.SoC',
     guide: 'Hướng dẫn',
     rolePermission: 'Quyền truy cập',
@@ -14,6 +9,7 @@ export default {
     role_managerment: 'Quản lý vai trò',
     node_managerment: 'Quản lý node',
     permission_managerment: 'Quản lý phân quyền',
+    rules_managerment: 'Quản lý quy tắc',
     roles_of_user: 'Vai trò của người dùng',
     users_of_role: 'Người dùng của vai trò',
     user_list: 'Danh sách người dùng',
@@ -22,7 +18,22 @@ export default {
     detail_node: 'Chi tiết Node',
     engine_type_list: 'Danh sách loại Engine',
     engine_list: 'Danh sách Engine',
-    engine_managerment: 'Quản lý Engine'
+    engine_managerment: 'Quản lý Engine',
+    system_managerment: 'Quản lý hệ thống',
+    ips_managerment: 'Quản lý IPS',
+    organisation_list: 'Quản lý tổ chức',
+    settings: 'Thiết lập',
+    monitor: 'Monitor',
+    siem: 'SIEM Interconnection',
+    intrusion_managerment: 'Intrusion Management',
+    intrusion_monitoring: ' Intrusion Monitoring',
+    alarm: 'Alarm',
+    anomaly_vents: 'Anomaly Events',
+    impact_analysis: 'Impact Analysis',
+    search: 'Search',
+    statistics: 'Statistics',
+    anomaly_models: 'Anomaly Models',
+    specifics: 'Specifics Data'
   },
   navbar: {
     logOut: 'Đăng xuất',
