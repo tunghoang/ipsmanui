@@ -32,7 +32,8 @@
     search: 'Search',
     statistics: 'Statistics',
     anomaly_models: 'Anomaly Models',
-    specifics: 'Specifics Data'
+    specifics: 'Specifics Data',
+    ruleset: 'Ruleset'
   },
   navbar: {
     dashboard: 'Dashboard',

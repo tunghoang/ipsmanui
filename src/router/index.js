@@ -215,7 +215,7 @@ export const asyncRoutes = [
   {
     path: '/rules-managerment',
     component: Layout,
-    redirect: '/rules-managerment/role',
+    redirect: '/rules-managerment/ruleset',
     alwaysShow: true,
     name: 'RoleManagerment',
     meta: {
@@ -225,35 +225,13 @@ export const asyncRoutes = [
     },
     children: [
       {
-        path: 'role',
-        component: () => import('@/views/rules-managerment/role-list'),
-        name: 'RoleList',
+        path: 'ruleset',
+        component: () => import('@/views/rules-managerment/ruleset'),
+        name: 'Ruleset',
         meta: {
-          title: 'role_list',
-          icon: 'roles',
-          roles: ['admin', 'superadmin'] // or you can only set roles in sub nav
-        }
-      },
-      {
-        path: 'role/:id/users',
-        component: () => import('@/views/rules-managerment/users-of-role'),
-        name: 'UsersOfRole',
-        hidden: true,
-        meta: {
-          icon: 'user',
-          title: 'users_of_role',
+          icon: 'ruleset',
+          title: 'ruleset',
           roles: ['admin', 'superadmin']
-        }
-      },
-      {
-        path: 'role/:id/permissions',
-        component: () => import('@/views/permission-managerment/index'),
-        name: 'PermissionOfRole',
-        hidden: true,
-        meta: {
-          title: 'permission_managerment',
-          icon: 'permissions',
-          roles: ['superadmin']
         }
       },
       {
@@ -325,7 +303,7 @@ export const asyncRoutes = [
         component: () => import('@/views/intrusion-managerment/impact-analysis'),
         name: 'ImpactAnalysis',
         meta: {
-          title: 'impact-analysis',
+          title: 'impact_analysis',
           icon: 'impact-analysis',
           roles: ['superadmin'] // or you can only set roles in sub nav
         }
@@ -386,25 +364,57 @@ export const asyncRoutes = [
         }
       },
       {
-        path: 'organisation-list',
-        component: () => import('@/views/system-managerment/organisation-list'),
-        name: 'OrganisationList',
+        path: 'role',
+        component: () => import('@/views/system-managerment/role-list'),
+        name: 'RoleList',
         meta: {
-          title: 'organisation_list',
-          icon: 'organization',
-          roles: ['superadmin'] // or you can only set roles in sub nav
+          title: 'role_list',
+          icon: 'roles',
+          roles: ['admin', 'superadmin'] // or you can only set roles in sub nav
         }
       },
       {
-        path: 'siem',
-        component: () => import('@/views/system-managerment/siem'),
-        name: 'SiemInterconnection',
+        path: 'role/:id/users',
+        component: () => import('@/views/system-managerment/users-of-role'),
+        name: 'UsersOfRole',
+        hidden: true,
         meta: {
-          title: 'siem',
-          icon: 'siem',
-          roles: ['superadmin'] // or you can only set roles in sub nav
+          icon: 'user',
+          title: 'users_of_role',
+          roles: ['admin', 'superadmin']
         }
       },
+      {
+        path: 'role/:id/permissions',
+        component: () => import('@/views/permission-managerment/index'),
+        name: 'PermissionOfRole',
+        hidden: true,
+        meta: {
+          title: 'permission_managerment',
+          icon: 'permissions',
+          roles: ['superadmin']
+        }
+      },
+      // {
+      //   path: 'organisation-list',
+      //   component: () => import('@/views/system-managerment/organisation-list'),
+      //   name: 'OrganisationList',
+      //   meta: {
+      //     title: 'organisation_list',
+      //     icon: 'organization',
+      //     roles: ['superadmin'] // or you can only set roles in sub nav
+      //   }
+      // },
+      // {
+      //   path: 'siem',
+      //   component: () => import('@/views/system-managerment/siem'),
+      //   name: 'SiemInterconnection',
+      //   meta: {
+      //     title: 'siem',
+      //     icon: 'siem',
+      //     roles: ['superadmin'] // or you can only set roles in sub nav
+      //   }
+      // },
       {
         path: 'settings',
         component: () => import('@/views/system-managerment/settings'),

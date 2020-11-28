@@ -33,7 +33,8 @@ export default {
     search: 'Search',
     statistics: 'Statistics',
     anomaly_models: 'Anomaly Models',
-    specifics: 'Specifics Data'
+    specifics: 'Specifics Data',
+    ruleset: 'Bộ quy tắc'
   },
   navbar: {
     logOut: 'Đăng xuất',
