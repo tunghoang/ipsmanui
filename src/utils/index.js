@@ -1,13 +1,22 @@
-/**
- * Created by PanJiaChen on 16/11/18.
- */
+import moment from 'moment'
 
-/**
- * Parse the time to string
- * @param {(Object|string|number)} time
- * @param {string} cFormat
- * @returns {string | null}
- */
+export const formatBytes = (a, b) => {
+  if (a === 0) return "0";
+  let c = 1024,
+    d = b || 2,
+    f = Math.floor(Math.log(a) / Math.log(c));
+  return parseFloat((a / Math.pow(c, f)).toFixed(d));
+}
+
+export const getUptime = time => {
+  const date = new Date(time * 1000);
+  const utcString = date.toUTCString();
+  const start = moment(utcString).format();
+  const result = moment.utc(moment().diff(start)).format();
+  return moment(result)
+    .toString();
+};
+
 export function parseTime(time, cFormat) {
   if (arguments.length === 0) {
     return null
@@ -43,48 +52,6 @@ export function parseTime(time, cFormat) {
   return time_str
 }
 
-/**
- * @param {number} time
- * @param {string} option
- * @returns {string}
- */
-export function formatTime(time, option) {
-  if (('' + time).length === 10) {
-    time = parseInt(time) * 1000
-  } else {
-    time = +time
-  }
-  const d = new Date(time)
-  const now = Date.now()
-
-  const diff = (now - d) / 1000
-
-  if (diff < 30) {
-    return '刚刚'
-  } else if (diff < 3600) {
-    // less 1 hour
-    return Math.ceil(diff / 60) + '分钟前'
-  } else if (diff < 3600 * 24) {
-    return Math.ceil(diff / 3600) + '小时前'
-  } else if (diff < 3600 * 24 * 2) {
-    return '1天前'
-  }
-  if (option) {
-    return parseTime(time, option)
-  } else {
-    return (
-      d.getMonth() +
-      1 +
-      '月' +
-      d.getDate() +
-      '日' +
-      d.getHours() +
-      '时' +
-      d.getMinutes() +
-      '分'
-    )
-  }
-}
 
 /**
  * @param {string} url
@@ -245,15 +212,12 @@ export function debounce(func, wait, immediate) {
   let timeout, args, context, timestamp, result
 
   const later = function() {
-    // 据上一次触发时间间隔
     const last = +new Date() - timestamp
 
-    // 上次被包装函数被调用时间间隔 last 小于设定时间间隔 wait
     if (last < wait && last > 0) {
       timeout = setTimeout(later, wait - last)
     } else {
       timeout = null
-      // 如果设定为immediate===true，因为开始边界已经调用过了此处无需调用
       if (!immediate) {
         result = func.apply(context, args)
         if (!timeout) context = args = null
@@ -265,7 +229,6 @@ export function debounce(func, wait, immediate) {
     context = this
     timestamp = +new Date()
     const callNow = immediate && !timeout
-    // 如果延时不存在，重新设定延时
     if (!timeout) timeout = setTimeout(later, wait)
     if (callNow) {
       result = func.apply(context, args)

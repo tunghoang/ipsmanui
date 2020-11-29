@@ -12,6 +12,11 @@ const backend = {
 //    pathRewrite: {'^/api' : ''}
 }
 
+const ips = {
+  target: 'https://ipsmanager.uetis.com',
+  changeOrigin: true
+}
+
 function resolve(dir) {
   return path.join(__dirname, dir)
 }
@@ -40,12 +45,6 @@ module.exports = {
       '/permissions': backend,
       '/containmentRels': backend,
       '/control': backend
-      // '/api': {
-      //     target: 'http://112.137.129.214:15580',
-      //     pathRewrite: {'^/api' : ''},
-      //     secure: false,
-      //     changeOrigin: true
-      // }
     },
     // https: true,
     // key: fs.readFileSync('/home/nnhoa/ca/new/server.key'),
@@ -85,5 +84,56 @@ module.exports = {
     config.when(process.env.NODE_ENV === "development", config =>
       config.devtool("cheap-source-map")
     );
+  }
+}
+
+/**
+ * Proxy bypass function to bypass request to interface.domain.ext back to /index.html
+ *
+ * @param req
+ * @param res
+ * @param proxyOptions
+ * @returns {string}
+ */
+function bypassFunction(req, res, proxyOptions) {
+  if (req.headers && req.headers.host) {
+    let expression = new RegExp('(my\\.(' + domains.join('|').replace(new RegExp('\\.', 'gi'), '\\.') + '))', 'i');
+    let match = req.headers.host.match( expression );
+    if (match && match.length > 0) {
+       return '/index.html';
+    }
+  }
+}
+
+
+/**
+ * Adjust request headers before send to script
+ * @param proxyReq
+ * @param req
+ */
+function relayRequestHeaders(proxyReq, req) {}
+
+
+/**
+ * Adjust response headers before send to browser
+ * @param proxyRes
+ * @param req
+ * @param res
+ */
+function relayResponseHeaders(proxyRes, req, res) {
+  if (proxyRes.headers && proxyRes.headers.location) {
+    // my is not in the prefixes
+    let expression = new RegExp('https://(((my|' + domainPrefixes.join('|') + ')\\.(' + domains.join('|').replace(new RegExp('\\.', 'gi'), '\\.') + '))(:443)?)/', 'i');
+    let match = proxyRes.headers.location.match( expression );
+    if (match && match.length > 0) {
+      // match[0] is full url
+      // match[1] is url including port (if set)
+      // match[2] is url excluding port
+      // match[3] is domain prefix
+      // match[4] is domain
+      // match[5] is port if set
+      proxyRes.headers.location = proxyRes.headers.location.replace(match[1], match[2] + ':8080');
+      res.append( 'location', proxyRes.headers.location );
+    }
   }
 }

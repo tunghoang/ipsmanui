@@ -1,5 +1,3 @@
-// import parseTime, formatTime and set to filter
-export { parseTime, formatTime } from '@/utils'
 import moment from 'moment';
 import i18n from '@/lang'
 

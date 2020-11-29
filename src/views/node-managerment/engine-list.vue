@@ -340,7 +340,11 @@ export default {
       rf.getRequest('EngineRequest').export(this.params)
       .then(async response => {
         let dataExport = []
-        response.map((item, index) => {item.no = index + 1 ; dataExport.push(item)})
+        response.map((item, index) => {
+          item.no = index + 1;
+          item.specs = JSON.stringify(JSON.parse(item.specs));
+          dataExport.push(item)
+        })
         this.handleExport(dataExport);
       })
       .catch(error => {
@@ -356,14 +360,15 @@ export default {
       });
     },
     handleExport(dataExport) {
+      console.log(dataExport)
       import('@/vendor/Export2Excel').then(excel => {
-        const tHeader = [this.$t('no'), this.$t('table.name')]
-        const filterVal = ['no', 'name']
+        const tHeader = [this.$t('no'), this.$t('table.id'), this.$t('table.specs')]
+        const filterVal = ['no', 'idEngine', 'specs']
         const data = this.formatJson(filterVal, dataExport)
         excel.export_json_to_excel({
           header: tHeader,
           data,
-          filename: `${this.$t('route."user list"')}`
+          filename: `${this.$t('route.engine_list')}`
         })
         this.isSubmitting = false
       })

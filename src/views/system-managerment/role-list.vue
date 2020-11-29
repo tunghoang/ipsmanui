@@ -307,13 +307,13 @@ export default {
     },
     handleExport(dataExport) {
       import('@/vendor/Export2Excel').then(excel => {
-        const tHeader = [this.$t('no'), this.$t('table.name'), this.$t('table.description')]
-        const filterVal = ['no', 'name', 'description']
+        const tHeader = [this.$t('no'), this.$t('table.id'), this.$t('table.name'), this.$t('table.description')]
+        const filterVal = ['no', 'idRole', 'name', 'description']
         const data = this.formatJson(filterVal, dataExport)
         excel.export_json_to_excel({
           header: tHeader,
           data,
-          filename: `${this.$t('route."user list"')}`
+          filename: `${this.$t('route.role_list')}`
         })
         this.isSubmitting = false
       })

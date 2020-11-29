@@ -248,5 +248,36 @@
   },
   select: {
     action: 'Select Action'
+  },
+  monitor: {
+    caption: "Monitor",
+    interfaces: "Interfaces",
+    name: "Name",
+    hardwareAddress: "Hardware address",
+    address: "Address",
+    hostStat: "Host stat",
+    hostname: "Host name",
+    uptime: "Uptime",
+    bootTime: "Boot time",
+    processes: "Processes",
+    os: "OS",
+    platform: "Platform",
+    platformFamily: "Platform family",
+    platformVersion: "Platform version",
+    kernelVersion: "Kernel version",
+    kernelArchitecture: "Kernel architecture",
+    virtualizationSystem: "Virtualization system",
+    virtualizationRole: "Virtualization role",
+    hostid: "Host ID",
+    diskStat: "Disk stat",
+    GB: "GB",
+    memStat: "Memory Stat",
+    cpuStat: "CPU stat",
+    cores: "Cores",
+    frequency: "Frequency",
+    cacheSize: "Cache size",
+    MHz: "MHz",
+    CPU: "CPU",
+    cpuHistory: "CPU History"
   }
 }

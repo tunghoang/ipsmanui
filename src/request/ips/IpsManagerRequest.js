@@ -1,131 +1,110 @@
-import store from "@/store"
 import axios from 'axios'
 
-axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest'
-axios.defaults.headers['Authorization'] = localStorage.getItem('token')
-axios = axios.create({
-  baseURL: 'https://ipsmanagerapi.uetis.com',
-  proxy: false
-});
-axios.interceptors.request.use(
-  config => {
-    return config;
-  },
-  error => {
-    console.log(error); // for debug
-    return Promise.reject(error);
-  }
-);
+const API = {
+    CPUINFO: "monitor/cpuinfo",
+    CPUPERCENT: "monitor/cpupercentage",
+    RUNTIMEOS: "monitor/runtimeos",
+    MEMSTAT: "monitor/memstat",
+    DISKSTAT: "monitor/diskstat",
+    HOSTSTAT: "monitor/hoststat",
+    INTERFACES: "monitor/interfaces"
+}
 
-axios.interceptors.response.use(
-  response => {
-    if(!response.status === 200) return
-    return response
-  },
-  error => {
-    store.dispatch('errorLog/addErrorLog', {
-      err: {
-        message: error.response.statusText,
-        stack: JSON.stringify(error.response)
-      },
-      vm: 'Call API with Axios error',
-      info: error.response.status,
-      url: error.response.config.url
-    })
-    window.app.$broadcast("EVENT_COMMON_ERROR", error);
-    if (error.response.status === 401 || error.response.status === 419) {
-      // Todo
+export const rules = async (params) => {
+  return await axios({
+    method: 'get',
+    url: 'https://ipsmanagerapi.uetis.com/netips/rules',
+    params,
+    headers: {
+      authorization: localStorage.getItem('token')
     }
-    // console.log("err" + error); // for debug
-    // Message({
-    //   message: error.message,
-    //   type: "error",
-    //   duration: 2 * 1000
-    // });
-    return Promise.reject(error);
-  }
-);
+  })
+}
 
-export default class IpsManagerRequest {
-  getUrlPrefix() {
-    return '';
-  }
-
-  getCurrentLocale() {
-    if (window.i18n) {
-      return window.i18n.locale;
+export const cpuInfo = async (params) => {
+  return await axios({
+    method: 'get',
+    url: `https://ipsmanagerapi.uetis.com/${API.CPUINFO}`,
+    params,
+    headers: {
+      authorization: localStorage.getItem('token')
     }
-  }
+  })
+}
 
-  appendLocale (data) {
-    const lang = this.getCurrentLocale();
-    return Object.assign(data, { lang });
-  }
-
-  async get(url, params = {}) {
-    try {
-      const config = {
-        params: params
-      }
-      console.log('get', url)
-      const response = await axios.get(this.getUrlPrefix('GET') + url, config);
-      return this._responseHandler(response);
-    } catch (error) {
-      this._errorHandler(error);
+export const cpuPercentage = async (params) => {
+  return await axios({
+    method: 'get',
+    url: `https://ipsmanagerapi.uetis.com/${API.CPUPERCENT}`,
+    params,
+    headers: {
+      authorization: localStorage.getItem('token')
     }
-  }
+  })
+}
 
-  async put(url, data = {}) {
-    try {
-      console.log('put', url)
-      const response = await axios.put(this.getUrlPrefix() + url, data);
-      return this._responseHandler(response);
-    } catch (error) {
-      this._errorHandler(error);
+export const runtimeOs = async (params) => {
+  return await axios({
+    method: 'get',
+    url: `https://ipsmanagerapi.uetis.com/${API.RUNTIMEOS}`,
+    params,
+    headers: {
+      authorization: localStorage.getItem('token')
     }
-  }
+  })
+}
 
-  async post(url, data = {}) {
-    try {
-      console.log('post', url)
-      const response = await axios.post(this.getUrlPrefix() + url, data);
-      return this._responseHandler(response);
-    } catch (error) {
-      this._errorHandler(error);
+export const memStat = async (params) => {
+  return await axios({
+    method: 'get',
+    url: `https://ipsmanagerapi.uetis.com/${API.MEMSTAT}`,
+    params,
+    headers: {
+      authorization: localStorage.getItem('token')
     }
-  }
+  })
+}
 
-  async del(url, data = {}) {
-    try {
-      console.log('delete', url)
-      const response = await axios.delete(this.getUrlPrefix() + url, {data});
-      return this._responseHandler(response);
-    } catch (error) {
-      this._errorHandler(error);
+export const diskStat = async (params) => {
+  return await axios({
+    method: 'get',
+    url: `https://ipsmanagerapi.uetis.com/${API.DISKSTAT}`,
+    params,
+    headers: {
+      authorization: localStorage.getItem('token')
     }
-  }
+  })
+}
 
-  async _responseHandler(response) {
-    console.log(response)
-    const data = response.data;
-    if (response.status === 202) {
-      data.redirectUrl = '/';
+export const hostStat = async (params) => {
+  return await axios({
+    method: 'get',
+    url: `https://ipsmanagerapi.uetis.com/${API.HOSTSTAT}`,
+    params,
+    headers: {
+      authorization: localStorage.getItem('token')
     }
-    return data;
-  }
+  })
+}
 
-  // async download(url, params, fileName) {
-  //   const response = await this.get(url, params);
-  //   CsvUtils.export(response, fileName);
-  // }
-
-  _errorHandler(err) {
-    window.app.$broadcast('EVENT_COMMON_ERROR', err);
-    if (err.response && err.response.status === 401) { // Unauthorized (session timeout)
+export const getInterfaces = async (params) => {
+  return await axios({
+    method: 'get',
+    url: `https://ipsmanagerapi.uetis.com/${API.INTERFACES}`,
+    params,
+    headers: {
+      authorization: localStorage.getItem('token')
     }
-    // if (err.response && err.response.status === 503) { // maintenance
-    //   window.location.reload();
-    // }
-    throw err;
-  }
+  })
+}
+
+export const models = async (params) => {
+  return await axios({
+    method: 'get',
+    url: 'https://ipsmanagerapi.uetis.com/templates',
+    params,
+    headers: {
+      authorization: localStorage.getItem('token')
+    }
+  })
 }

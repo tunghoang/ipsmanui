@@ -285,5 +285,36 @@ export default {
   },
   select: {
     action: 'Chọn Action'
+  },
+  monitor: {
+    caption: "Trạng thái hệ thống",
+    interfaces: "Giao diện",
+    name: "Tên",
+    hardwareAddress: "Địa chỉ phần cứng",
+    address: "Địa chỉ",
+    hostStat: "Thông tin máy chủ",
+    hostname: "Tên máy chủ",
+    uptime: "Thời gian hoạt động",
+    bootTime: "Thời gian khởi động",
+    processes: "Tiến trình",
+    os: "Hệ điều hành",
+    platform: "Nền tảng",
+    platformFamily: "Nhóm nền tảng",
+    platformVersion: "Phiên bản nền tảng",
+    kernelVersion: "Phiên bản nhân",
+    kernelArchitecture: "Kiến trúc nhân",
+    virtualizationSystem: "Hệ thống ảo hóa",
+    virtualizationRole: "Vai trò ảo hóa",
+    hostid: "ID máy chủ",
+    diskStat: "Thông tin ổ đĩa",
+    GB: "GB",
+    memStat: "Thông tin bộ nhớ",
+    cpuStat: "Thông tin CPU",
+    cores: "Cores",
+    frequency: "Tần suất",
+    cacheSize: "Bộ nhớ cache",
+    MHz: "MHz",
+    CPU: "CPU",
+    cpuHistory: "Lịch sử CPU"
   }
 }

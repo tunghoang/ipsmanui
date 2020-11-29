@@ -273,6 +273,7 @@ export const asyncRoutes = [
         component: () => import('@/views/intrusion-managerment/intrusion-monitoring'),
         name: 'IntrusionMonitoring',
         meta: {
+          noCache: false,
           title: 'intrusion_monitoring',
           icon: 'intrusion-monitoring',
           roles: ['superadmin'] // or you can only set roles in sub nav
@@ -283,6 +284,7 @@ export const asyncRoutes = [
         component: () => import('@/views/intrusion-managerment/alarm'),
         name: 'Alarm',
         meta: {
+          noCache: false,
           title: 'alarm',
           icon: 'alarm',
           roles: ['superadmin'] // or you can only set roles in sub nav
@@ -293,6 +295,7 @@ export const asyncRoutes = [
         component: () => import('@/views/intrusion-managerment/anomaly-events'),
         name: 'Anomalies',
         meta: {
+          noCache: false,
           title: 'anomaly_vents',
           icon: 'anomalies',
           roles: ['superadmin'] // or you can only set roles in sub nav
@@ -303,6 +306,7 @@ export const asyncRoutes = [
         component: () => import('@/views/intrusion-managerment/impact-analysis'),
         name: 'ImpactAnalysis',
         meta: {
+          noCache: false,
           title: 'impact_analysis',
           icon: 'impact-analysis',
           roles: ['superadmin'] // or you can only set roles in sub nav
@@ -313,6 +317,7 @@ export const asyncRoutes = [
         component: () => import('@/views/intrusion-managerment/search'),
         name: 'Search',
         meta: {
+          noCache: false,
           title: 'search',
           icon: 'search',
           roles: ['superadmin'] // or you can only set roles in sub nav
@@ -323,6 +328,7 @@ export const asyncRoutes = [
         component: () => import('@/views/intrusion-managerment/statistics'),
         name: 'Statistics',
         meta: {
+          noCache: false,
           title: 'statistics',
           icon: 'statistics',
           roles: ['superadmin'] // or you can only set roles in sub nav
