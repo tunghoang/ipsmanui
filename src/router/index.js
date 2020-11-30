@@ -169,20 +169,20 @@ export const asyncRoutes = [
     ]
   },
   {
-    path: '/ips-managerment',
+    path: '/ips-management',
     component: Layout,
-    redirect: '/ips-managerment/node',
+    redirect: '/ips-management/node',
     alwaysShow: true, // will always show the root menu
-    name: 'EngineManagerment',
+    name: 'EngineManagement',
     meta: {
-      title: 'ips_managerment',
+      title: 'ips_management',
       icon: 'engines',
       roles: ['admin', 'superadmin'] // you can set roles in root nav
     },
     children: [
       {
         path: 'node',
-        component: () => import('@/views/node-managerment/node-list'),
+        component: () => import('@/views/node-management/node-list'),
         name: 'NodeList',
         meta: {
           title: 'node_list',
@@ -192,7 +192,7 @@ export const asyncRoutes = [
       },
       {
         path: 'engine-type',
-        component: () => import('@/views/node-managerment/engine-type-list'),
+        component: () => import('@/views/node-management/engine-type-list'),
         name: 'EngineTypeList',
         meta: {
           title: 'engine_type_list',
@@ -202,7 +202,7 @@ export const asyncRoutes = [
       },
       {
         path: 'engine',
-        component: () => import('@/views/node-managerment/engine-list'),
+        component: () => import('@/views/node-management/engine-list'),
         name: 'EngineList',
         meta: {
           title: 'engine_list',
@@ -213,20 +213,20 @@ export const asyncRoutes = [
     ]
   },
   {
-    path: '/rules-managerment',
+    path: '/rules-management',
     component: Layout,
-    redirect: '/rules-managerment/ruleset',
+    redirect: '/rules-management/ruleset',
     alwaysShow: true,
-    name: 'RoleManagerment',
+    name: 'RoleManagement',
     meta: {
-      title: 'rules_managerment',
-      icon: 'rules-managerment',
+      title: 'rules_management',
+      icon: 'rules-management',
       roles: ['admin', 'superadmin'] // you can set roles in root nav
     },
     children: [
       {
         path: 'ruleset',
-        component: () => import('@/views/rules-managerment/ruleset'),
+        component: () => import('@/views/rules-management/ruleset'),
         name: 'Ruleset',
         meta: {
           icon: 'ruleset',
@@ -236,7 +236,7 @@ export const asyncRoutes = [
       },
       {
         path: 'models',
-        component: () => import('@/views/rules-managerment/anomaly-models'),
+        component: () => import('@/views/rules-management/anomaly-models'),
         name: 'AnomalyModels',
         meta: {
           icon: 'anomalies',
@@ -246,7 +246,7 @@ export const asyncRoutes = [
       },
       {
         path: 'specifics',
-        component: () => import('@/views/rules-managerment/specifics'),
+        component: () => import('@/views/rules-management/specifics'),
         name: 'Specifics',
         meta: {
           icon: 'specifics',
@@ -257,20 +257,20 @@ export const asyncRoutes = [
     ]
   },
   {
-    path: '/intrusion-managerment',
+    path: '/intrusion-management',
     component: Layout,
-    redirect: '/intrusion-managerment/intrusion',
+    redirect: '/intrusion-management/intrusion',
     alwaysShow: true, // will always show the root menu
-    name: 'IntrusionManagerment',
+    name: 'IntrusionManagement',
     meta: {
-      title: 'intrusion_managerment',
+      title: 'intrusion_management',
       icon: 'intrusion-management',
       roles: ['admin', 'superadmin'] // you can set roles in root nav
     },
     children: [
       {
         path: 'intrusion',
-        component: () => import('@/views/intrusion-managerment/intrusion-monitoring'),
+        component: () => import('@/views/intrusion-management/intrusion-monitoring'),
         name: 'IntrusionMonitoring',
         meta: {
           noCache: false,
@@ -281,7 +281,7 @@ export const asyncRoutes = [
       },
       {
         path: 'alarm',
-        component: () => import('@/views/intrusion-managerment/alarm'),
+        component: () => import('@/views/intrusion-management/alarm'),
         name: 'Alarm',
         meta: {
           noCache: false,
@@ -292,7 +292,7 @@ export const asyncRoutes = [
       },
       {
         path: 'anomalies',
-        component: () => import('@/views/intrusion-managerment/anomaly-events'),
+        component: () => import('@/views/intrusion-management/anomaly-events'),
         name: 'Anomalies',
         meta: {
           noCache: false,
@@ -303,7 +303,7 @@ export const asyncRoutes = [
       },
       {
         path: 'impact-analysis',
-        component: () => import('@/views/intrusion-managerment/impact-analysis'),
+        component: () => import('@/views/intrusion-management/impact-analysis'),
         name: 'ImpactAnalysis',
         meta: {
           noCache: false,
@@ -314,7 +314,7 @@ export const asyncRoutes = [
       },
       {
         path: 'search',
-        component: () => import('@/views/intrusion-managerment/search'),
+        component: () => import('@/views/intrusion-management/search'),
         name: 'Search',
         meta: {
           noCache: false,
@@ -325,7 +325,7 @@ export const asyncRoutes = [
       },
       {
         path: 'statistics',
-        component: () => import('@/views/intrusion-managerment/statistics'),
+        component: () => import('@/views/intrusion-management/statistics'),
         name: 'Statistics',
         meta: {
           noCache: false,
@@ -337,20 +337,20 @@ export const asyncRoutes = [
     ]
   },
   {
-    path: '/system-managerment',
+    path: '/system-management',
     component: Layout,
-    redirect: '/system-managerment/user-list',
+    redirect: '/system-management/user-list',
     alwaysShow: true, // will always show the root menu
-    name: 'SystemManagerment',
+    name: 'SystemManagement',
     meta: {
-      title: 'system_managerment',
+      title: 'system_management',
       icon: 'setting',
       roles: ['admin', 'superadmin'] // you can set roles in root nav
     },
     children: [
       {
         path: 'user-list',
-        component: () => import('@/views/system-managerment/user-list'),
+        component: () => import('@/views/system-management/user-list'),
         name: 'UserList',
         meta: {
           title: 'user_list',
@@ -360,7 +360,7 @@ export const asyncRoutes = [
       },
       {
         path: 'user/:id/roles',
-        component: () => import('@/views/system-managerment/role-of-user'),
+        component: () => import('@/views/system-management/role-of-user'),
         name: 'RoleOfUser',
         hidden: true,
         meta: {
@@ -371,7 +371,7 @@ export const asyncRoutes = [
       },
       {
         path: 'role',
-        component: () => import('@/views/system-managerment/role-list'),
+        component: () => import('@/views/system-management/role-list'),
         name: 'RoleList',
         meta: {
           title: 'role_list',
@@ -381,7 +381,7 @@ export const asyncRoutes = [
       },
       {
         path: 'role/:id/users',
-        component: () => import('@/views/system-managerment/users-of-role'),
+        component: () => import('@/views/system-management/users-of-role'),
         name: 'UsersOfRole',
         hidden: true,
         meta: {
@@ -392,18 +392,18 @@ export const asyncRoutes = [
       },
       {
         path: 'role/:id/permissions',
-        component: () => import('@/views/permission-managerment/index'),
+        component: () => import('@/views/permission-management/index'),
         name: 'PermissionOfRole',
         hidden: true,
         meta: {
-          title: 'permission_managerment',
+          title: 'permission_management',
           icon: 'permissions',
           roles: ['superadmin']
         }
       },
       // {
       //   path: 'organisation-list',
-      //   component: () => import('@/views/system-managerment/organisation-list'),
+      //   component: () => import('@/views/system-management/organisation-list'),
       //   name: 'OrganisationList',
       //   meta: {
       //     title: 'organisation_list',
@@ -413,7 +413,7 @@ export const asyncRoutes = [
       // },
       // {
       //   path: 'siem',
-      //   component: () => import('@/views/system-managerment/siem'),
+      //   component: () => import('@/views/system-management/siem'),
       //   name: 'SiemInterconnection',
       //   meta: {
       //     title: 'siem',
@@ -423,7 +423,7 @@ export const asyncRoutes = [
       // },
       {
         path: 'settings',
-        component: () => import('@/views/system-managerment/settings'),
+        component: () => import('@/views/system-management/settings'),
         name: 'Settings',
         meta: {
           title: 'settings',
@@ -433,7 +433,7 @@ export const asyncRoutes = [
       },
       {
         path: 'monitor',
-        component: () => import('@/views/system-managerment/monitor'),
+        component: () => import('@/views/system-management/monitor'),
         name: 'Monitor',
         meta: {
           title: 'monitor',
@@ -444,18 +444,18 @@ export const asyncRoutes = [
     ]
   },
   // {
-  //   path: '/permission-managerment',
+  //   path: '/permission-management',
   //   component: Layout,
-  //   redirect: '/permission-managerment/:id',
+  //   redirect: '/permission-management/:id',
   //   name: 'Permission',
   //   hidden: true,
   //   children: [
   //     {
   //       path: ':id',
-  //       component: () => import('@/views/permission-managerment/index'),
+  //       component: () => import('@/views/permission-management/index'),
   //       name: 'PermissionOfRole',
   //       meta: {
-  //         title: 'permission_managerment',
+  //         title: 'permission_management',
   //         icon: 'permissions',
   //         roles: ['admin', 'superadmin']
   //       }

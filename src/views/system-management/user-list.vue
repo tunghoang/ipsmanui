@@ -1,19 +1,11 @@
 <template>
-  <div class="app-container user-managerment">
+  <div class="app-container user-management">
     <div class="filter-container">
-      <el-autocomplete
-                v-model="engineTypeSelect"
-                class="filter-item"
-                value="name"
-                clearable
-                @select="handleAutocomplete"
-                :fetch-suggestions="querySearchAsync"
-                @keyup.enter.native="handleAutocomplete"
-                :placeholder="$t('table.engine_type')">
-        <template slot-scope="{ item }">
-          <span class="value">{{ item.name }}</span>
-        </template>
-      </el-autocomplete>
+      <el-input style="width: 200px;"
+                v-model="params.key"
+                :placeholder="$t('table.key')"
+                class="filter-item" 
+                @keyup.enter.native="handleRefreshTable" />
       <el-button v-waves class="filter-item ml-1" type="primary" icon="el-icon-search" @click="handleRefreshTable">
         {{ $t('table.search') }}
       </el-button>
@@ -34,23 +26,21 @@
       style="width: 100%;"
       @sort-change="sortChange"
     >
-      <el-table-column :label="$t('table.id')" prop="idEngine" sortable align="center" width="100px">
+      <el-table-column :label="$t('table.id')" prop="idUser" sortable align="center" width="100px">
         <template slot-scope="scope">
-          <span>{{ scope.row.idEngine }}</span>
+          <span>{{ scope.row.idUser }}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('table.idEnginetype')" sortable prop="idEnginetype" align="center">
+      <el-table-column :label="$t('table.username')" sortable prop="username" align="center">
         <template slot-scope="scope">
-          <span class="link-type" @click="handleUpdate(scope.row)">{{ scope.row.idEnginetype }}</span>
+          <span class="link-type" @click="handleUpdate(scope.row)">{{ scope.row.username }}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('table.specs')" sortable prop="specs" align="center">
-        <template slot-scope="scope">
-          <span class="link-type" @click="handleUpdate(scope.row)">{{ scope.row.specs }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column :label="$t('table.actions')" fixed="right" align="center" width="150" class-name="small-padding fixed-width">
+      <el-table-column :label="$t('table.actions')" fixed="right" align="center" width="270" class-name="small-padding fixed-width">
         <template slot-scope="{row}">
+          <el-button type="primary" size="mini" class="w-auto" @click.native="$router.push({ name: 'RoleOfUser', params: { id: row.idUser } })">
+            {{ $t('table.edit_role') }}
+          </el-button>
           <el-button type="primary" size="mini" @click="handleUpdate(row)">
             {{ $t('table.edit') }}
           </el-button>
@@ -64,44 +54,35 @@
     <pagination v-show="total>0" :total="total" :page.sync="params.page" :limit.sync="params.limit" @pagination="getList" />
 
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" @close="resetError()">
-      <el-form ref="dataFormSingle" :model="temp" label-position="left" label-width="120px" style="width: 100%">
-        <el-form-item :label="$t('table.name')" prop="idEnginetype">
-          <el-select
-                v-model="temp.idEnginetype"
-                class="filter-item"
-                placeholder="Please select"
-                name="enginetype"
-                @focus="resetError"
-                :class="{ error: errors.has('enginetype') }"
-                data-vv-validate-on="none"
-                v-validate="'required'">
-            <el-option v-for="item in engineTypes" :key="item.idEnginetype" :label="item.name" :value="item.idEnginetype" />
-          </el-select>
-          <div class="el-form-item__error" v-if="errors.has('enginetype')">
-            {{ errors.first('enginetype') }}
-          </div>
-        </el-form-item>
-        <el-form-item :label="`${$t('table.specs')}(JSON)`" props="specs">
-          <json-editor
-            ref="jsonEditor"
-            v-model="temp.specs"
-            tabindex="1"
-            @focus="resetError"
-            name="specs"
-            :placeholder="$t('table.specs')"
-            :class="{ error: errors.has('specs') }"
-            data-vv-validate-on="none"
-            v-validate="'required|min:4|max:255'" />
-<!--           <el-input v-model="temp.specs"
+      <el-form ref="dataFormSingle" :model="temp" label-position="left" label-width="100px" style="width: 100%">
+        <el-form-item :label="$t('table.username')" prop="username">
+          <el-input v-model="temp.username"
                     tabindex="1"
                     @focus="resetError"
-                    name="specs"
-                    :placeholder="$t('table.specs')"
-                    :class="{ error: errors.has('specs') }"
+                    name="username"
+                    :placeholder="$t('table.username')"
+                    :class="{ error: errors.has('username') }"
                     data-vv-validate-on="none"
-                    v-validate="'required|min:4|max:255'" /> -->
-          <div class="el-form-item__error" v-if="errors.has('specs')">
-            {{ errors.first('specs') }}
+                    v-validate="'required|min:2|max:255'"  />
+          <div class="el-form-item__error" v-if="errors.has('username')">
+            {{ errors.first('username') }}
+          </div>
+        </el-form-item>
+        <el-form-item :label="$t('table.change_password')" v-if="dialogStatus !== 'create'">
+          <el-switch v-model="changePassword" />
+        </el-form-item>
+        <el-form-item :label="$t('table.password')" v-if="dialogStatus === 'create' || changePassword">
+          <el-input v-model="temp.password"
+                    tabindex="1"
+                    show-password
+                    @focus="resetError"
+                    name="password"
+                    :placeholder="$t('table.password')"
+                    :class="{ error: errors.has('password') }"
+                    data-vv-validate-on="none"
+                    v-validate="'required|min:4|max:255'" />
+          <div class="el-form-item__error" v-if="errors.has('password')">
+            {{ errors.first('password') }}
           </div>
         </el-form-item>
       </el-form>
@@ -118,7 +99,6 @@
 </template>
 
 <script>
-import JsonEditor from '@/components/JsonEditor'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
@@ -127,8 +107,8 @@ import { Message } from 'element-ui'
 import RemoveErrorsMixin from 'common/RemoveErrorsMixin'
 
 export default {
-  name: 'EngineList',
-  components: { Pagination, JsonEditor },
+  name: 'UserList',
+  components: { Pagination },
   directives: { waves },
   mixins: [RemoveErrorsMixin],
   data() {
@@ -141,42 +121,35 @@ export default {
         page: 1,
         limit: 20,
         key: undefined,
-        idEnginetype: undefined,
+        status: undefined,
         sort: 'updated_at',
         order: 'desc'
       },
+      changePassword: false,
       temp: {
-        idEngine: undefined,
-        idEnginetype: '',
-        name: '',
-        specs: {}
+        idUser: undefined,
+        username: '',
+        password: ''
       },
       dialogFormVisible: false,
       dialogStatus: '',
       textMap: {
         update: this.$t('table.edit'),
-        create: this.$t('table.create')
+        create: this.$t('table.create'),
+        upload: this.$t('upload.title')
       },
-      engineTypes: [],
-      engineTypeSelect: '',
       fileList: [],
       isSubmitting: false
     }
   },
-  async mounted() {
-    await this.loadEngineTypes()
+  mounted() {
+    this.getList()
   },
   methods: {
     getList() {
-      rf.getRequest('EngineRequest').getList(this.params)
+      rf.getRequest('UserRequest').getList(this.params)
       .then(async response => {
-        this.list = window._.map(response, res => {
-          return {
-            idEngine: res.idEngine,
-            idEnginetype: res.idEnginetype,
-            specs: JSON.parse(res.specs)
-          }
-        })
+        this.list = response
         this.total = response.length
       })
       .catch(error => {
@@ -184,45 +157,6 @@ export default {
         Message.error(this.$t(this.errors.first('error')) || this.$t('auth.unknowError'))
       })
       .finally(() => this.listLoading = false)
-    },
-    loadEngineTypes() {
-      let params = {}
-      rf.getRequest('EngineTypeRequest').getList(params)
-      .then(async response => {
-        await this.getList()
-        this.engineTypes = window._.map(response, engineType => {
-          return {
-            idEnginetype: engineType.idEnginetype,
-            name: engineType.name,
-            value: engineType.name,
-            description: engineType.description
-          }
-        })
-        this.options = window._.cloneDeep(response)
-      })
-      .catch(error => {
-        this.errors.add({field: 'error', msg: error.response.data.message});
-        Message.error(this.$t(this.errors.first('error')) || this.$t('auth.unknowError'))
-      });
-    },
-    querySearchAsync(queryString, cb) {
-      var roles = this.engineTypes;
-      var results = queryString ? roles.filter(this.createFilter(queryString)) : roles;
-
-      clearTimeout(this.timeout);
-      this.timeout = setTimeout(() => {
-        cb(results);
-      }, 1000 * Math.random());
-    },
-    createFilter(queryString) {
-      return (link) => {
-        return (link.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0);
-      };
-    },
-    handleAutocomplete (value) {
-      console.log(value)
-      this.params.idEnginetype = value.idEnginetype
-      this.handleRefreshTable()
     },
     handleRefreshTable() {
       this.listLoading = true
@@ -274,12 +208,12 @@ export default {
       if (this.isSubmitting) {
         return;
       }
-      await this.$validator.validate('enginetype');
-      await this.$validator.validate('specs');
+      await this.$validator.validate('username');
+      await this.$validator.validate('password');
       if (this.errors.any()) {
         return;
       }
-      rf.getRequest('EngineRequest').create(this.temp)
+      rf.getRequest('UserRequest').create(this.temp)
       .then(() => {
         this.dialogFormVisible = false
         this.$notify({
@@ -296,16 +230,26 @@ export default {
       })
 
     },
+    handleRemove(file, fileList) {
+      console.log(file, fileList);
+    },
+    handlePreview(file) {
+      console.log(file);
+    },
+    beforeRemove(file) {
+      return this.$confirm(`Cancel the transfert of ${ file.name } ?`);
+    },
     resetTemp() {
       this.temp = {
-        idEngine: undefined,
-        idEnginetype: '',
-        specs: {}
+        idUser: undefined,
+        username: '',
+        password: ''
       }
     },
     handleUpdate(row) {
       row = {
-        ...row
+        ...row,
+        password: ''
       }
       this.temp = Object.assign({}, row) // copy obj
       this.dialogStatus = 'update'
@@ -316,13 +260,16 @@ export default {
       if (this.isSubmitting) {
         return;
       }
-      await this.$validator.validate('enginetype');
-      await this.$validator.validate('specs');
+      await this.$validator.validate('username');
+      await this.$validator.validate('password');
       if (this.errors.any()) {
         return;
       }
       let params = window._.cloneDeep(this.temp)
-      rf.getRequest('EngineRequest').update(params.idEngine, params)
+      if(!this.changePassword) {
+        delete params.password
+      }
+      rf.getRequest('UserRequest').update(params.idUser, params)
       .then(() => {
         this.dialogFormVisible = false
         this.$notify({
@@ -337,14 +284,10 @@ export default {
     },
     handleDownload() {
       this.isSubmitting = true
-      rf.getRequest('EngineRequest').export(this.params)
+      rf.getRequest('UserRequest').export(this.params)
       .then(async response => {
         let dataExport = []
-        response.map((item, index) => {
-          item.no = index + 1;
-          item.specs = JSON.stringify(JSON.parse(item.specs));
-          dataExport.push(item)
-        })
+        response.map((item, index) => {item.no = index + 1 ; dataExport.push(item)})
         this.handleExport(dataExport);
       })
       .catch(error => {
@@ -360,15 +303,14 @@ export default {
       });
     },
     handleExport(dataExport) {
-      console.log(dataExport)
       import('@/vendor/Export2Excel').then(excel => {
-        const tHeader = [this.$t('no'), this.$t('table.id'), this.$t('table.specs')]
-        const filterVal = ['no', 'idEngine', 'specs']
+        const tHeader = [this.$t('no'), this.$t('table.id'), this.$t('table.username')]
+        const filterVal = ['no', 'idUser', 'username']
         const data = this.formatJson(filterVal, dataExport)
         excel.export_json_to_excel({
           header: tHeader,
           data,
-          filename: `${this.$t('route.engine_list')}`
+          filename: `${this.$t('route.user_list')}`
         })
         this.isSubmitting = false
       })
@@ -399,7 +341,7 @@ export default {
         type: 'warning',
         center: true
       }).then(() => {
-        rf.getRequest('EngineRequest').delete(row.idEngine)
+        rf.getRequest('UserRequest').delete(row.idUser)
           .then(() => {
             this.$message({
               type: 'success',

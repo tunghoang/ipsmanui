@@ -1,21 +1,10 @@
 <template>
-  <div class="app-container node-managerment">
+  <div class="app-container node-management">
     <el-row :gutter="10">
       <el-col :sm="24" :md="6">
         <el-card shadow="always">
           <el-form ref="form" :model="treeConfig" label-width="100px">
-            <el-form-item :label="$t('node.tree_type')" prop="type">
-              <el-select v-model="treeConfig.type" placeholder="Select Tree type">
-                <el-option
-                  label="tree"
-                  value="tree">
-                </el-option>
-                <el-option
-                  label="cluster"
-                  value="cluster">
-                </el-option>
-              </el-select>
-            </el-form-item>
+            
             <el-form-item :label="$t('node.layout_type')" prop="layoutType">
               <el-select v-model="treeConfig.layoutType" placeholder="Select Layout type">
                 <el-option
@@ -215,7 +204,7 @@ import { statusDeduce } from '../../utils'
 import RemoveErrorsMixin from 'common/RemoveErrorsMixin'
 
 export default {
-  name: 'NodeManagerment',
+  name: 'NodeManagement',
 
   components: {
     tree,

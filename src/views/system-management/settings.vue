@@ -1,5 +1,5 @@
 <template>
-  <div class="app-container settings-managerment">
+  <div class="app-container settings-management">
     N/A
   </div>
 </template>

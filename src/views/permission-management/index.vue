@@ -1,5 +1,5 @@
 <template>
-  <div class="app-container role-managerment">
+  <div class="app-container role-management">
     <div class="filter-container">
       <el-button style="float: right;" class="filter-item float-right" type="primary" icon="el-icon-plus" @click="handleCreateSingle">
         {{ $t('table.add') }}

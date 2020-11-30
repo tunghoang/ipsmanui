@@ -1,5 +1,5 @@
 <template>
-  <div class="app-container siem-managerment">
+  <div class="app-container siem-management">
     N/A
   </div>
 </template>

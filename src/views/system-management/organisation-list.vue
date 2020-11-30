@@ -1,5 +1,5 @@
 <template>
-  <div class="app-container organisation-managerment">
+  <div class="app-container organisation-management">
     N/A
   </div>
 </template>

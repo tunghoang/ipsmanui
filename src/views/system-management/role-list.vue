@@ -1,5 +1,5 @@
 <template>
-  <div class="app-container user-managerment">
+  <div class="app-container role-management">
     <div class="filter-container">
       <el-input style="width: 200px;"
                 v-model="params.key"
@@ -26,29 +26,39 @@
       style="width: 100%;"
       @sort-change="sortChange"
     >
-      <el-table-column :label="$t('table.id')" prop="idEnginetype" sortable align="center" width="100px">
+      <el-table-column :label="$t('table.id')" prop="idRole" sortable align="center" width="100px">
         <template slot-scope="scope">
-          <span>{{ scope.row.idEnginetype }}</span>
+          <span>{{ scope.row.idRole }}</span>
         </template>
       </el-table-column>
       <el-table-column :label="$t('table.name')" sortable prop="name" align="center">
-        <template slot-scope="scope">
-          <span class="link-type" @click="handleUpdate(scope.row)">{{ scope.row.name }}</span>
+        <template slot-scope="{row}">
+          <span class="link-type">{{ row.name }}</span>
         </template>
       </el-table-column>
       <el-table-column :label="$t('table.description')" sortable prop="description" align="center">
         <template slot-scope="scope">
-          <span class="link-type" @click="handleUpdate(scope.row)">{{ scope.row.description }}</span>
+          <span class="el-link--info" @click="handleUpdate(scope.row)">{{ scope.row.description }}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('table.actions')" fixed="right" align="center" width="150" class-name="small-padding fixed-width">
+      <el-table-column :label="$t('table.actions')" fixed="right" align="center" width="200" class-name="small-padding fixed-width">
         <template slot-scope="{row}">
-          <el-button type="primary" size="mini" @click="handleUpdate(row)">
-            {{ $t('table.edit') }}
-          </el-button>
-          <el-button type="danger" size="mini" @click="handleDelete(row)">
-            {{ $t('table.delete') }}
-          </el-button>
+          <div class="d-flex">
+            <el-button type="primary" size="mini" class="w-auto" @click="$router.push({ name: 'UsersOfRole', params: { id: row.idRole } })">
+              {{ $t('table.all_user') }}
+            </el-button>
+            <el-button type="primary" size="mini" class="w-auto" @click.native="$router.push({ name: 'PermissionOfRole', params: { id: row.idRole } })">
+              {{ $t('table.edit_permission') }}
+            </el-button>
+          </div>
+          <div class="d-flex mt-1">
+            <el-button type="primary" size="mini" @click="handleUpdate(row)">
+              {{ $t('table.edit') }}
+            </el-button>
+            <el-button type="danger" size="mini" @click="handleDelete(row)">
+              {{ $t('table.delete') }}
+            </el-button>
+          </div>
         </template>
       </el-table-column> 
     </el-table>
@@ -105,7 +115,7 @@ import { Message } from 'element-ui'
 import RemoveErrorsMixin from 'common/RemoveErrorsMixin'
 
 export default {
-  name: 'EngineList',
+  name: 'UserList',
   components: { Pagination },
   directives: { waves },
   mixins: [RemoveErrorsMixin],
@@ -124,7 +134,7 @@ export default {
         order: 'desc'
       },
       temp: {
-        idEnginetype: undefined,
+        idRole: undefined,
         name: '',
         description: ''
       },
@@ -144,7 +154,7 @@ export default {
   },
   methods: {
     getList() {
-      rf.getRequest('EngineTypeRequest').getList(this.params)
+      rf.getRequest('RoleRequest').getList(this.params)
       .then(async response => {
         this.list = response
         this.total = response.length
@@ -210,7 +220,7 @@ export default {
       if (this.errors.any()) {
         return;
       }
-      rf.getRequest('EngineTypeRequest').create(this.temp)
+      rf.getRequest('RoleRequest').create(this.temp)
       .then(() => {
         this.dialogFormVisible = false
         this.$notify({
@@ -238,7 +248,7 @@ export default {
     },
     resetTemp() {
       this.temp = {
-        idEnginetype: undefined,
+        idRole: undefined,
         name: '',
         description: ''
       }
@@ -262,7 +272,7 @@ export default {
         return;
       }
       let params = window._.cloneDeep(this.temp)
-      rf.getRequest('EngineTypeRequest').update(params.idEnginetype, params)
+      rf.getRequest('RoleRequest').update(params.idRole, params)
       .then(() => {
         this.dialogFormVisible = false
         this.$notify({
@@ -277,7 +287,7 @@ export default {
     },
     handleDownload() {
       this.isSubmitting = true
-      rf.getRequest('EngineTypeRequest').export(this.params)
+      rf.getRequest('RoleRequest').export(this.params)
       .then(async response => {
         let dataExport = []
         response.map((item, index) => {item.no = index + 1 ; dataExport.push(item)})
@@ -298,12 +308,12 @@ export default {
     handleExport(dataExport) {
       import('@/vendor/Export2Excel').then(excel => {
         const tHeader = [this.$t('no'), this.$t('table.id'), this.$t('table.name'), this.$t('table.description')]
-        const filterVal = ['no', 'idEnginetype', 'name', 'description']
+        const filterVal = ['no', 'idRole', 'name', 'description']
         const data = this.formatJson(filterVal, dataExport)
         excel.export_json_to_excel({
           header: tHeader,
           data,
-          filename: `${this.$t('route.engine_type_list')}`
+          filename: `${this.$t('route.role_list')}`
         })
         this.isSubmitting = false
       })
@@ -334,7 +344,7 @@ export default {
         type: 'warning',
         center: true
       }).then(() => {
-        rf.getRequest('EngineTypeRequest').delete(row.idEnginetype)
+        rf.getRequest('RoleRequest').delete(row.idRole)
           .then(() => {
             this.$message({
               type: 'success',
