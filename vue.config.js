@@ -31,7 +31,7 @@ module.exports = {
     disableHostCheck: true,
     injectClient: false,
     compress: true,
-    port: 10099,
+    port: 15580,
     // proxy: 'https://ipsmanagerapi.uetis.com/',
     proxy: {
       '/users': backend,

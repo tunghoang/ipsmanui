@@ -191,6 +191,16 @@ export const asyncRoutes = [
         }
       },
       {
+        path: 'engine',
+        component: () => import('@/views/node-management/engine-list'),
+        name: 'EngineList',
+        meta: {
+          title: 'engine_list',
+          icon: 'server',
+          roles: ['admin', 'superadmin'] // or you can only set roles in sub nav
+        }
+      },
+      {
         path: 'engine-type',
         component: () => import('@/views/node-management/engine-type-list'),
         name: 'EngineTypeList',
@@ -200,16 +210,7 @@ export const asyncRoutes = [
           roles: ['admin', 'superadmin'] // or you can only set roles in sub nav
         }
       },
-      {
-        path: 'engine',
-        component: () => import('@/views/node-management/engine-list'),
-        name: 'EngineList',
-        meta: {
-          title: 'engine_list',
-          icon: 'server',
-          roles: ['admin', 'superadmin'] // or you can only set roles in sub nav
-        }
-      }
+      
     ]
   },
   {
