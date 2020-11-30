@@ -7,7 +7,6 @@ export const login = async () => {
     data: { username: 'admin', password: '123456' }
   })
   .then(res => {
-    console.log(res)
     localStorage.setItem("token", `Bearer ${res.data.token}`);
     localStorage.setItem("expireToken", res.data.expire);
   })

@@ -1,7 +1,7 @@
 <template>
   <div class="app-container node-management">
     <el-row :gutter="10">
-      <el-col :sm="24" :md="6">
+<!--       <el-col :sm="24" :md="6">
         <el-card shadow="always">
           <el-form ref="form" :model="treeConfig" label-width="100px">
             
@@ -54,8 +54,8 @@
             </el-form-item>
           </el-form>
         </el-card>
-      </el-col>
-      <el-col :sm="24" :md="18">
+      </el-col> -->
+      <el-col :sm="24" :md="24">
         <el-card shadow="always" v-loading="isLoading">
           <tree ref="tree"
             v-model="treeConfig.currentData"

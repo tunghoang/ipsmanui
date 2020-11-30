@@ -67,6 +67,10 @@ export default {
     }
   },
   created () {
+    if(!window._.isEmpty(localStorage.getItem('token'))) {
+      this.getList()
+      return
+    }
     login()
     .then(() => {
       this.getList()

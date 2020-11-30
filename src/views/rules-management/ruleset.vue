@@ -139,10 +139,14 @@ export default {
     }
   },
   created () {
-    login()
-    .then(() => {
+    if(!window._.isEmpty(localStorage.getItem('token'))) {
       this.getList()
-    })
+      return
+    }
+    login()
+      .then(() => {
+        this.getList()
+      })
   },
   watch: {
     'params.page'() {

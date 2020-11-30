@@ -38,6 +38,9 @@ import App from './App.vue';
 import './validation';
 import './utils/error-log'
 
+import { BForm } from 'bootstrap-vue'
+Vue.component('b-form', BForm)
+
 
 window._ = require('lodash');
 

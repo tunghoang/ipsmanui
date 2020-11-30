@@ -184,6 +184,7 @@
 
 <script>
 import { getUptime, formatBytes } from '@/utils'
+import { login } from '@/request/ips/login'
 import { cpuInfo, memStat, diskStat, hostStat, getInterfaces } from '@/request/ips/IpsManagerRequest'
 import CPUPecent from '@/components/CPUPercent'
 
@@ -202,7 +203,6 @@ export default {
       cpuInfo: null,
       errorMessage: this.$t("base.loading"),
       //interfaces
-      fields: [],
       bordered: true,
       outlined: true,
       noCollapse: true,
@@ -215,32 +215,16 @@ export default {
     }
   },
   created() {
-      this.fields = this.getFields();
-      this.getData();
+      if(!window._.isEmpty(localStorage.getItem('token'))) {
+        this.getData()
+        return
+      }
+      login()
+        .then(() => {
+          this.getData()
+        })
   },
   methods: {
-    getFields() {
-      return [
-        {
-          key: "name",
-          label: this.$t("monitor.name"),
-          sortable: false,
-          thStyle: {"text-align": "center"}
-        },
-        {
-          key: "hardwareAddress",
-          label: this.$t("monitor.hardwareAddress"),
-          sortable: false,
-          thStyle: {"text-align": "center", width: "30%"}
-        },
-        {
-          key: "address",
-          label: this.$t("monitor.address"),
-          sortable: false,
-          thStyle: {"text-align": "center", width: "30%"}
-        }
-      ];
-    },
     getData() {
       Promise.all([
           getInterfaces(),
