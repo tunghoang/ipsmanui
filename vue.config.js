@@ -32,6 +32,7 @@ module.exports = {
     injectClient: false,
     compress: true,
     port: 15580,
+    host: "112.137.129.225",
     // proxy: 'https://ipsmanagerapi.uetis.com/',
     proxy: {
       '/users': backend,
