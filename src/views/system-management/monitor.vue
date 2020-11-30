@@ -19,7 +19,7 @@
       </el-card>
       <el-card class="mt-2">
         <h3>{{ $t("monitor.cpuStat") }}</h3>
-        <template v-show="false">
+        <el-row v-show="false">
           <el-col :span="8" :sm="8" :md="4">
             {{ $t("monitor.name") }}:
           </el-col>
@@ -44,7 +44,7 @@
           <el-col :span="16" :sm="16" :md="8" class="info">
             {{ cpuInfo.cacheSize }}
           </el-col>
-        </template>
+        </el-row>
         <CPUPecent></CPUPecent>
       </el-card>
       <el-card class="mt-2">

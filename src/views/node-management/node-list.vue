@@ -103,7 +103,7 @@
         </el-card>
       </el-col>
     </el-row>
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" @close="resetError()">
+    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" @close="resetTemp()">
       <el-form ref="dataFormSingle" :model="temp" label-position="left" label-width="100px" style="width: 100%">
         <el-form-item :label="$t('table.engine')" prop="idEngine">
           <el-select
@@ -162,21 +162,57 @@
     <el-dialog
       :title="objectCanView.name"
       :visible.sync="dialogVisible"
-      :before-close="handleClose"
-      width="500px">
-      <p>Status: {{ objectCanView.enabled ? (objectCanView.online ? 'online' : 'offline') : 'disabled' }}</p>
-      <p class="pt-1">
-        <span>Online: {{ objectCanView.online ? 'online' : 'offline' }}</span>
-        <el-button :loading="onlineLoading" size="mini" class="r" :type="objectCanView.online ? 'primary' : 'info'" @click="changeOnline">{{ objectCanView.online ? 'offline' : 'online' }}</el-button>
-      </p>
-      <p class="pt-1">
-        <span>Enabled: {{ objectCanView.enabled ? 'enabled' : 'disabled' }}</span>
-        <el-button size="mini" class="r" :type="objectCanView.enabled ? 'primary' : 'info'" @click="changeLock">{{ objectCanView.enabled ? 'disabled' : 'enabled'  }}</el-button>
-      </p>
+      @close="resetTemp()"
+      :before-close="handleClose">
+<!--       <el-form ref="editObject" :model="objectCanView" label-position="left" label-width="100px" style="width: 100%">
+        <el-form-item :label="$t('table.name')" props="name">
+          <el-input v-model="objectCanView.name"
+              tabindex="1"
+              @focus="resetError"
+              name="object_name"
+              :placeholder="$t('table.object_name')"
+              :class="{ error: errors.has('object_name') }"
+              data-vv-validate-on="none"
+              v-validate="'required|min:4|max:255'" />
+          <div class="el-form-item__error" v-if="errors.has('object_name')">
+            {{ errors.first('object_name') }}
+          </div>
+        </el-form-item>
+        <el-form-item :label="$t('table.description')" props="description">
+          <el-input v-model="objectCanView.description"
+              tabindex="1"
+              @focus="resetError"
+              name="object_description"
+              :placeholder="$t('table.object_description')"
+              :class="{ error: errors.has('object_description') }"
+              data-vv-validate-on="none"
+              v-validate="'required|min:4|max:255'" />
+          <div class="el-form-item__error" v-if="errors.has('object_description')">
+            {{ errors.first('object_description') }}
+          </div>
+        </el-form-item>
+        <el-button type="primary" @click="updateObject">
+          {{ $t('table.update') }}
+        </el-button>
+        <el-button type="primary" @click="$refs.editObject.resetFields()">
+          {{ $t('table.cancel') }}
+        </el-button>
+      </el-form> -->
       <template v-if="objectCanView.idEngine">
+        <p>Status: {{ objectCanView.enabled ? (objectCanView.online ? 'online' : 'offline') : 'disabled' }}</p>
+        <p class="pt-1">
+          <span>Online: {{ objectCanView.online ? 'online' : 'offline' }}</span>
+          <el-button :loading="onlineLoading" size="mini" class="r" :type="objectCanView.online ? 'primary' : 'info'" @click="changeOnline">{{ objectCanView.online ? 'offline' : 'online' }}</el-button>
+        </p>
+        <p class="pt-1">
+          <span>Enabled: {{ objectCanView.enabled ? 'enabled' : 'disabled' }}</span>
+          <el-button size="mini" class="r" :type="objectCanView.enabled ? 'primary' : 'info'" @click="changeLock">{{ objectCanView.enabled ? 'disabled' : 'enabled'  }}</el-button>
+        </p>
         <p>Endpoint: {{ objectCanView.specs.endpoint || null }}</p>
         <p>Username: {{ objectCanView.specs.username || null }}</p>
+        <p>Type: {{ objectCanView.specs.type || null }}</p>
       </template>
+      <p v-else>Status: {{ objectCanView.status }}</p>
       <el-button>Monitor</el-button>
       <el-button>Alert</el-button>
     </el-dialog>
@@ -275,15 +311,24 @@ export default {
       rf.getRequest('ContainmentRelRequest').getList(this.params)
       .then(res => {
         forEach(res, async (object) => {
+          let status = 'unknow';
+          let statusResponse = {}
+          if (object.idEngine) {
+            statusResponse = await rf.getRequest('ContainmentRelRequest').checkHostStatus(object.idObject);
+            status = statusDeduce(statusResponse);
+          }
           const newData = {
             idContainer: object.idObject,
             children: [],
             name: object.name || object.idContainee,
-            status: 'unknow',
+            description: object.description,
+            status,
+            online: statusResponse.online,
+            enabled: statusResponse.enabled,
             idEngine: object.idEngine,
-            specs: await this.getDetailEngine(object.idEngine),
-            load: false
-          }
+            specs: this.hasEngine(object) && await this.getDetailEngine(object.idEngine),
+            load: this.hasEngine(object)
+            }
           await this.tree.children.push(newData)
         })
       })
@@ -340,6 +385,7 @@ export default {
           idContainer: object.idObject,
           children: [],
           name: object.name || object.idContainee,
+          description: object.description,
           status,
           online: statusResponse.online,
           enabled: statusResponse.enabled,
@@ -400,6 +446,7 @@ export default {
     handleClose() {
       this.objectCanView = {}
       this.dialogVisible = false
+      this.resetTemp()
     },
     async createData() {
       this.resetError();
@@ -419,6 +466,7 @@ export default {
           idContainer: object.idObject,
           children: [],
           name: object.name || object.idContainee,
+          description: object.description,
           status: 'unknow',
           idEngine: object.idEngine,
           specs: this.hasEngine(object) && await this.getDetailEngine(object.idEngine),
@@ -520,27 +568,34 @@ export default {
         }, 500)
       })
     },
-    fakeSpecs () {
-      return new Promise((resolver) => {
-        setTimeout(() => {
-          resolver({
-            endpoint: 'google.com',
-            username: Math.random().toString(36).substring(8),
-            password: Math.random().toString(36).substring(8)
-          })
-        }, 500)
-      })
-    },
     async getDetailEngine (id) {
       if(id === null) return {}
       let { specs } = await rf.getRequest('EngineRequest').detail(id)
-      specs = JSON.parse(specs.replaceAll('\'', '"'))
-      const specsFake = await this.fakeSpecs()
-      specs = {
-        ...specs,
-        ...specsFake
-      }
+      specs = JSON.parse(specs)
       return specs
+    },
+    async updateObject () {
+      this.resetError();
+      if (this.isSubmitting) {
+        return;
+      }
+      await this.$validator.validate('object_name');
+      await this.$validator.validate('object_description');
+      if (this.errors.any()) {
+        return;
+      }
+      let params = window._.cloneDeep(this.objectCanView)
+      rf.getRequest('ContainmentRelRequest').update(params.idContainer, { name: params.name, description: params.description })
+      .then(() => {
+        this.dialogFormVisible = false
+        this.$notify({
+          title: this.$t('notify.success.label'),
+          message: this.$t('notify.success.updateSuccess'),
+          type: 'success',
+          duration: 1000,
+          showClose: false
+        })
+      })
     }
   },
 }
