@@ -1,25 +1,63 @@
 <template>
   <section class="app-main">
     <transition name="fade-transform" mode="out-in">
-      <keep-alive :include="cachedViews">
-        <router-view :key="key" />
-      </keep-alive>
+      <div>
+        <keep-alive :include="cachedViews">
+          <router-view :key="key" />
+        </keep-alive>
+        <Intrusion v-show="checkShow(1)" />
+        <Alarm v-show="checkShow(2)" />
+        <Anomalies v-show="checkShow(3)" />
+        <Search v-show="checkShow(4)" />
+        <Statistics v-show="checkShow(5)" />
+      </div>
     </transition>
   </section>
 </template>
 
 <script>
+import Intrusion from "../../views/intrusion-management/intrusion-monitoring";
+import Alarm from "../../views/intrusion-management/alarm";
+import Anomalies from "../../views/intrusion-management/anomaly-events";
+import Search from "../../views/intrusion-management/search";
+import Statistics from "../../views/intrusion-management/statistics";
+
 export default {
-  name: 'AppMain',
+  name: "AppMain",
+  components: {
+    Intrusion,
+    Alarm,
+    Anomalies,
+    Search,
+    Statistics,
+  },
   computed: {
     cachedViews() {
-      return this.$store.state.tagsView.cachedViews
+      return this.$store.state.tagsView.cachedViews;
     },
     key() {
-      return this.$route.path
-    }
-  }
-}
+      return this.$route.path;
+    },
+  },
+  methods: {
+    checkShow(type) {
+      switch (type) {
+        case 1:
+          return this.$route.path === "/intrusion-management/intrusion";
+        case 2:
+          return this.$route.path === "/intrusion-management/alarm";
+        case 3:
+          return this.$route.path === "/intrusion-management/anomalies";
+        case 4:
+          return this.$route.path === "/intrusion-management/search";
+        case 5:
+          return this.$route.path === "/intrusion-management/statistics";
+        default:
+          return true;
+      }
+    },
+  },
+};
 </script>
 
 <style lang="scss" scoped>
@@ -31,7 +69,7 @@ export default {
   overflow: hidden;
 }
 
-.fixed-header+.app-main {
+.fixed-header + .app-main {
   padding-top: 50px;
 }
 
@@ -41,7 +79,7 @@ export default {
     min-height: calc(100vh - 84px);
   }
 
-  .fixed-header+.app-main {
+  .fixed-header + .app-main {
     padding-top: 84px;
   }
 }

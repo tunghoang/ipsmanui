@@ -271,7 +271,7 @@ export const asyncRoutes = [
     children: [
       {
         path: 'intrusion',
-        component: () => import('@/views/intrusion-management/intrusion-monitoring'),
+        // component: () => import('@/views/intrusion-management/intrusion-monitoring'),
         name: 'IntrusionMonitoring',
         meta: {
           noCache: false,
@@ -282,7 +282,7 @@ export const asyncRoutes = [
       },
       {
         path: 'alarm',
-        component: () => import('@/views/intrusion-management/alarm'),
+        // component: () => import('@/views/intrusion-management/alarm'),
         name: 'Alarm',
         meta: {
           noCache: false,
@@ -293,7 +293,7 @@ export const asyncRoutes = [
       },
       {
         path: 'anomalies',
-        component: () => import('@/views/intrusion-management/anomaly-events'),
+        // component: () => import('@/views/intrusion-management/anomaly-events'),
         name: 'Anomalies',
         meta: {
           noCache: false,
@@ -315,7 +315,7 @@ export const asyncRoutes = [
       },
       {
         path: 'search',
-        component: () => import('@/views/intrusion-management/search'),
+        // component: () => import('@/views/intrusion-management/search'),
         name: 'Search',
         meta: {
           noCache: false,
@@ -326,7 +326,7 @@ export const asyncRoutes = [
       },
       {
         path: 'statistics',
-        component: () => import('@/views/intrusion-management/statistics'),
+        // component: () => import('@/views/intrusion-management/statistics'),
         name: 'Statistics',
         meta: {
           noCache: false,
