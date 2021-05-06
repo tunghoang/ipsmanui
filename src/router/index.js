@@ -258,6 +258,54 @@ export const asyncRoutes = [
     ]
   },
   {
+    path: '/modsecurity',
+    component: Layout,
+    children: [
+      {
+        path: '',
+        // component: () => import('@/views/overviews/modsecurity-overview'),
+        name: 'Modsecurity',
+        meta: {
+          icon: 'shield',
+          title: 'modsecurity',
+          roles: ['admin', 'superadmin']
+        }
+      }
+    ]
+  },
+  {
+    path: '/overview-ecs',
+    component: Layout,
+    children: [
+      {
+        path: '',
+        // component: () => import('@/views/overviews/overview-ECS'),
+        name: 'OverviewECS',
+        meta: {
+          icon: 'host',
+          title: 'overview_ecs',
+          roles: ['admin', 'superadmin']
+        }
+      }
+    ]
+  },
+  {
+    path: '/host-overview-ecs',
+    component: Layout,
+    children: [
+      {
+        path: '',
+        // component: () => import('@/views/overviews/modsecurity-overview'),
+        name: 'HostOverviewECS',
+        meta: {
+          icon: 'host',
+          title: 'host_overview_ecs',
+          roles: ['admin', 'superadmin']
+        }
+      }
+    ]
+  },
+  {
     path: '/intrusion-management',
     component: Layout,
     redirect: '/intrusion-management/intrusion',

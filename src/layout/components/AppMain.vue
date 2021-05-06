@@ -10,6 +10,9 @@
         <Anomalies v-show="checkShow(3)" />
         <Search v-show="checkShow(4)" />
         <Statistics v-show="checkShow(5)" />
+        <HostOverview v-show="checkShow(6)" />
+        <Overview v-show="checkShow(7)" />
+        <ModSecurity v-show="checkShow(8)" />
       </div>
     </transition>
   </section>
@@ -21,6 +24,9 @@ import Alarm from "../../views/intrusion-management/alarm";
 import Anomalies from "../../views/intrusion-management/anomaly-events";
 import Search from "../../views/intrusion-management/search";
 import Statistics from "../../views/intrusion-management/statistics";
+import HostOverview from "../../views/overviews/host-overview-ECS";
+import Overview from "../../views/overviews/overview-ECS";
+import ModSecurity from "../../views/overviews/modsecurity-overview";
 
 export default {
   name: "AppMain",
@@ -30,6 +36,9 @@ export default {
     Anomalies,
     Search,
     Statistics,
+    HostOverview,
+    Overview,
+    ModSecurity
   },
   computed: {
     cachedViews() {
@@ -52,6 +61,12 @@ export default {
           return this.$route.path === "/intrusion-management/search";
         case 5:
           return this.$route.path === "/intrusion-management/statistics";
+        case 6:
+          return this.$route.path === "/host-overview-ecs";
+        case 7:
+          return this.$route.path === "/overview-ecs";
+        case 8:
+          return this.$route.path === "/modsecurity";
         default:
           return true;
       }

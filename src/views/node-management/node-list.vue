@@ -160,61 +160,60 @@
       </div>
     </el-dialog>
     <el-dialog
-      :title="objectCanView.name"
       :visible.sync="dialogVisible"
       @close="resetTemp()"
       :before-close="handleClose">
-<!--       <el-form ref="editObject" :model="objectCanView" label-position="left" label-width="100px" style="width: 100%">
-        <el-form-item :label="$t('table.name')" props="name">
-          <el-input v-model="objectCanView.name"
-              tabindex="1"
-              @focus="resetError"
-              name="object_name"
-              :placeholder="$t('table.object_name')"
-              :class="{ error: errors.has('object_name') }"
-              data-vv-validate-on="none"
-              v-validate="'required|min:4|max:255'" />
-          <div class="el-form-item__error" v-if="errors.has('object_name')">
-            {{ errors.first('object_name') }}
-          </div>
-        </el-form-item>
-        <el-form-item :label="$t('table.description')" props="description">
-          <el-input v-model="objectCanView.description"
-              tabindex="1"
-              @focus="resetError"
-              name="object_description"
-              :placeholder="$t('table.object_description')"
-              :class="{ error: errors.has('object_description') }"
-              data-vv-validate-on="none"
-              v-validate="'required|min:4|max:255'" />
-          <div class="el-form-item__error" v-if="errors.has('object_description')">
-            {{ errors.first('object_description') }}
-          </div>
-        </el-form-item>
-        <el-button type="primary" @click="updateObject">
-          {{ $t('table.update') }}
-        </el-button>
-        <el-button type="primary" @click="$refs.editObject.resetFields()">
-          {{ $t('table.cancel') }}
-        </el-button>
-      </el-form> -->
+      <template #title>
+        <div class="tc">
+          <h2>{{ objectCanView.name }}</h2>
+        </div>
+      </template>
+      <div>
+        <el-button class="r" @click.native="onClickSetupNode" :loading="setupLoading" icon="el-icon-s-tools" size="default">Setup</el-button>
+      </div>
+      <div class="clearfix"></div>
       <template v-if="objectCanView.idEngine">
-        <p>Status: {{ objectCanView.enabled ? (objectCanView.online ? 'online' : 'offline') : 'disabled' }}</p>
+        <p>
+          <strong>Status:</strong>
+          {{ objectCanView.enabled ? (objectCanView.online ? 'online' : 'offline') : 'disabled' }}
+        </p>
         <p class="pt-1">
-          <span>Online: {{ objectCanView.online ? 'online' : 'offline' }}</span>
+          <span>
+            <strong>Online:</strong>
+            {{ objectCanView.online ? 'online' : 'offline' }}
+          </span>
           <el-button :loading="onlineLoading" size="mini" class="r" :type="objectCanView.online ? 'primary' : 'info'" @click="changeOnline">{{ objectCanView.online ? 'offline' : 'online' }}</el-button>
         </p>
         <p class="pt-1">
-          <span>Enabled: {{ objectCanView.enabled ? 'enabled' : 'disabled' }}</span>
+          <span>
+            <strong>Enabled:</strong>
+            {{ objectCanView.enabled ? 'enabled' : 'disabled' }}
+          </span>
           <el-button size="mini" class="r" :type="objectCanView.enabled ? 'primary' : 'info'" @click="changeLock">{{ objectCanView.enabled ? 'disabled' : 'enabled'  }}</el-button>
         </p>
-        <p>Endpoint: {{ objectCanView.specs.endpoint || null }}</p>
-        <p>Username: {{ objectCanView.specs.username || null }}</p>
-        <p>Type: {{ objectCanView.specs.type || null }}</p>
+        <p>
+          <strong>Endpoint:</strong>
+          {{ objectCanView.specs.endpoint || null }}
+        </p>
+        <p>
+          <strong>Type:</strong>
+          {{ objectCanView.specs.type || null }}
+        </p>
       </template>
-      <p v-else>Status: {{ objectCanView.status }}</p>
-      <el-button>Monitor</el-button>
-      <el-button>Alert</el-button>
+      <p v-else>
+        <strong>Status:</strong>
+        {{ objectCanView.status }}
+      </p>
+<!--  <div>
+        <el-button class="r" size="medium">Monitor</el-button>
+      </div>
+      <div class="clearfix"></div>
+ -->
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button @click="dialogVisible = false">Cancel</el-button>
+        </span>
+      </template>
     </el-dialog>
   </div>
 </template>
@@ -288,7 +287,8 @@ export default {
       objectCanAdd: {},
       objectCanView: {},
       dialogVisible: false,
-      onlineLoading: false
+      onlineLoading: false,
+      setupLoading: false
     }
   },
 
@@ -596,58 +596,69 @@ export default {
           showClose: false
         })
       })
+    },
+    async onClickSetupNode () {
+      this.setupLoading = true
+      await new Promise(resolve => setTimeout(resolve, 3000));
+      this.setupLoading = false
     }
-  },
+  }
 }
 </script>
 
 <style lang="scss" scoped>
-  .tree {
-    height: 800px;
-    ::v-deep.nodetree {
-      g.node {
-        cursor: pointer;
-      }
-      circle, svg {
-        &.active {
-          fill: #67c23a;
-          path {
+  ::v-deep.node-management {
+    .tree {
+      height: 800px;
+      .nodetree {
+        g.node {
+          cursor: pointer;
+        }
+        circle, svg {
+          &.active {
             fill: #67c23a;
+            path {
+              fill: #67c23a;
+            }
           }
-        }
-        &.inactive {
-          fill: #8d8d8d;
-          path {
+          &.inactive {
             fill: #8d8d8d;
+            path {
+              fill: #8d8d8d;
+            }
           }
-        }
-        &.unknow {
-          fill: rgb(24, 144, 255);
-          path {
+          &.unknow {
             fill: rgb(24, 144, 255);
+            path {
+              fill: rgb(24, 144, 255);
+            }
+          }
+        }
+        svg.node-icon {
+          overflow: inherit;
+          >g {
+            transform: translate(-24px, -24px);
+          }
+        }
+        circle {
+          visibility: hidden;
+        }
+        &.node--internal {
+          >text {
+            font-weight: bold;
+            transform: rotateZ( -20deg);
+          }
+        }
+        &.selected {
+          >text {
+            fill: #409eff;
           }
         }
       }
-      svg.node-icon {
-        overflow: inherit;
-        >g {
-          transform: translate(-24px, -24px);
-        }
-      }
-      circle {
-        visibility: hidden;
-      }
-      &.node--internal {
-        >text {
-          font-weight: bold;
-          transform: rotateZ( -20deg);
-        }
-      }
-      &.selected {
-        >text {
-          fill: #409eff;
-        }
-      }
+    }
+    .el-dialog__body {
+      padding-top: 0;
+      padding-bottom: 0;
     }
   }
 </style>

@@ -33,7 +33,13 @@
     statistics: 'Statistics',
     anomaly_models: 'Anomaly Models',
     specifics: 'Specifics Data',
-    ruleset: 'Ruleset'
+    ruleset: 'Ruleset',
+    monitoring: 'Monitoring',
+    net_monitoring: 'NetIPS Monitoring',
+    host_monitoring: 'HostIPS Monitoring',
+    host_overview_ecs: 'Host Overview ECS',
+    overview_ecs: 'Overview ECS',
+    modsecurity: 'ModSecurity'
   },
   navbar: {
     dashboard: 'Dashboard',

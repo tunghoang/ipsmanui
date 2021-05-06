@@ -5,7 +5,7 @@ const defaultSettings = require('./src/settings.js')
 // var https = require('https')
 // https.globalAgent.options.rejectUnauthorized = false
 const backend = {
-    target: 'http://112.137.129.214:15580',
+    target: 'http://112.137.129.214:34280',
     // target: 'http://10.10.1.155',
     secure: false,
     changeOrigin: true
