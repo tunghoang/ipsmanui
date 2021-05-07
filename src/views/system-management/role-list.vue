@@ -44,19 +44,13 @@
       <el-table-column :label="$t('table.actions')" fixed="right" align="center" width="200" class-name="small-padding fixed-width">
         <template slot-scope="{row}">
           <div class="d-flex">
-            <el-button type="primary" size="mini" class="w-auto" @click="$router.push({ name: 'UsersOfRole', params: { id: row.idRole } })">
-              {{ $t('table.all_user') }}
+            <el-button type="primary" icon="el-icon-user-solid" size="mini" class="w-auto" @click="$router.push({ name: 'UsersOfRole', params: { id: row.idRole } })" :title="$t('table.all_user')">
             </el-button>
-            <el-button type="primary" size="mini" class="w-auto" @click.native="$router.push({ name: 'PermissionOfRole', params: { id: row.idRole } })">
-              {{ $t('table.edit_permission') }}
+            <el-button type="primary" icon="el-icon-edit-outline" size="mini" class="w-auto" @click.native="$router.push({ name: 'PermissionOfRole', params: { id: row.idRole } })" :title="$t('table.edit_permission')">
             </el-button>
-          </div>
-          <div class="d-flex mt-1">
-            <el-button type="primary" size="mini" @click="handleUpdate(row)">
-              {{ $t('table.edit') }}
+            <el-button type="primary" icon="el-icon-edit" size="mini" @click="handleUpdate(row)" :title="$t('table.edit')">
             </el-button>
-            <el-button type="danger" size="mini" @click="handleDelete(row)">
-              {{ $t('table.delete') }}
+            <el-button type="danger" icon="el-icon-delete-solid" size="mini" @click="handleDelete(row)" :title="$t('table.delete')">
             </el-button>
           </div>
         </template>

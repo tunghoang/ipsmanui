@@ -35,8 +35,9 @@
     specifics: 'Specifics Data',
     ruleset: 'Ruleset',
     monitoring: 'Monitoring',
-    net_monitoring: 'NetIPS Monitoring',
-    host_monitoring: 'HostIPS Monitoring',
+    setting: 'Setting',
+    net_ips: 'NetIPS',
+    host_ips: 'HostIPS',
     host_overview_ecs: 'Host Overview ECS',
     overview_ecs: 'Overview ECS',
     modsecurity: 'ModSecurity'

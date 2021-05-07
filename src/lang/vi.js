@@ -34,7 +34,14 @@ export default {
     statistics: 'Statistics',
     anomaly_models: 'Anomaly Models',
     specifics: 'Specifics Data',
-    ruleset: 'Bộ quy tắc'
+    ruleset: 'Bộ quy tắc',
+    monitoring: 'Monitoring',
+    setting: 'Cài đặt',
+    net_ips: 'NetIPS',
+    host_ips: 'HostIPS',
+    host_overview_ecs: 'Host Overview ECS',
+    overview_ecs: 'Overview ECS',
+    modsecurity: 'ModSecurity'
   },
   navbar: {
     logOut: 'Đăng xuất',
