@@ -169,7 +169,7 @@
         </div>
       </template>
       <div>
-        <el-button class="r" @click.native="onClickSetupNode" :loading="setupLoading" icon="el-icon-s-tools" size="default">Setup</el-button>
+        <el-button class="r" @click.native="onClickSetupNode" icon="el-icon-s-tools" size="default">Setup</el-button>
       </div>
       <div class="clearfix"></div>
       <template v-if="objectCanView.idEngine">
@@ -287,8 +287,7 @@ export default {
       objectCanAdd: {},
       objectCanView: {},
       dialogVisible: false,
-      onlineLoading: false,
-      setupLoading: false
+      onlineLoading: false
     }
   },
 
@@ -314,8 +313,8 @@ export default {
           let status = 'unknow';
           let statusResponse = {}
           if (object.idEngine) {
-            statusResponse = await rf.getRequest('ContainmentRelRequest').checkHostStatus(object.idObject);
-            status = statusDeduce(statusResponse);
+            statusResponse = await rf.getRequest('ContainmentRelRequest').checkHostStatus(object.idObject) || {};
+            status = statusDeduce(statusResponse) || status;
           }
           const newData = {
             idContainer: object.idObject,
@@ -323,8 +322,8 @@ export default {
             name: object.name || object.idContainee,
             description: object.description,
             status,
-            online: statusResponse.online,
-            enabled: statusResponse.enabled,
+            online: statusResponse.online || false,
+            enabled: statusResponse.enabled || false,
             idEngine: object.idEngine,
             specs: this.hasEngine(object) && await this.getDetailEngine(object.idEngine),
             load: this.hasEngine(object)
@@ -378,8 +377,13 @@ export default {
         let status = 'unknow';
         let statusResponse = {}
         if (object.idEngine) {
-          statusResponse = await rf.getRequest('ContainmentRelRequest').checkHostStatus(object.idObject);
-          status = statusDeduce(statusResponse);
+          try {
+            statusResponse = await rf.getRequest('ContainmentRelRequest').checkHostStatus(object.idObject);
+            status = statusDeduce(statusResponse);
+          } catch (e) {
+            statusResponse = {}
+            status = 'unknow';
+          }
         }
         const newData = {
           idContainer: object.idObject,
@@ -387,8 +391,8 @@ export default {
           name: object.name || object.idContainee,
           description: object.description,
           status,
-          online: statusResponse.online,
-          enabled: statusResponse.enabled,
+          online: statusResponse.online || false,
+          enabled: statusResponse.enabled || false,
           idEngine: object.idEngine,
           specs: this.hasEngine(object) && await this.getDetailEngine(object.idEngine),
           load: this.hasEngine(object)
@@ -403,14 +407,8 @@ export default {
         }
         evt.data.status = 'active';
         removeAllChild(evt.data.children);
-        console.log(res);
         for (let object of res) {
-          try {
-            await appendNode(object);
-          }
-          catch(e) {
-            console.error(e);
-          }
+          await appendNode(object);
         }
       }).catch(e => console.error(e));
       
@@ -598,9 +596,14 @@ export default {
       })
     },
     async onClickSetupNode () {
-      this.setupLoading = true
+      const loading = this.$loading({
+        lock: true,
+        text: 'Loading',
+        spinner: 'el-icon-loading',
+        background: 'rgba(0, 0, 0, 0.7)'
+      });
       await new Promise(resolve => setTimeout(resolve, 3000));
-      this.setupLoading = false
+      loading.close()
     }
   }
 }

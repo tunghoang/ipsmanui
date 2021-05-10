@@ -221,7 +221,8 @@
       'unknow': 'somethong Went Wrong',
       '500': 'Server Error',
       'networkerror': 'Network Error',
-      label: 'Error'
+      label: 'Error',
+      invalid_json_format: 'Invalid JSON format'
     },
     success: {
       label: 'Success',

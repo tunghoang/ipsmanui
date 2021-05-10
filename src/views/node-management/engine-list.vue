@@ -90,8 +90,8 @@
             name="specs"
             :placeholder="$t('table.specs')"
             :class="{ error: errors.has('specs') }"
-            data-vv-validate-on="none"
-            v-validate="'required|min:4|max:255'" />
+            data-vv-validate-on="change|blur"
+            v-validate="'required|is_json|min:4|max:255'" />
 <!--           <el-input v-model="temp.specs"
                     tabindex="1"
                     @focus="resetError"
@@ -126,6 +126,21 @@ import rf from 'requestfactory'
 import { Message } from 'element-ui'
 import RemoveErrorsMixin from 'common/RemoveErrorsMixin'
 
+import { Validator } from 'vee-validate';
+import i18n from '@/lang'
+
+Validator.extend('is_json', {
+  getMessage: () => i18n.t('notify.errors.invalid_json_format'),
+  validate: value => {
+    try {
+      JSON.parse(value)
+    } catch {
+      return false
+    }
+    return true
+  }
+});
+
 export default {
   name: 'EngineList',
   components: { Pagination, JsonEditor },
@@ -149,7 +164,10 @@ export default {
         idEngine: undefined,
         idEnginetype: '',
         name: '',
-        specs: {}
+        specs: {
+          endpoint: '',
+          type: ''
+        }
       },
       dialogFormVisible: false,
       dialogStatus: '',
@@ -170,7 +188,7 @@ export default {
     getList() {
       rf.getRequest('EngineRequest').getList(this.params)
       .then(async response => {
-        this.list = window._.map(response, res => {
+         this.list = window._.map(response, res => {
           return {
             idEngine: res.idEngine,
             idEnginetype: res.idEnginetype,
@@ -180,6 +198,7 @@ export default {
         this.total = response.length
       })
       .catch(error => {
+        console.log(error)
         this.errors.add({field: 'error', msg: error.response.data.message});
         Message.error(this.$t(this.errors.first('error')) || this.$t('auth.unknowError'))
       })
@@ -279,28 +298,31 @@ export default {
       if (this.errors.any()) {
         return;
       }
-      rf.getRequest('EngineRequest').create(this.temp)
-      .then(() => {
-        this.dialogFormVisible = false
-        this.$notify({
-          title: this.$t('notify.success.label'),
-          message: this.$t('notify.success.createSuccess'),
-          type: 'success',
-          duration: 1000,
-          showClose: false
-        })
-        this.handleRefreshTable()
-      })
-      .catch(error => {
-        this.handleError(error)
-      })
+      // rf.getRequest('EngineRequest').create(this.temp)
+      // .then(() => {
+      //   this.dialogFormVisible = false
+      //   this.$notify({
+      //     title: this.$t('notify.success.label'),
+      //     message: this.$t('notify.success.createSuccess'),
+      //     type: 'success',
+      //     duration: 1000,
+      //     showClose: false
+      //   })
+      //   this.handleRefreshTable()
+      // })
+      // .catch(error => {
+      //   this.handleError(error)
+      // })
 
     },
     resetTemp() {
       this.temp = {
         idEngine: undefined,
         idEnginetype: '',
-        specs: {}
+        specs: {
+          endpoint: '',
+          type: ''
+        }
       }
     },
     handleUpdate(row) {

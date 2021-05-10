@@ -247,7 +247,8 @@ export default {
       'unknow': 'Đã có lỗi xảy ra',
       '500': 'Lỗi trên máy chủ',
       'networkerror': 'Kết nối mạng gặp vấn đề',
-      label: 'Lỗi'
+      label: 'Lỗi',
+      invalid_json_format: 'Định dạng JSON không đúng'
     },
     success: {
       label: 'Thành công',
@@ -288,7 +289,8 @@ export default {
     "Internal Server Error": "Thao tác thực hiện không thành công",
     "Current Password Is Wrong": "Mật khẩu hiện tại không đúng",
     "The user credentials were incorrect.": "Thông tin đăng nhập của người dùng không chính xác.",
-    "New password Is same current password": "Mật khẩu mới giống mật khẩu cũ"
+    "New password Is same current password": "Mật khẩu mới giống mật khẩu cũ",
+
   },
   select: {
     action: 'Chọn Action'

@@ -34,6 +34,8 @@ export default {
     this.jsonEditor = CodeMirror.fromTextArea(this.$refs.textarea, {
       lineNumbers: true,
       mode: 'application/json',
+      indentWithTabs: true,
+      matchBrackets: true,
       gutters: ['CodeMirror-lint-markers'],
       theme: 'rubyblue',
       lint: true
