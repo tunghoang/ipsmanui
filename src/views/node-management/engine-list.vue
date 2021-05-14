@@ -39,6 +39,11 @@
           <span>{{ scope.row.idEngine }}</span>
         </template>
       </el-table-column>
+      <el-table-column :label="$t('table.name')" prop="name" sortable align="center" width="140px">
+        <template slot-scope="scope">
+          <span>{{ scope.row.name }}</span>
+        </template>
+      </el-table-column>
       <el-table-column :label="$t('table.idEnginetype')" sortable prop="idEnginetype" align="center">
         <template slot-scope="scope">
           <span class="link-type" @click="handleUpdate(scope.row)">{{ scope.row.idEnginetype }}</span>
@@ -192,6 +197,7 @@ export default {
           return {
             idEngine: res.idEngine,
             idEnginetype: res.idEnginetype,
+            name: res.name,
             specs: JSON.parse(res.specs)
           }
         })
