@@ -182,14 +182,14 @@
             <strong>Online:</strong>
             {{ objectCanView.online ? 'online' : 'offline' }}
           </span>
-          <el-button :loading="onlineLoading" size="mini" class="r" :type="objectCanView.online ? 'primary' : 'info'" @click="changeOnline">{{ objectCanView.online ? 'offline' : 'online' }}</el-button>
+          <el-button :loading="onlineLoading" size="mini" class="r width-100" :type="objectCanView.online ? 'primary' : 'info'" @click="changeOnline">{{ objectCanView.online ? 'offline' : 'online' }}</el-button>
         </p>
         <p class="pt-1">
           <span>
             <strong>Enabled:</strong>
             {{ objectCanView.enabled ? 'enabled' : 'disabled' }}
           </span>
-          <el-button size="mini" class="r" :type="objectCanView.enabled ? 'primary' : 'info'" @click="changeLock">{{ objectCanView.enabled ? 'disabled' : 'enabled'  }}</el-button>
+          <el-button size="mini" class="r width-100" :type="objectCanView.enabled ? 'primary' : 'info'" @click="changeLock">{{ objectCanView.enabled ? 'disabled' : 'enabled'  }}</el-button>
         </p>
         <p>
           <strong>Endpoint:</strong>
@@ -211,7 +211,7 @@
  -->
       <template #footer>
         <span class="dialog-footer">
-          <el-button @click="dialogVisible = false">Cancel</el-button>
+          <el-button @click="dialogVisible = false">Close</el-button>
         </span>
       </template>
     </el-dialog>
@@ -662,6 +662,9 @@ export default {
     .el-dialog__body {
       padding-top: 0;
       padding-bottom: 0;
+    }
+    .width-100 {
+      width: 75px;
     }
   }
 </style>

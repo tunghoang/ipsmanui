@@ -3,7 +3,7 @@
     <el-card shadow="always">
       <h3>[Metricbeat System] Host overview ECS</h3>
       <div class="kibanaframe">
-          <iframe src="http://112.137.129.214:56010/app/dashboards#/view/79ffd6e0-faa0-11e6-947f-177f697178b8-ecs?_a=(description:'Overview%20of%20host%20metrics',filters:!(),fullScreenMode:!f,options:(darkTheme:!f),query:(language:kuery,query:'host.name:%22192.168.0.45%22'),tags:!(),timeRestore:!f,title:'%5BMetricbeat%20System%5D%20Host%20overview%20ECS',viewMode:view)&_g=(filters:!(),refreshInterval:(pause:!t,value:0),time:(from:now-15m,to:now))" class="frame"></iframe>
+          <iframe :src="url" class="frame"></iframe>
       </div>
     </el-card>
   </div>
@@ -12,7 +12,23 @@
 <script>
 
 export default {
-  name: 'HostOverviewECS'
+  name: 'HostOverviewECS',
+  data: function() {
+    return {
+      base: "http://112.137.129.214:56010/app/dashboards#/view/79ffd6e0-faa0-11e6-947f-177f697178b8-ecs",
+      filter: "filters:!(),refreshInterval:(pause:!t,value:0),time:(from:now-15m,to:now)",
+      hostname: "192.168.0.30",
+    }
+  },
+  computed: {
+    url: function() {
+      let _url = `${this.base}?_g=(${this.filter})&_a=(${this.info})`
+      return encodeURI(_url);
+    },
+    info: function() {
+      return 'description:\'Overview of host metrics\',filters:!(),fullScreenMode:!f,options:(darkTheme:!f),query:(language:kuery,query:\'host.name:"' + this.hostname + '"\'),tags:!(),timeRestore:!f,title:\'[Metricbeat System] Host overview ECS\',viewMode:view';
+    }
+  }
 }
 </script>
 

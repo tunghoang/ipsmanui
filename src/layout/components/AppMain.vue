@@ -5,6 +5,7 @@
         <keep-alive :include="cachedViews">
           <router-view :key="key" />
         </keep-alive>
+        <!--
         <Intrusion v-show="checkShow(1)" />
         <Alarm v-show="checkShow(2)" />
         <Anomalies v-show="checkShow(3)" />
@@ -13,6 +14,7 @@
         <HostOverview v-show="checkShow(6)" />
         <Overview v-show="checkShow(7)" />
         <ModSecurity v-show="checkShow(8)" />
+        -->
       </div>
     </transition>
   </section>
