@@ -289,12 +289,14 @@ export const asyncRoutes = [
         }
       },
       {
-        path: 'host-overview-ecs',
+        path: 'host-overview-ecs/:hostname',
         component: () => import('@/views/overviews/host-overview-ECS'),
         name: 'HostOverviewECS',
+        props: true,
         meta: {
           icon: 'host',
-          title: 'host_overview_ecs',
+          tagViewTitle: 'host_overview_ecs',
+          title: 'host_overview_ecs_static',
           roles: ['admin', 'superadmin']
         }
       },

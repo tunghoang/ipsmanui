@@ -49,15 +49,23 @@
           <span class="link-type" @click="handleUpdate(scope.row)">{{ scope.row.idEnginetype }}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('table.specs')" sortable prop="specs" align="center">
+      <el-table-column :label="$t('table.hostname')" sortable prop="specs" align="center">
         <template slot-scope="scope">
-          <span class="link-type" @click="handleUpdate(scope.row)">{{ scope.row.specs }}</span>
+          <span class="link-type" @click="handleUpdate(scope.row)">{{ scope.row.specs.hostname }}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('table.actions')" fixed="right" align="center" width="150" class-name="small-padding fixed-width">
+      <el-table-column :label="$t('table.port')" sortable prop="specs" align="center">
+        <template slot-scope="scope">
+          <span class="link-type" @click="handleUpdate(scope.row)">{{ scope.row.specs.port }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column :label="$t('table.actions')" fixed="right" align="center" width="300" class-name="small-padding fixed-width">
         <template slot-scope="{row}">
           <el-button type="primary" size="mini" @click="handleUpdate(row)">
             {{ $t('table.edit') }}
+          </el-button>
+          <el-button type="primary" class="w-auto" size="mini" @click="handleViewRuleManagement(row)">
+            {{ $t('route.rules_management') }}
           </el-button>
           <el-button type="danger" size="mini" @click="handleDelete(row)">
             {{ $t('table.delete') }}
@@ -68,6 +76,7 @@
 
     <pagination v-show="total>0" :total="total" :page.sync="params.page" :limit.sync="params.limit" @pagination="getList" />
 
+    <!-- dialog edit, create -->
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" @close="resetError()">
       <el-form ref="dataFormSingle" :model="temp" label-position="left" label-width="120px" style="width: 100%">
         <el-form-item :label="$t('table.name')" prop="idEnginetype">
@@ -86,28 +95,31 @@
             {{ errors.first('enginetype') }}
           </div>
         </el-form-item>
-        <el-form-item :label="`${$t('table.specs')}(JSON)`" props="specs">
-          <json-editor
-            ref="jsonEditor"
-            v-model="temp.specs"
+
+        <el-form-item label="Hostname" prop="specs">
+          <el-input
+            v-model="temp.specs.hostname"
             tabindex="1"
             @focus="resetError"
-            name="specs"
-            :placeholder="$t('table.specs')"
-            :class="{ error: errors.has('specs') }"
+            name="hostname"
+            :placeholder="$t('table.hostname')"
+            :class="{ error: errors.has('hostname') }"
             data-vv-validate-on="change|blur"
-            v-validate="'required|is_json|min:4|max:255'" />
-<!--           <el-input v-model="temp.specs"
-                    tabindex="1"
-                    @focus="resetError"
-                    name="specs"
-                    :placeholder="$t('table.specs')"
-                    :class="{ error: errors.has('specs') }"
-                    data-vv-validate-on="none"
-                    v-validate="'required|min:4|max:255'" /> -->
-          <div class="el-form-item__error" v-if="errors.has('specs')">
-            {{ errors.first('specs') }}
-          </div>
+            v-validate="'required|min:4|max:255'"
+          />
+        </el-form-item>
+
+        <el-form-item label="Port" prop="specs">
+          <el-input
+            v-model="temp.specs.port"
+            tabindex="1"
+            @focus="resetError"
+            name="port"
+            :placeholder="$t('table.port')"
+            :class="{ error: errors.has('port') }"
+            data-vv-validate-on="change|blur"
+            v-validate="'required|numeric|max:255'"
+          />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -115,6 +127,45 @@
           {{ $t('table.cancel') }}
         </el-button>
         <el-button type="primary" @click="dialogStatus==='create'?createData():updateData()">
+          {{ $t('table.confirm') }}
+        </el-button>
+      </div>
+    </el-dialog>
+
+    <!-- dialog rule -->
+    <el-dialog title="Application Firewall Rule Management" :visible.sync="ruleManagementVisible" @close="resetError()">
+      <div>
+        <el-button class="r" size="medium" @click="uploadModalVisible = true">Upload</el-button>
+      </div>
+      <div class="clearfix"></div>
+      <div><strong>Webserver type</strong></div>
+      <div><strong>Modsercirity</strong></div>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="ruleManagementVisible = false">
+          {{ $t('table.cancel') }}
+        </el-button>
+      </div>
+    </el-dialog>
+
+    <!-- dialog upload -->
+    <el-dialog title="Upload Rule" :visible.sync="uploadModalVisible" @close="resetError()" width="400px">
+      <el-form ref="uploadFromFile" :model="rule" label-position="left" label-width="70px" style="width: 100%;">
+        <el-upload
+              class="upload-student"
+              drag
+              ref="uploadexcel"
+              action="/api/v1/student/upload"
+              :file-list="fileList"
+              :auto-upload="false">
+          <i class="el-icon-upload"></i>
+          <div class="el-upload__text">{{ $t('upload.dropFileHere') }} {{ $t('upload.or') }} <em>{{ $t('upload.clickToUpload') }}</em></div>
+        </el-upload>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="uploadModalVisible = false">
+          {{ $t('table.cancel') }}
+        </el-button>
+        <el-button type="primary"">
           {{ $t('table.confirm') }}
         </el-button>
       </div>
@@ -170,8 +221,8 @@ export default {
         idEnginetype: '',
         name: '',
         specs: {
-          endpoint: '',
-          type: ''
+          hostname: '',
+          port: ''
         }
       },
       dialogFormVisible: false,
@@ -183,7 +234,12 @@ export default {
       engineTypes: [],
       engineTypeSelect: '',
       fileList: [],
-      isSubmitting: false
+      isSubmitting: false,
+      ruleManagementVisible: false,
+      uploadModalVisible: false,
+      fileList: [],
+      rule: {},
+      hostCanView: {}
     }
   },
   async mounted() {
@@ -198,6 +254,7 @@ export default {
             idEngine: res.idEngine,
             idEnginetype: res.idEnginetype,
             name: res.name,
+            idObject: res.idObject,
             specs: JSON.parse(res.specs)
           }
         })
@@ -325,9 +382,10 @@ export default {
       this.temp = {
         idEngine: undefined,
         idEnginetype: '',
+        name: '',
         specs: {
-          endpoint: '',
-          type: ''
+          hostname: '',
+          port: ''
         }
       }
     },
@@ -345,11 +403,16 @@ export default {
         return;
       }
       await this.$validator.validate('enginetype');
-      await this.$validator.validate('specs');
+      await this.$validator.validate('hostname');
+      await this.$validator.validate('port');
       if (this.errors.any()) {
         return;
       }
       let params = window._.cloneDeep(this.temp)
+      params = {
+        ...params,
+        specs: JSON.stringify(params.specs)
+      }
       rf.getRequest('EngineRequest').update(params.idEngine, params)
       .then(() => {
         this.dialogFormVisible = false
@@ -420,6 +483,10 @@ export default {
         }
       }))
     },
+    handleViewRuleManagement(row) {
+      this.queryHost(row.idObject)
+      this.ruleManagementVisible = true
+    },
     handleDelete(row) {
       this.$confirm(this.$t('notify.text.delete'), 'Warning', {
         confirmButtonText: this.$t('action.ok'),
@@ -441,6 +508,14 @@ export default {
           message: this.$t('notify.info.cancel'),
         });
       });
+    },
+
+    queryHost (objectId) {
+      rf.getRequest('ContainmentRelRequest').queryHost(objectId)
+      .then((res) => {
+        console.log(res)
+        this.hostCanView = res.data
+      })
     }
   },
 }

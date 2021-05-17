@@ -1,7 +1,7 @@
 <template>
   <div class="app-container alarm">
     <el-card shadow="always">
-      <h3>[Metricbeat System] Host overview ECS</h3>
+      <h3>[Metricbeat System] Host overview ECS: {{ hostname }}</h3>
       <div class="kibanaframe">
           <iframe :src="url" class="frame"></iframe>
       </div>
@@ -17,7 +17,7 @@ export default {
     return {
       base: "http://112.137.129.214:56010/app/dashboards#/view/79ffd6e0-faa0-11e6-947f-177f697178b8-ecs",
       filter: "filters:!(),refreshInterval:(pause:!t,value:0),time:(from:now-15m,to:now)",
-      hostname: "192.168.0.30",
+      hostname: "",
     }
   },
   computed: {
@@ -28,6 +28,10 @@ export default {
     info: function() {
       return 'description:\'Overview of host metrics\',filters:!(),fullScreenMode:!f,options:(darkTheme:!f),query:(language:kuery,query:\'host.name:"' + this.hostname + '"\'),tags:!(),timeRestore:!f,title:\'[Metricbeat System] Host overview ECS\',viewMode:view';
     }
+  },
+
+  created () {
+    this.hostname = this.$route.params.hostname === ':hostname' ? '': this.$route.params.hostname
   }
 }
 </script>

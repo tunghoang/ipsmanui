@@ -38,7 +38,8 @@
     setting: 'Setting',
     net_ips: 'NetIPS',
     host_ips: 'HostIPS',
-    host_overview_ecs: 'Host Overview ECS',
+    host_overview_ecs: '{hostname}',
+    host_overview_ecs_static: 'Host Overview ECS',
     overview_ecs: 'Overview ECS',
     modsecurity: 'ModSecurity'
   },

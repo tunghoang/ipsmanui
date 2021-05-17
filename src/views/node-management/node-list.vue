@@ -105,7 +105,7 @@
     </el-row>
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" @close="resetTemp()">
       <el-form ref="dataFormSingle" :model="temp" label-position="left" label-width="100px" style="width: 100%">
-        <el-form-item :label="$t('table.engine')" prop="idEngine">
+        <el-form-item :label="$t('table.engine')" prop="idEngine" v-if="this.dialogStatus === 'create'">
           <el-select
                 v-model="temp.idEngine"
                 class="filter-item"
@@ -136,7 +136,7 @@
             {{ errors.first('name') }}
           </div>
         </el-form-item>
-        <el-form-item :label="$t('table.description')" props="description">
+        <el-form-item :label="$t('table.description')" props="description" v-if="this.dialogStatus === 'create'"">
           <el-input v-model="temp.description"
                     tabindex="1"
                     @focus="resetError"
@@ -162,6 +162,7 @@
     <el-dialog
       :visible.sync="dialogVisible"
       @close="resetTemp()"
+      width="500px"
       :before-close="handleClose">
       <template #title>
         <div class="tc">
@@ -193,7 +194,11 @@
         </p>
         <p>
           <strong>Endpoint:</strong>
-          {{ objectCanView.specs.endpoint || null }}
+          {{ objectCanView.specs.hostname || null }}
+        </p>
+        <p>
+          <strong>Port:</strong>
+          {{ objectCanView.specs.port || null }}
         </p>
         <p>
           <strong>Type:</strong>
@@ -204,11 +209,12 @@
         <strong>Status:</strong>
         {{ objectCanView.status }}
       </p>
-<!--  <div>
-        <el-button class="r" size="medium">Monitor</el-button>
+      <div>
+        <el-button @click="updateNode()">Edit</el-button>
+        <el-button class="r" size="medium" @click="$router.push({ name: 'HostOverviewECS', params: { hostname: objectCanView.specs.hostname } })">Detail</el-button>
       </div>
       <div class="clearfix"></div>
- -->
+
       <template #footer>
         <span class="dialog-footer">
           <el-button @click="dialogVisible = false">Close</el-button>
@@ -287,7 +293,8 @@ export default {
       objectCanAdd: {},
       objectCanView: {},
       dialogVisible: false,
-      onlineLoading: false
+      onlineLoading: false,
+      nodeFormVisible: false
     }
   },
 
@@ -429,6 +436,13 @@ export default {
       this.dialogFormVisible = true
       this.objectCanAdd = data
     },
+    updateNode () {
+      this.dialogStatus = 'update'
+      this.dialogFormVisible = true
+      this.temp = {
+        name: this.objectCanView.name
+      }
+    },
     resetTemp () {
       return this.temp = {
         idObject: undefined,
@@ -487,6 +501,35 @@ export default {
             this.resetTemp()
             this.objectCanAdd = {}
           })
+      })
+      .catch(error => {
+        this.handleError(error)
+      })
+      .finally(() => {
+        this.endSubmit()
+      })
+    },
+    async updateData () {
+      this.resetError();
+      if (this.isSubmitting) {
+        return;
+      }
+      await this.$validator.validate('name');
+      if (this.errors.any()) {
+        return;
+      }
+      this.startSubmit()
+      rf.getRequest('ContainmentRelRequest').update(this.objectCanView.idContainer , this.temp)
+      .then(async (object) => {
+        this.dialogFormVisible = false
+        this.$notify({
+          title: this.$t('notify.success.label'),
+          message: this.$t('notify.success.updateSuccess'),
+          type: 'success',
+          duration: 1000,
+          showClose: false
+        })
+        this.objectCanView.name = this.temp.name
       })
       .catch(error => {
         this.handleError(error)

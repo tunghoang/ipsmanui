@@ -56,7 +56,12 @@ export default class ContainmentRelRequest extends BaseModelRequest {
   startHost1(objectId) {
     return this.get(`/control/ansStart/${objectId}`);
   }
+
   stopHost1(objectId) {
     return this.get(`/control/ansStop/${objectId}`);
+  }
+
+  queryHost(objectId) {
+    return this.get(`/control/query/modsec-rules/${objectId}`)
   }
 }
