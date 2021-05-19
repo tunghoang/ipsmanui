@@ -166,7 +166,7 @@
       :before-close="handleClose">
       <template #title>
         <div class="tc">
-          <h2>{{ objectCanView.name }}</h2>
+          <h2>{{objectCanView.description}} ({{ objectCanView.name }}) ({{ objectCanView.specs.idEnginetype}})</h2>
         </div>
       </template>
       <div>
@@ -183,26 +183,37 @@
             <strong>Online:</strong>
             {{ objectCanView.online ? 'online' : 'offline' }}
           </span>
-          <el-button :loading="onlineLoading" size="mini" class="r width-100" :type="objectCanView.online ? 'primary' : 'info'" @click="changeOnline">{{ objectCanView.online ? 'offline' : 'online' }}</el-button>
+          <el-button
+              :loading="onlineLoading" 
+              size="mini" 
+              class="r width-100" 
+              :type="objectCanView.online ? 'primary' : 'info'" 
+              @click="changeOnline"
+          >
+            {{ objectCanView.online ? 'offline' : 'online' }}
+          </el-button>
         </p>
         <p class="pt-1">
           <span>
             <strong>Enabled:</strong>
             {{ objectCanView.enabled ? 'enabled' : 'disabled' }}
           </span>
-          <el-button size="mini" class="r width-100" :type="objectCanView.enabled ? 'primary' : 'info'" @click="changeLock">{{ objectCanView.enabled ? 'disabled' : 'enabled'  }}</el-button>
+          <el-button 
+              size="mini" 
+              class="r width-100" 
+              :type="objectCanView.enabled ? 'primary' : 'info'" 
+              @click="changeLock"
+          >
+            {{ objectCanView.enabled ? 'disabled' : 'enabled'  }}
+          </el-button>
         </p>
-        <p>
+        <p class="pt-1">
           <strong>Endpoint:</strong>
           {{ objectCanView.specs.hostname || null }}
         </p>
-        <p>
+        <p class="pt-1">
           <strong>Port:</strong>
           {{ objectCanView.specs.port || null }}
-        </p>
-        <p>
-          <strong>Type:</strong>
-          {{ objectCanView.specs.type || null }}
         </p>
       </template>
       <p v-else>
@@ -317,7 +328,7 @@ export default {
       rf.getRequest('ContainmentRelRequest').getList(this.params)
       .then(res => {
         forEach(res, async (object) => {
-          let status = 'unknow';
+          let status = 'unknown';
           let statusResponse = {}
           if (object.idEngine) {
             statusResponse = await rf.getRequest('ContainmentRelRequest').checkHostStatus(object.idObject) || {};
@@ -340,7 +351,7 @@ export default {
       })
       .catch(error => {
         this.errors.add({field: 'error', msg: error.response.data.message});
-        Message.error(this.$t(this.errors.first('error')) || this.$t('auth.unknowError'))
+        Message.error(this.$t(this.errors.first('error')) || this.$t('auth.unknownError'))
       })
       .finally(() => this.listLoading = false)
     },
@@ -371,6 +382,7 @@ export default {
     },
     onClickNode (evt) {
       if (evt.data.idEngine) {
+        console.log(evt.data);
         this.viewDetailNode(evt.data)
         return
       }
@@ -381,7 +393,7 @@ export default {
       evt.data.load = true;
 
       let appendNode = async (object) => {
-        let status = 'unknow';
+        let status = 'unknown';
         let statusResponse = {}
         if (object.idEngine) {
           try {
@@ -389,7 +401,7 @@ export default {
             status = statusDeduce(statusResponse);
           } catch (e) {
             statusResponse = {}
-            status = 'unknow';
+            status = 'unknown';
           }
         }
         const newData = {
@@ -479,7 +491,7 @@ export default {
           children: [],
           name: object.name || object.idContainee,
           description: object.description,
-          status: 'unknow',
+          status: 'unknown',
           idEngine: object.idEngine,
           specs: this.hasEngine(object) && await this.getDetailEngine(object.idEngine),
           load: this.hasEngine(object)
@@ -601,9 +613,9 @@ export default {
       this.objectCanView.enabled = !this.objectCanView.enabled
     },
     getNodeStatus (object) {
-      if (!object.idEngine) return 'unknow';
+      if (!object.idEngine) return 'unknown';
       return new Promise((resolver) => {
-        const statusList = ['active', 'inactive', 'unknow']
+        const statusList = ['active', 'inactive', 'unknown']
         setTimeout(() => {
           resolver(statusList[Math.floor((Math.random() * 3))])
         }, 500)
@@ -611,8 +623,11 @@ export default {
     },
     async getDetailEngine (id) {
       if(id === null) return {}
-      let { specs } = await rf.getRequest('EngineRequest').detail(id)
-      specs = JSON.parse(specs)
+      let { idEnginetype, specs } = await rf.getRequest('EngineRequest').detail(id)
+      specs = JSON.parse(specs);
+      console.log(idEnginetype, specs);
+      specs.idEnginetype = idEnginetype;
+      console.log(specs);
       return specs
     },
     async updateObject () {
@@ -673,7 +688,7 @@ export default {
               fill: #8d8d8d;
             }
           }
-          &.unknow {
+          &.unknown {
             fill: rgb(24, 144, 255);
             path {
               fill: rgb(24, 144, 255);

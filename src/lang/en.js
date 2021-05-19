@@ -219,7 +219,7 @@
       '422': 'Unprocessable Entity',
       '404': 'Not Found',
       '403': 'Forbidden',
-      'unknow': 'somethong Went Wrong',
+      'unknown': 'somethong Went Wrong',
       '500': 'Server Error',
       'networkerror': 'Network Error',
       label: 'Error',
