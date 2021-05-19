@@ -81,7 +81,7 @@
             @clickedNode="onClickNode">
             <template #node="{ data }">
                 <GroupIcon class="node-icon" :class="data.status" v-if="data.idEngine === null"></GroupIcon>
-                <NodeIcon class="node-icon" :class="data.status" v-else></NodeIcon>
+                <NodeIcon class="node-icon" :class="data.status" v-else :idEnginetype="data.idEnginetype"></NodeIcon>
               <circle r="6" :class="data.status">
                 <title>{{data.name}}</title>
               </circle>
@@ -166,7 +166,10 @@
       :before-close="handleClose">
       <template #title>
         <div class="tc">
-          <h2>{{objectCanView.description}} ({{ objectCanView.name }}) ({{ objectCanView.specs.idEnginetype}})</h2>
+          <h2>
+            <svg-icon :icon-class="objectCanView.idEnginetype === 2 ? 'host':'netIPS'" />
+            {{objectCanView.description}} ({{ objectCanView.name }})
+          </h2>
         </div>
       </template>
       <div>
@@ -345,7 +348,7 @@ export default {
             idEngine: object.idEngine,
             specs: this.hasEngine(object) && await this.getDetailEngine(object.idEngine),
             load: this.hasEngine(object)
-            }
+          }
           await this.tree.children.push(newData)
         })
       })
@@ -414,7 +417,8 @@ export default {
           enabled: statusResponse.enabled || false,
           idEngine: object.idEngine,
           specs: this.hasEngine(object) && await this.getDetailEngine(object.idEngine),
-          load: this.hasEngine(object)
+          load: this.hasEngine(object),
+          idEnginetype: object.idEnginetype
         }
 
         evt.data.children.push(newData);
@@ -494,7 +498,7 @@ export default {
           status: 'unknown',
           idEngine: object.idEngine,
           specs: this.hasEngine(object) && await this.getDetailEngine(object.idEngine),
-          load: this.hasEngine(object)
+          load: this.hasEngine(object),
         }
         await this.objectCanAdd.children.push(newData)
         if (this.objectCanAdd.root) return
