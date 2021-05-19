@@ -64,4 +64,12 @@ export default class ContainmentRelRequest extends BaseModelRequest {
   queryHost(objectId) {
     return this.get(`/control/query/modsec-rules/${objectId}`)
   }
+
+  addRuleset(objectId, params) {
+    return this.post(`/control/ruleset/${objectId}`, params);
+  }
+
+  deleteRuleset(objectId, params) {
+    return this.del(`/control/ruleset/${objectId}`, params);
+  }
 }

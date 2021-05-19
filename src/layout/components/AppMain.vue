@@ -21,26 +21,26 @@
 </template>
 
 <script>
-import Intrusion from "../../views/intrusion-management/intrusion-monitoring";
-import Alarm from "../../views/intrusion-management/alarm";
-import Anomalies from "../../views/intrusion-management/anomaly-events";
-import Search from "../../views/intrusion-management/search";
-import Statistics from "../../views/intrusion-management/statistics";
-import HostOverview from "../../views/overviews/host-overview-ECS";
-import Overview from "../../views/overviews/overview-ECS";
-import ModSecurity from "../../views/overviews/modsecurity-overview";
+// import Intrusion from "../../views/intrusion-management/intrusion-monitoring";
+// import Alarm from "../../views/intrusion-management/alarm";
+// import Anomalies from "../../views/intrusion-management/anomaly-events";
+// import Search from "../../views/intrusion-management/search";
+// import Statistics from "../../views/intrusion-management/statistics";
+// import HostOverview from "../../views/overviews/host-overview-ECS";
+// import Overview from "../../views/overviews/overview-ECS";
+// import ModSecurity from "../../views/overviews/modsecurity-overview";
 
 export default {
   name: "AppMain",
   components: {
-    Intrusion,
-    Alarm,
-    Anomalies,
-    Search,
-    Statistics,
-    HostOverview,
-    Overview,
-    ModSecurity
+    // Intrusion,
+    // Alarm,
+    // Anomalies,
+    // Search,
+    // Statistics,
+    // HostOverview,
+    // Overview,
+    // ModSecurity
   },
   computed: {
     cachedViews() {

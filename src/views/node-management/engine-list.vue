@@ -64,7 +64,7 @@
           <el-button type="primary" size="mini" @click="handleUpdate(row)">
             {{ $t('table.edit') }}
           </el-button>
-          <el-button type="primary" class="w-auto" size="mini" @click="handleViewRuleManagement(row)">
+          <el-button type="primary" class="w-auto" size="mini" :disabled="!row.idObject" @click="handleViewRuleManagement(row)">
             {{ $t('route.rules_management') }}
           </el-button>
           <el-button type="danger" size="mini" @click="handleDelete(row)">
@@ -133,15 +133,53 @@
     </el-dialog>
 
     <!-- dialog rule -->
-    <el-dialog title="Application Firewall Rule Management" :visible.sync="ruleManagementVisible" @close="resetError()">
-      <div>
-        <el-button class="r" size="medium" @click="uploadModalVisible = true">Upload</el-button>
-      </div>
+    <el-dialog
+      title="Application Firewall Rule Management"
+      :visible.sync="ruleManagementVisible"
+      @close="closeRuleManagementModal()"
+      v-loading="submitRulesetLoading"
+      element-loading-text="Loading..."
+      element-loading-spinner="el-icon-loading"
+      element-loading-background="rgba(0, 0, 0, 0.8)"
+    >
       <div class="clearfix"></div>
-      <div><strong>Webserver type</strong></div>
-      <div><strong>Modsercirity</strong></div>
+      <div>
+        <div v-for="(value, key) in hostCanView" :key="key">
+          <strong>
+            {{ key }}:
+          </strong>
+          <el-tag
+            :key="item"
+            v-for="item in hostCanView[key]"
+            closable
+            :disable-transitions="false"
+            @close="handleClose(key, item)">
+            {{ item }}
+          </el-tag>
+          <el-select
+            class="input-new-tag"
+            v-if="inputVisible"
+            v-model="inputValue"
+            ref="rulesetInput"
+            size="mini"
+            placeholder="Ruleset"
+            @change="handleInputConfirm(key)"
+          >
+            <el-option
+              v-for="item in rulesetOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value">
+            </el-option>
+          </el-select>
+          <el-button v-else class="button-new-tag" size="small" @click="showInput">+ New ruleset</el-button>
+        </div>
+<!--         <div>
+          <el-button class="button-new-tag" size="small" @click="add">+ New Server Type</el-button>
+        </div> -->
+      </div>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="ruleManagementVisible = false">
+        <el-button @click="closeRuleManagementModal()">
           {{ $t('table.cancel') }}
         </el-button>
       </div>
@@ -165,7 +203,7 @@
         <el-button @click="uploadModalVisible = false">
           {{ $t('table.cancel') }}
         </el-button>
-        <el-button type="primary"">
+        <el-button type="primary">
           {{ $t('table.confirm') }}
         </el-button>
       </div>
@@ -174,7 +212,6 @@
 </template>
 
 <script>
-import JsonEditor from '@/components/JsonEditor'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
@@ -182,24 +219,9 @@ import rf from 'requestfactory'
 import { Message } from 'element-ui'
 import RemoveErrorsMixin from 'common/RemoveErrorsMixin'
 
-import { Validator } from 'vee-validate';
-import i18n from '@/lang'
-
-Validator.extend('is_json', {
-  getMessage: () => i18n.t('notify.errors.invalid_json_format'),
-  validate: value => {
-    try {
-      JSON.parse(value)
-    } catch {
-      return false
-    }
-    return true
-  }
-});
-
 export default {
   name: 'EngineList',
-  components: { Pagination, JsonEditor },
+  components: { Pagination },
   directives: { waves },
   mixins: [RemoveErrorsMixin],
   data() {
@@ -237,9 +259,29 @@ export default {
       isSubmitting: false,
       ruleManagementVisible: false,
       uploadModalVisible: false,
-      fileList: [],
       rule: {},
-      hostCanView: {}
+      hostCanView: {},
+      inputVisible: false,
+      inputValue: '',
+      selectedRow: {},
+      submitRulesetLoading: false,
+      rulesetOptions: [
+        {
+          value: 'cwaf',
+          label: 'Cwaf',
+          type: ['apache2', 'nginx']
+        },
+        {
+          value: 'coreruleset-3.3.0',
+          label: 'Coreruleset-3.3.0',
+          type: ['apache2', 'nginx']
+        },
+        {
+          value: 'owasp-modsecurity-crs-2.2',
+          label: 'Owasp-modsecurity-crs-2.2',
+          type: ['apache2', 'nginx']
+        }
+      ]
     }
   },
   async mounted() {
@@ -484,8 +526,10 @@ export default {
       }))
     },
     handleViewRuleManagement(row) {
-      this.queryHost(row.idObject)
-      this.ruleManagementVisible = true
+      this.selectedRow = row
+      this.queryHost(row.idObject).then(() => {
+        this.ruleManagementVisible = true
+      })
     },
     handleDelete(row) {
       this.$confirm(this.$t('notify.text.delete'), 'Warning', {
@@ -511,12 +555,111 @@ export default {
     },
 
     queryHost (objectId) {
-      rf.getRequest('ContainmentRelRequest').queryHost(objectId)
+      return rf.getRequest('ContainmentRelRequest').queryHost(objectId)
       .then((res) => {
-        console.log(res)
-        this.hostCanView = res.data
+        this.hostCanView = res.data || {}
       })
+    },
+
+    handleClose(key, server) {
+      this.submitRulesetLoading = true
+      return rf.getRequest('ContainmentRelRequest').deleteRuleset(this.selectedRow.idObject, {
+        webserver: key,
+        ruleset: server
+      })
+        .then(() => {
+          this.hostCanView[key].splice(this.hostCanView[key].indexOf(server), 1);
+          this.$notify({
+            title: this.$t('notify.success.label'),
+            message: this.$t('notify.success.deleteSuccess'),
+            type: 'success',
+            duration: 1000,
+            showClose: false
+          })
+        })
+        .catch((error) => {
+          this.$notify({
+            title: this.$t('notify.errors.label'),
+            message: error,
+            type: 'error',
+            duration: 1000,
+            showClose: false
+          })
+          this.inputValue = '';
+        })
+        .finally(() => {
+          this.submitRulesetLoading = false
+        })
+    },
+
+    showInput() {
+      this.inputVisible = true;
+      this.$nextTick(() => {
+        this.$refs.rulesetInput[0].focus();
+      });
+    },
+
+    closeRuleManagementModal() {
+      this.ruleManagementVisible = false
+      this.selectedRow = {}
+      this.resetError()
+    },
+
+    handleInputConfirm(key) {
+      let inputValue = this.inputValue;
+      if (inputValue) {
+        this.submitRulesetLoading = true
+        return rf.getRequest('ContainmentRelRequest').addRuleset(this.selectedRow.idObject, {
+          webserver: key,
+          ruleset: inputValue
+        })
+          .then((res) => {
+            this.hostCanView[key].push(inputValue);
+            this.$notify({
+              title: this.$t('notify.success.label'),
+              message: this.$t('notify.success.createSuccess'),
+              type: 'success',
+              duration: 1000,
+              showClose: false
+            })
+            this.inputVisible = false;
+            this.inputValue = '';
+          })
+          .catch((error) => {
+            this.$notify({
+              title: this.$t('notify.errors.label'),
+              message: error,
+              type: 'error',
+              duration: 1000,
+              showClose: false
+            })
+            this.inputValue = '';
+          })
+          .finally(() => {
+            this.submitRulesetLoading = false
+          })
+      }
+      this.inputVisible = false;
+      this.inputValue = '';
     }
   },
 }
 </script>
+
+<style lang="scss" scoped>
+  .el-tag + .el-tag {
+    margin-left: 10px;
+  }
+  .button-new-tag {
+    margin-left: 10px;
+    height: 32px;
+    line-height: 30px;
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+  .input-new-tag {
+    width: 90px;
+    margin-left: 10px;
+    vertical-align: bottom;
+  }
+</style>
