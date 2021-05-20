@@ -339,6 +339,6 @@ export function deleteAllCookies() {
 export function statusDeduce({ success, online, enabled }) {
   if (!online || !enabled) return 'inactive';
   if (online) return 'active';
-  if (!success) return 'unknow';
-  return 'unknow';
+  if (!success) return 'unknown';
+  return 'unknown';
 }

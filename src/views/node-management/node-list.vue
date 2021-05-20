@@ -163,29 +163,32 @@
       :visible.sync="dialogVisible"
       @close="resetTemp()"
       width="500px"
-      :before-close="handleClose">
+      :before-close="handleClose"
+      :show-close="false">
       <template #title>
-        <div class="tc">
+        <div>
           <h2>
             <svg-icon :icon-class="objectCanView.idEnginetype === 2 ? 'host':'netIPS'" />
             {{objectCanView.description}} ({{ objectCanView.name }})
+            <a class="r" style="color:navy;" @click="onClickSetupNode()">
+              <i class="el-icon-s-tools"></i>
+            </a>
           </h2>
         </div>
       </template>
-      <div>
-        <el-button class="r" @click.native="onClickSetupNode" icon="el-icon-s-tools" size="default">Setup</el-button>
-      </div>
       <div class="clearfix"></div>
       <template v-if="objectCanView.idEngine">
-        <p>
-          <strong>Status:</strong>
-          {{ objectCanView.enabled ? (objectCanView.online ? 'online' : 'offline') : 'disabled' }}
-        </p>
-        <p class="pt-1">
-          <span>
+        <div class="my-row">
+          <div class='row-text'>
+            <strong>Status:</strong>{{ objectCanView.enabled ? (objectCanView.online ? 'online' : 'offline') : 'disabled' }}
+          </div>
+        </div>
+        <div class="my-row" style="cursor: pointer;" @click="collapsed=!collapsed">
+          <div class='row-text'>
             <strong>Online:</strong>
             {{ objectCanView.online ? 'online' : 'offline' }}
-          </span>
+            <a class="pl-10" style="color: blue;"><i :class="{'el-icon-arrow-right': collapsed, 'el-icon-arrow-down': !collapsed}"></i></a>
+          </div>
           <el-button
               :loading="onlineLoading" 
               size="mini" 
@@ -195,12 +198,15 @@
           >
             {{ objectCanView.online ? 'offline' : 'online' }}
           </el-button>
-        </p>
-        <p class="pt-1">
-          <span>
+          <div v-show="!collapsed" class="my-row-child">
+            <div v-for="(srv, idx) in objectCanView.serviceStates" key="idx">{{srv.service}} : {{srv.running}}</div>
+          </div>
+        </div>
+        <div class="my-row">
+          <div class="row-text">
             <strong>Enabled:</strong>
             {{ objectCanView.enabled ? 'enabled' : 'disabled' }}
-          </span>
+          </div>
           <el-button 
               size="mini" 
               class="r width-100" 
@@ -209,28 +215,28 @@
           >
             {{ objectCanView.enabled ? 'disabled' : 'enabled'  }}
           </el-button>
-        </p>
-        <p class="pt-1">
-          <strong>Endpoint:</strong>
-          {{ objectCanView.specs.hostname || null }}
-        </p>
-        <p class="pt-1">
-          <strong>Port:</strong>
-          {{ objectCanView.specs.port || null }}
-        </p>
+        </div>
+        <div class="my-row">
+          <div class="row-text">
+            <strong>Endpoint:</strong>{{ objectCanView.specs.hostname || null }}
+          </div>
+        </div>
+        <div class="my-row">
+          <div class="row-text">
+            <strong>Port:</strong> {{ objectCanView.specs.port || null }}
+          </div>
+        </div>
       </template>
-      <p v-else>
-        <strong>Status:</strong>
-        {{ objectCanView.status }}
-      </p>
-      <div>
-        <el-button @click="updateNode()">Edit</el-button>
-        <el-button class="r" size="medium" @click="$router.push({ name: 'HostOverviewECS', params: { hostname: objectCanView.specs.hostname } })">Detail</el-button>
+      <div v-if="!objectCanView.idEngine" class="my-row">
+        <div class="row-text">
+          <strong>Status:</strong>{{ objectCanView.status }}
+        </div>
       </div>
       <div class="clearfix"></div>
-
       <template #footer>
         <span class="dialog-footer">
+          <el-button @click="updateNode()">Edit</el-button>
+          <el-button @click="$router.push({ name: 'HostOverviewECS', params: { hostname: objectCanView.specs.hostname } })">Detail</el-button>
           <el-button @click="dialogVisible = false">Close</el-button>
         </span>
       </template>
@@ -308,7 +314,8 @@ export default {
       objectCanView: {},
       dialogVisible: false,
       onlineLoading: false,
-      nodeFormVisible: false
+      nodeFormVisible: false,
+      collapsed: true
     }
   },
 
@@ -398,10 +405,13 @@ export default {
       let appendNode = async (object) => {
         let status = 'unknown';
         let statusResponse = {}
+        let serviceStates;
         if (object.idEngine) {
           try {
             statusResponse = await rf.getRequest('ContainmentRelRequest').checkHostStatus(object.idObject);
             status = statusDeduce(statusResponse);
+            serviceStates = JSON.parse(statusResponse.data);
+            console.log(serviceStates);
           } catch (e) {
             statusResponse = {}
             status = 'unknown';
@@ -413,6 +423,7 @@ export default {
           name: object.name || object.idContainee,
           description: object.description,
           status,
+          serviceStates,
           online: statusResponse.online || false,
           enabled: statusResponse.enabled || false,
           idEngine: object.idEngine,
@@ -727,6 +738,18 @@ export default {
     }
     .width-100 {
       width: 75px;
+    }
+    .my-row {
+      border-bottom: 1px solid #ccc;
+      padding: 1em 0;
+    }
+    .row-text {
+      display: inline-block;
+      vertical-align: middle;
+      line-height: 2em;
+    }
+    .my-row-child {
+      padding: 0.3em 0 0.3em 2em;
     }
   }
 </style>
