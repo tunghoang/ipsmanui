@@ -162,7 +162,7 @@
     <el-dialog
       :visible.sync="dialogVisible"
       @close="resetTemp()"
-      width="500px"
+      width="600px"
       :before-close="handleClose"
       :show-close="false">
       <template #title>
@@ -199,7 +199,7 @@
             {{ objectCanView.online ? 'offline' : 'online' }}
           </el-button>
           <div v-show="!collapsed" class="my-row-child">
-            <div v-for="(srv, idx) in objectCanView.serviceStates" key="idx">{{srv.service}} : {{srv.running}}</div>
+            <div v-for="(srv, idx) in objectCanView.serviceStates" :key="idx">{{srv.service}} : {{srv.running}}</div>
           </div>
         </div>
         <div class="my-row">
@@ -235,11 +235,37 @@
       <div class="clearfix"></div>
       <template #footer>
         <span class="dialog-footer">
+          <el-button @click="onclickOpenManagerMonitorDirectories">Manage Monitor Directories</el-button>
           <el-button @click="updateNode()">Edit</el-button>
           <el-button @click="$router.push({ name: 'HostOverviewECS', params: { hostname: objectCanView.specs.hostname } })">Detail</el-button>
           <el-button @click="dialogVisible = false">Close</el-button>
         </span>
       </template>
+    </el-dialog>
+    <el-dialog
+      :visible.sync="monitorDirectoriesVisible"
+      width="500px">
+      <template #title>
+        <div>
+          <h2>
+            Manage monitor directories
+          </h2>
+        </div>
+      </template>
+      <ul>
+        <li v-for="(i, index) in monitorDirectoriesCanView">
+          <a @click="doRemoveDireactory(i, index)"><i class="el-icon-close"></i></a>
+          {{ i }}
+        </li>
+      </ul>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="monitorDirectoriesVisible = false">
+          {{ $t('table.cancel') }}
+        </el-button>
+        <el-button type="primary" @click="updateMonitorDirectories">
+          {{ $t('table.update') }}
+        </el-button>
+      </div>
     </el-dialog>
   </div>
 </template>
@@ -315,7 +341,9 @@ export default {
       dialogVisible: false,
       onlineLoading: false,
       nodeFormVisible: false,
-      collapsed: true
+      collapsed: true,
+      monitorDirectoriesVisible: false,
+      monitorDirectoriesCanView: []
     }
   },
 
@@ -677,6 +705,31 @@ export default {
       });
       await new Promise(resolve => setTimeout(resolve, 3000));
       loading.close()
+    },
+
+    onclickOpenManagerMonitorDirectories () {
+      rf.getRequest('ContainmentRelRequest').monitorDireactories(this.objectCanView.idContainer)
+      .then(async (res) => {
+        this.monitorDirectoriesCanView = res.data
+        this.monitorDirectoriesVisible = true
+      })
+    },
+
+    updateMonitorDirectories () {
+      rf.getRequest('ContainmentRelRequest').updateMonitorDireactories(this.objectCanView.idContainer, this.monitorDirectoriesCanView)
+      .then(async () => {
+        this.$notify({
+          title: this.$t('notify.success.label'),
+          message: this.$t('notify.success.updateSuccess'),
+          type: 'success',
+          duration: 1000,
+          showClose: false
+        })
+      })
+    },
+
+    doRemoveDireactory (i, index) {
+      this.monitorDirectoriesCanView.splice(index, 1)
     }
   }
 }
@@ -747,6 +800,7 @@ export default {
       display: inline-block;
       vertical-align: middle;
       line-height: 2em;
+      user-select: none;
     }
     .my-row-child {
       padding: 0.3em 0 0.3em 2em;

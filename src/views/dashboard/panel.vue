@@ -1,6 +1,6 @@
 <template>
   <el-row :gutter="40" class="panel-group">
-    <el-col :xs="12" :sm="12" :lg="8" class="card-panel-col">
+    <el-col :xs="12" :sm="12" :lg="8" class="card-panel-col" @click.native="$router.push({ name: 'UserList' })">
       <div class="card-panel">
         <div class="card-panel-icon-wrapper icon-people">
           <svg-icon icon-class="peoples" class-name="card-panel-icon" />
@@ -13,7 +13,7 @@
         </div>
       </div>
     </el-col>
-    <el-col :xs="12" :sm="12" :lg="8" class="card-panel-col">
+    <el-col :xs="12" :sm="12" :lg="8" class="card-panel-col" @click.native="$router.push({ name: 'EngineList' })">
       <div class="card-panel">
         <div class="card-panel-icon-wrapper icon-table">
           <svg-icon icon-class="server" class-name="card-panel-icon" />
@@ -26,7 +26,7 @@
         </div>
       </div>
     </el-col>
-        <el-col :xs="12" :sm="12" :lg="8" class="card-panel-col">
+    <el-col :xs="12" :sm="12" :lg="8" class="card-panel-col" @click.native="$router.push({ name: 'EngineTypeList' })">
       <div class="card-panel">
         <div class="card-panel-icon-wrapper icon-form">
           <svg-icon icon-class="engine-type" class-name="card-panel-icon" />
@@ -39,7 +39,7 @@
         </div>
       </div>
     </el-col>
-        <el-col :xs="12" :sm="12" :lg="8" class="card-panel-col">
+    <el-col :xs="12" :sm="12" :lg="8" class="card-panel-col" @click.native="$router.push({ name: 'RoleList' })">
       <div class="card-panel">
         <div class="card-panel-icon-wrapper icon-example">
           <svg-icon icon-class="role" class-name="card-panel-icon" />
@@ -49,6 +49,32 @@
             {{ $t('route.role_list') }}
           </div>
           <span :start-val="0" :duration="2600" class="card-panel-num">{{ summary.roles }}</span>
+        </div>
+      </div>
+    </el-col>
+    <el-col :xs="12" :sm="12" :lg="8" class="card-panel-col" @click.native="$router.push({ name: 'NodeList' })">
+      <div class="card-panel">
+        <div class="card-panel-icon-wrapper icon-table">
+          <svg-icon icon-class="host" class-name="card-panel-icon" />
+        </div>
+        <div class="card-panel-description">
+          <div class="card-panel-text">
+            {{ $t('route.host_ips') }}
+          </div>
+          <span :start-val="0" :duration="2600" class="card-panel-num">0</span>
+        </div>
+      </div>
+    </el-col>
+    <el-col :xs="12" :sm="12" :lg="8" class="card-panel-col" @click.native="$router.push({ name: 'NodeList' })">
+      <div class="card-panel">
+        <div class="card-panel-icon-wrapper icon-net">
+          <svg-icon icon-class="netIPS" class-name="card-panel-icon" />
+        </div>
+        <div class="card-panel-description">
+          <div class="card-panel-text">
+            {{ $t('route.net_ips') }}
+          </div>
+          <span :start-val="0" :duration="2600" class="card-panel-num">0</span>
         </div>
       </div>
     </el-col>
@@ -169,6 +195,9 @@ import { Message } from 'element-ui'
       color: #f4516c;
     }
     .icon-form {
+      color: #34bfa3
+    }
+    .icon-net {
       color: #34bfa3
     }
     .card-panel-icon-wrapper {

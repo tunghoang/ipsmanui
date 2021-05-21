@@ -72,4 +72,16 @@ export default class ContainmentRelRequest extends BaseModelRequest {
   deleteRuleset(objectId, params) {
     return this.del(`/control/ruleset/${objectId}`, params);
   }
+
+  monitorDireactories(objectId) {
+    // return this.get(`/control/watchList/${objectId}`);
+    return Promise.resolve({
+      status: 'ok',
+      data: [ 'xxx', 'yuuuu']
+    })
+  }
+
+  updateMonitorDireactories(objectId, params) {
+    return this.put(`/control/watchList/${objectId}`, params);
+  }
 }
