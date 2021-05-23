@@ -3,8 +3,7 @@
     <el-row :gutter="10">
 <!--       <el-col :sm="24" :md="6">
         <el-card shadow="always">
-          <el-form ref="form" :model="treeConfig" label-width="100px">
-            
+          <el-form ref="form" :model="treeConfig" label-width="100px">            
             <el-form-item :label="$t('node.layout_type')" prop="layoutType">
               <el-select v-model="treeConfig.layoutType" placeholder="Select Layout type">
                 <el-option
@@ -178,28 +177,26 @@
       </template>
       <div class="clearfix"></div>
       <template v-if="objectCanView.idEngine">
+        <!--
         <div class="my-row">
           <div class='row-text'>
             <strong>Status:</strong>{{ objectCanView.enabled ? (objectCanView.online ? 'online' : 'offline') : 'disabled' }}
           </div>
         </div>
-        <div class="my-row" style="cursor: pointer;" @click="collapsed=!collapsed">
-          <div class='row-text'>
-            <strong>Online:</strong>
+        -->
+        <div class="my-row" style="cursor: pointer;">
+          <div class='row-text' @click="collapsed=!collapsed">
+            <strong>Online</strong>
             {{ objectCanView.online ? 'online' : 'offline' }}
             <a class="pl-10" style="color: blue;"><i :class="{'el-icon-arrow-right': collapsed, 'el-icon-arrow-down': !collapsed}"></i></a>
           </div>
-          <el-button
-              :loading="onlineLoading" 
-              size="mini" 
-              class="r width-100" 
-              :type="objectCanView.online ? 'primary' : 'info'" 
-              @click="changeOnline"
-          >
-            {{ objectCanView.online ? 'offline' : 'online' }}
-          </el-button>
+          <el-switch class="r" v-model="objectCanView.online"></el-switch>
           <div v-show="!collapsed" class="my-row-child">
-            <div v-for="(srv, idx) in objectCanView.serviceStates" :key="idx">{{srv.service}} : {{srv.running}}</div>
+            <div v-for="(srv, idx) in objectCanView.serviceStates" :key="idx" class='pt-1'>
+              <i :class="{'el-icon-success color-success mr-1':srv.running, 'el-icon-remove color-danger mr-1': !srv.running}">
+              </i>
+              <span class="service-name">{{srv.service}}</span> : <span class="service-status">{{srv.running?'running':'stopped'}}</span>
+            </div>
           </div>
         </div>
         <div class="my-row">
@@ -207,14 +204,7 @@
             <strong>Enabled:</strong>
             {{ objectCanView.enabled ? 'enabled' : 'disabled' }}
           </div>
-          <el-button 
-              size="mini" 
-              class="r width-100" 
-              :type="objectCanView.enabled ? 'primary' : 'info'" 
-              @click="changeLock"
-          >
-            {{ objectCanView.enabled ? 'disabled' : 'enabled'  }}
-          </el-button>
+          <el-switch class="r" v-model="objectCanView.enabled"></el-switch>
         </div>
         <div class="my-row">
           <div class="row-text">
@@ -248,14 +238,24 @@
       <template #title>
         <div>
           <h2>
-            Manage monitor directories
+            Monitored directories on {{objectCanView.name}}
           </h2>
         </div>
       </template>
-      <ul>
-        <li v-for="(i, index) in monitorDirectoriesCanView">
-          <a @click="doRemoveDireactory(i, index)"><i class="el-icon-close"></i></a>
-          {{ i }}
+      <el-form :inline="true" class='tc'>
+        <el-form-item>
+          <el-button :disabled="!newDir || !newDir.length" @click.prevent.stop="addNewDir">Add</el-button>
+        </el-form-item>
+        <el-form-item>
+          <el-input v-model="newDir" placeholder="New directory"></el-input>
+        </el-form-item>
+      </el-form>
+      <ul class="list-style-none">
+        <li style="margin: 5px 0 0 0"v-for="(i, index) in monitorDirectoriesCanView">
+          <div class="directory-entry">
+            <a style="margin: 0 7px 0 0;" @click="doRemoveDirectory(i, index)"><i class="el-icon-error"></i></a>
+            {{ i }}
+          </div>
         </li>
       </ul>
       <div slot="footer" class="dialog-footer">
@@ -343,7 +343,8 @@ export default {
       nodeFormVisible: false,
       collapsed: true,
       monitorDirectoriesVisible: false,
-      monitorDirectoriesCanView: []
+      monitorDirectoriesCanView: [],
+      newDir: null
     }
   },
 
@@ -360,7 +361,11 @@ export default {
   //     this.idEngine = val === null || val === '' ? undefined : val
   //   }
   // },
-
+  watch: {
+    'objectCanView.online': function() {
+        this.changeOnline();
+    }
+  },
   methods: {
     getList () {
       rf.getRequest('ContainmentRelRequest').getList(this.params)
@@ -623,15 +628,18 @@ export default {
     },
     changeOnline() {
       if (this.isSubmitting) return
-      const instence = rf.getRequest('ContainmentRelRequest')
+      const instance = rf.getRequest('ContainmentRelRequest')
       this.startSubmit()
       this.onlineLoading = true
-      if (this.objectCanView.online) {
-        instence.stopHost(this.objectCanView.idContainer)
+      if (!this.objectCanView.online) {
+        instance.stopHost(this.objectCanView.idContainer)
           .then((res) => {
             this.objectCanView.online = res.online
             this.objectCanView.status = statusDeduce(res)
             this.objectCanView.enabled = res.enabled
+            console.log(this.objectCanView);
+            this.objectCanView.serviceStates = JSON.parse(res.data);
+            this.objectCanView.online = res.online;
           })
           .catch(e => console.log(e))
           .finally(() => {
@@ -640,11 +648,13 @@ export default {
           })
         return
       }
-      instence.startHost(this.objectCanView.idContainer)
+      instance.startHost(this.objectCanView.idContainer)
         .then((res) => {
           this.objectCanView.online = res.online
           this.objectCanView.status = statusDeduce(res)
           this.objectCanView.enabled = res.enabled
+          this.objectCanView.serviceStates = JSON.parse(res.data);
+          this.objectCanView.online = res.online;
         })
         .catch(e => console.log(e))
         .finally(() => {
@@ -708,7 +718,7 @@ export default {
     },
 
     onclickOpenManagerMonitorDirectories () {
-      rf.getRequest('ContainmentRelRequest').monitorDireactories(this.objectCanView.idContainer)
+      rf.getRequest('ContainmentRelRequest').monitorDirectories(this.objectCanView.idContainer)
       .then(async (res) => {
         this.monitorDirectoriesCanView = res.data
         this.monitorDirectoriesVisible = true
@@ -716,7 +726,7 @@ export default {
     },
 
     updateMonitorDirectories () {
-      rf.getRequest('ContainmentRelRequest').updateMonitorDireactories(this.objectCanView.idContainer, this.monitorDirectoriesCanView)
+      rf.getRequest('ContainmentRelRequest').updateMonitorDirectories(this.objectCanView.idContainer, this.monitorDirectoriesCanView)
       .then(async () => {
         this.$notify({
           title: this.$t('notify.success.label'),
@@ -724,12 +734,18 @@ export default {
           type: 'success',
           duration: 1000,
           showClose: false
-        })
+        });
+        this.monitorDirectoriesVisible = false;
       })
     },
 
-    doRemoveDireactory (i, index) {
+    doRemoveDirectory (i, index) { 
       this.monitorDirectoriesCanView.splice(index, 1)
+    },
+    addNewDir() {
+      if (!this.newDir || !this.newDir.length) return;
+      this.monitorDirectoriesCanView.push((" " + this.newDir).slice(1));
+      this.newDir = null;
     }
   }
 }
@@ -786,24 +802,40 @@ export default {
       }
     }
     .el-dialog__body {
-      padding-top: 0;
-      padding-bottom: 0;
+        padding-top: 0;
+        padding-bottom: 0;
     }
     .width-100 {
-      width: 75px;
+        width: 75px;
     }
     .my-row {
-      border-bottom: 1px solid #ccc;
-      padding: 1em 0;
+        border-bottom: 1px solid #ccc;
+        padding: 1em 0;
     }
     .row-text {
-      display: inline-block;
-      vertical-align: middle;
-      line-height: 2em;
-      user-select: none;
+        display: inline-block;
+        vertical-align: middle;
+        user-select: none;
     }
     .my-row-child {
-      padding: 0.3em 0 0.3em 2em;
+        padding: 0.3em 0 0.3em 2em;
+    }
+    ul.list-style-none {
+        list-style: none;
+    }
+    div.directory-entry {
+        display: inline-block;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 1.2em;
+        padding: 7px;
+    }
+    .service-name {
+        font-weight: 500;
+    }
+    .service-status {
+        font-weight: 300;
+        font-style: italic;
     }
   }
-</style>
+</style>  

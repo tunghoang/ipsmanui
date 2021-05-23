@@ -39,6 +39,12 @@
   max-width: 100%;
 }
 
+.color-danger {
+    color: $--color-danger;
+}
+.color-success {
+    color: $--color-success;
+}
 
 // border left 
 .border-left {
