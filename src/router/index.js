@@ -210,6 +210,16 @@ export const asyncRoutes = [
           roles: ['admin', 'superadmin'] // or you can only set roles in sub nav
         }
       },
+      {
+        path: 'ips',
+        component: () => import('@/views/node-management/ips-list'),
+        name: 'IpsList',
+        meta: {
+          title: 'ips_list',
+          icon: 'host',
+          roles: ['admin', 'superadmin'] // or you can only set roles in sub nav
+        }
+      },
     ]
   },
   {

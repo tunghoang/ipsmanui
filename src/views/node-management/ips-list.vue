@@ -1,5 +1,5 @@
 <template>
-  <div class="app-container role-management">
+  <div class="app-container user-management">
     <div class="filter-container">
       <el-input style="width: 200px;"
                 v-model="params.key"
@@ -9,12 +9,17 @@
       <el-button v-waves class="filter-item ml-1" type="primary" icon="el-icon-search" @click="handleRefreshTable">
         {{ $t('table.search') }}
       </el-button>
-      <el-button v-waves :loading="isSubmitting" style="margin-left: 10px; float: right;" class="filter-item float-right" type="primary" icon="el-icon-download" @click="handleDownload">
-        {{ $t('table.export') }}
-      </el-button>
-      <el-button style="float: right;" class="filter-item float-right" type="primary" icon="el-icon-plus" @click="handleCreateSingle">
-        {{ $t('table.add') }}
-      </el-button>
+      <el-select style="width: 130px" 
+                v-model="params.idEnginetype"
+                class="filter-item ml-3"
+                :placeholder="$t('table.status')"
+                @change="handleRefreshTable"
+                clearable >
+        <el-option v-for="item in engineTypes" 
+                  :key="item.idEnginetype" 
+                  :label="item.name" 
+                  :value="item.idEnginetype" />
+      </el-select>
     </div>
 
     <el-table
@@ -26,38 +31,51 @@
       style="width: 100%;"
       @sort-change="sortChange"
     >
-      <el-table-column :label="$t('table.id')" prop="idRole" sortable align="center" width="100px">
+      <el-table-column :label="$t('table.idObject')" sortable prop="idObject" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.idRole }}</span>
+          <span>{{ scope.row.idObject }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column :label="$t('table.idEnginetype')" prop="idEnginetype" sortable align="center" width="150px">
+        <template slot-scope="scope">
+          <span>{{ scope.row.idEnginetype }}</span>
         </template>
       </el-table-column>
       <el-table-column :label="$t('table.name')" sortable prop="name" align="center">
-        <template slot-scope="{row}">
-          <span class="link-type">{{ row.name }}</span>
+        <template slot-scope="scope">
+          <span>{{ scope.row.name }}</span>
         </template>
       </el-table-column>
       <el-table-column :label="$t('table.description')" sortable prop="description" align="center">
         <template slot-scope="scope">
-          <span class="el-link--info" @click="handleUpdate(scope.row)">{{ scope.row.description }}</span>
+          <span>{{ scope.row.description }}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('table.actions')" fixed="right" align="center" width="200" class-name="small-padding fixed-width">
-        <template slot-scope="{row}">
-          <div class="d-flex">
-            <el-button type="primary" icon="el-icon-user-solid" size="mini" class="w-auto" @click="$router.push({ name: 'UsersOfRole', params: { id: row.idRole } })" :title="$t('table.all_user')">
-            </el-button>
-            <el-button type="primary" icon="el-icon-edit-outline" size="mini" class="w-auto" @click.native="$router.push({ name: 'PermissionOfRole', params: { id: row.idRole } })" :title="$t('table.edit_permission')">
-            </el-button>
-            <el-button type="primary" icon="el-icon-edit" size="mini" @click="handleUpdate(row)" :title="$t('table.edit')">
-            </el-button>
-            <el-button type="danger" icon="el-icon-delete" size="mini" @click="handleDelete(row)" :title="$t('table.delete')">
-            </el-button>
-          </div>
+      <el-table-column :label="$t('table.hostname')" sortable prop="specs" align="center">
+        <template slot-scope="scope">
+          <span>{{ scope.row.specs.hostname }}</span>
         </template>
-      </el-table-column> 
+      </el-table-column>
+      <el-table-column :label="$t('table.port')" sortable prop="specs" align="center">
+        <template slot-scope="scope">
+          <span>{{ scope.row.specs.port }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column :label="$t('table.actions')" fixed="right" align="center" width="200" class-name="small-padding">
+        <template slot-scope="{row}">
+          <el-button type="primary" icon="el-icon-edit" size="mini" @click="handleUpdate(row)" :title="$t('table.edit')">
+          </el-button>
+          <el-button type="primary" size="mini" @click="handleDetail(row)" :title="$t('table.edit')">
+            <svg-icon icon-class="eye-open" />
+          </el-button>
+          <el-button type="danger" icon="el-icon-delete" size="mini" :title="$t('table.delete')" @click="handleDelete(row)">
+          </el-button>
+        </template>
+      </el-table-column>
     </el-table>
 
     <pagination v-show="total>0" :total="total" :page.sync="params.page" :limit.sync="params.limit" @pagination="getList" />
+    <DialogIps :objectCanView="rowCanView" v-if="!isEmpty(rowCanView)" :dialogVisible="dialogVisible" @close="handleClose" @detail="detailIps"></DialogIps>
 
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" @close="resetError()">
       <el-form ref="dataFormSingle" :model="temp" label-position="left" label-width="100px" style="width: 100%">
@@ -74,7 +92,7 @@
             {{ errors.first('name') }}
           </div>
         </el-form-item>
-        <el-form-item :label="$t('table.description')">
+<!--         <el-form-item :label="$t('table.description')">
           <el-input v-model="temp.description"
                     tabindex="1"
                     @focus="resetError"
@@ -87,12 +105,33 @@
             {{ errors.first('description') }}
           </div>
         </el-form-item>
+        <el-form-item :label="$t('table.engine_type')">
+          <el-select
+                v-model="temp.idEnginetype"
+                class="filter-item"
+                tabindex="1"
+                @focus="resetError"
+                name="engine-type"
+                :placeholder="$t('table.engine_type')"
+                :class="{ error: errors.has('engine-type') }"
+                data-vv-validate-on="none"
+                v-validate="'required'"
+                clearable >
+            <el-option v-for="item in engineTypes"
+                  :key="item.idEnginetype" 
+                  :label="item.name" 
+                  :value="item.idEnginetype" />
+          </el-select>
+          <div class="el-form-item__error" v-if="errors.has('engine-type')">
+            {{ errors.first('engine-type') }}
+          </div>
+        </el-form-item> -->
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">
           {{ $t('table.cancel') }}
         </el-button>
-        <el-button type="primary" @click="dialogStatus==='create'?createData():updateData()">
+        <el-button type="primary" @click="updateData()">
           {{ $t('table.confirm') }}
         </el-button>
       </div>
@@ -102,15 +141,20 @@
 
 <script>
 import waves from '@/directive/waves' // waves directive
-import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 import rf from 'requestfactory'
 import { Message } from 'element-ui'
 import RemoveErrorsMixin from 'common/RemoveErrorsMixin'
+import { statusDeduce } from '../../utils'
+import DialogIps from './DialogIps'
+import { isEmpty, map, cloneDeep } from 'lodash'
 
 export default {
-  name: 'UserList',
-  components: { Pagination },
+  name: 'IpsList',
+  components: {
+    Pagination,
+    DialogIps
+  },
   directives: { waves },
   mixins: [RemoveErrorsMixin],
   data() {
@@ -123,14 +167,13 @@ export default {
         page: 1,
         limit: 20,
         key: undefined,
+        idEnginetype: undefined,
         status: undefined,
         sort: 'updated_at',
         order: 'desc'
       },
       temp: {
-        idRole: undefined,
-        name: '',
-        description: ''
+        name: ''
       },
       dialogFormVisible: false,
       dialogStatus: '',
@@ -140,20 +183,50 @@ export default {
         upload: this.$t('upload.title')
       },
       fileList: [],
-      isSubmitting: false
+      isSubmitting: false,
+      engineTypes: [],
+      rowCanView: {},
+      dialogVisible: false
     }
   },
-  mounted() {
-    this.getList()
+  async mounted() {
+    await this.loadEngineTypes()
   },
   methods: {
-    getList() {
-      rf.getRequest('RoleRequest').getList(this.params)
+    loadEngineTypes() {
+      let params = {}
+      rf.getRequest('EngineTypeRequest').getList(params)
       .then(async response => {
-        this.list = response
+        await this.getList()
+        this.engineTypes = map(response, engineType => {
+          return {
+            idEnginetype: engineType.idEnginetype,
+            name: engineType.name,
+            value: engineType.name,
+            description: engineType.description
+          }
+        })
+        this.options = cloneDeep(response)
+      })
+      .catch(error => {
+        this.errors.add({field: 'error', msg: error.response.data.message});
+        Message.error(this.$t(this.errors.first('error')) || this.$t('auth.unknowError'))
+      });
+    },
+    getList() {
+      rf.getRequest('ContainmentRelRequest').getIpsList(this.params)
+      .then(async response => {
+        if (this.params.idEnginetype) {
+          response = response.filter(item => item.idEnginetype === this.params.idEnginetype);
+        }
+        this.list = response.map(item => ({
+          ...item,
+          specs: JSON.parse(item.specs)
+        }))
         this.total = response.length
       })
       .catch(error => {
+        console.log(error)
         this.errors.add({field: 'error', msg: error.response.data.message});
         Message.error(this.$t(this.errors.first('error')) || this.$t('auth.unknowError'))
       })
@@ -196,55 +269,9 @@ export default {
         Message.error(this.$t(this.errors.first('error')) || this.$t('auth.unknowError'))
       }
     },
-    handleCreateSingle() {
-      this.resetTemp()
-      this.dialogStatus = 'create'
-      this.dialogFormVisible = true
-      this.$nextTick(() => {
-        this.$refs['dataFormSingle'].clearValidate()
-      })
-    },
-    async createData() {
-      this.resetError();
-      if (this.isSubmitting) {
-        return;
-      }
-      await this.$validator.validate('name');
-      await this.$validator.validate('description');
-      if (this.errors.any()) {
-        return;
-      }
-      rf.getRequest('RoleRequest').create(this.temp)
-      .then(() => {
-        this.dialogFormVisible = false
-        this.$notify({
-          title: this.$t('notify.success.label'),
-          message: this.$t('notify.success.createSuccess'),
-          type: 'success',
-          duration: 1000,
-          showClose: false
-        })
-        this.handleRefreshTable()
-      })
-      .catch(error => {
-        this.handleError(error)
-      })
-
-    },
-    handleRemove(file, fileList) {
-      console.log(file, fileList);
-    },
-    handlePreview(file) {
-      console.log(file);
-    },
-    beforeRemove(file) {
-      return this.$confirm(`Cancel the transfert of ${ file.name } ?`);
-    },
     resetTemp() {
       this.temp = {
-        idRole: undefined,
-        name: '',
-        description: ''
+        name: ''
       }
     },
     handleUpdate(row) {
@@ -254,6 +281,32 @@ export default {
       this.temp = Object.assign({}, row) // copy obj
       this.dialogStatus = 'update'
       this.dialogFormVisible = true
+      this.rowCanView = row
+    },
+    isEmpty(value) {
+      return !!isEmpty(value)
+    },
+    async handleDetail(row) {
+      rf.getRequest('ContainmentRelRequest').checkHostStatus(row.idObject)
+        .then(res => {
+          const status = statusDeduce(res) || status;
+          const serviceStates = JSON.parse(res.data);
+
+          this.rowCanView = {
+            ...row,
+            idContainer: row.idObject,
+            children: [],
+            name: row.name || row.idContainee,
+            description: row.description,
+            status,
+            serviceStates,
+            online: res.online || false,
+            enabled: res.enabled || false
+          }
+        })
+        .then(() => {
+          this.dialogVisible = true
+        })
     },
     async updateData() {
       this.resetError();
@@ -261,12 +314,11 @@ export default {
         return;
       }
       await this.$validator.validate('name');
-      await this.$validator.validate('description');
       if (this.errors.any()) {
         return;
       }
-      let params = window._.cloneDeep(this.temp)
-      rf.getRequest('RoleRequest').update(params.idRole, params)
+      let params = cloneDeep(this.temp)
+      rf.getRequest('ContainmentRelRequest').update(this.rowCanView.idObject, params)
       .then(() => {
         this.dialogFormVisible = false
         this.$notify({
@@ -279,58 +331,6 @@ export default {
         this.handleRefreshTable()
       })
     },
-    handleDownload() {
-      this.isSubmitting = true
-      rf.getRequest('RoleRequest').export(this.params)
-      .then(async response => {
-        let dataExport = []
-        response.map((item, index) => {item.no = index + 1 ; dataExport.push(item)})
-        this.handleExport(dataExport);
-      })
-      .catch(error => {
-        this.isSubmitting = false
-        this.errors.add({field: 'error', msg: error});
-        this.$notify({
-          title: this.$t('notify.errors.label'),
-          message: this.$t(this.errors.first('error')) || this.$t('notify.errors.unknow'),
-          type: 'error',
-          duration: 1000,
-          showClose: false
-        })
-      });
-    },
-    handleExport(dataExport) {
-      import('@/vendor/Export2Excel').then(excel => {
-        const tHeader = [this.$t('no'), this.$t('table.id'), this.$t('table.name'), this.$t('table.description')]
-        const filterVal = ['no', 'idRole', 'name', 'description']
-        const data = this.formatJson(filterVal, dataExport)
-        excel.export_json_to_excel({
-          header: tHeader,
-          data,
-          filename: `${this.$t('route.role_list')}`
-        })
-        this.isSubmitting = false
-      })
-      .catch(error => {
-        this.isSubmitting = false
-        this.$notify({
-          title: this.$t('notify.errors.label'),
-          message: error,
-          type: 'error',
-          duration: 1000,
-          showClose: false
-        })
-      });
-    },
-    formatJson(filterVal, jsonData) {
-      return jsonData.map(v => filterVal.map(j => {
-        if (j === 'timestamp') {
-          return parseTime(v[j])
-        } else {
-          return v[j]
-        }
-      }))
-    },
     handleDelete(row) {
       this.$confirm(this.$t('notify.text.delete'), 'Warning', {
         confirmButtonText: this.$t('action.ok'),
@@ -338,7 +338,7 @@ export default {
         type: 'warning',
         center: true
       }).then(() => {
-        rf.getRequest('RoleRequest').delete(row.idRole)
+        rf.getRequest('ContainmentRelRequest').delete(row.idObject)
           .then(() => {
             this.$message({
               type: 'success',
@@ -352,6 +352,14 @@ export default {
           message: this.$t('notify.info.cancel'),
         });
       });
+    },
+    handleClose () {
+      this.dialogVisible = false
+      this.rowCanView = {}
+    },
+    detailIps () {
+      this.dialogVisible = false
+      this.$router.push({ name: 'HostOverviewECS', params: { hostname: this.rowCanView.specs.hostname } })
     }
   },
 }

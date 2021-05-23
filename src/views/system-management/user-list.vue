@@ -36,17 +36,14 @@
           <span class="link-type" @click="handleUpdate(scope.row)">{{ scope.row.username }}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('table.actions')" fixed="right" align="center" width="270" class-name="small-padding fixed-width">
+      <el-table-column :label="$t('table.actions')" fixed="right" align="center" width="270" class-name="small-padding">
         <template slot-scope="{row}">
-          <el-button type="primary" size="mini" class="w-auto" @click.native="$router.push({ name: 'RoleOfUser', params: { id: row.idUser } })">
-            {{ $t('table.edit_role') }}
+          <el-button type="primary" size="mini" @click.native="$router.push({ name: 'RoleOfUser', params: { id: row.idUser } })" icon="el-icon-edit-outline" :title="$t('table.edit_role')">
           </el-button>
-          <el-button type="primary" size="mini" @click="handleUpdate(row)">
-            {{ $t('table.edit') }}
-          </el-button>
-          <el-button type="danger" size="mini" @click="handleDelete(row)">
-            {{ $t('table.delete') }}
-          </el-button>
+          <el-button type="primary" icon="el-icon-edit" size="mini" @click="handleUpdate(row)" :title="$t('table.edit')">
+            </el-button>
+          <el-button type="danger" icon="el-icon-delete" size="mini" @click="handleDelete(row)" :title="$t('table.delete')">
+            </el-button>
         </template>
       </el-table-column> 
     </el-table>

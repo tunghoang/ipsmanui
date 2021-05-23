@@ -41,7 +41,8 @@
     host_overview_ecs: '{hostname}',
     host_overview_ecs_static: 'Host Overview ECS',
     overview_ecs: 'Overview ECS',
-    modsecurity: 'ModSecurity'
+    modsecurity: 'ModSecurity',
+    ips_list: 'IPS List'
   },
   navbar: {
     dashboard: 'Dashboard',

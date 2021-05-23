@@ -59,16 +59,13 @@
           <span class="link-type" @click="handleUpdate(scope.row)">{{ scope.row.specs.port }}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('table.actions')" fixed="right" align="center" width="300" class-name="small-padding fixed-width">
+      <el-table-column :label="$t('table.actions')" fixed="right" align="center" width="300" class-name="small-padding">
         <template slot-scope="{row}">
-          <el-button type="primary" size="mini" @click="handleUpdate(row)">
-            {{ $t('table.edit') }}
+          <el-button type="primary" icon="el-icon-edit" size="mini" @click="handleUpdate(row)" :title="$t('table.edit')">
           </el-button>
-          <el-button type="primary" class="w-auto" size="mini" :disabled="!row.idObject" @click="handleViewRuleManagement(row)">
-            {{ $t('route.rules_management') }}
+          <el-button type="primary" icon="el-icon-edit-outline" class="w-auto" size="mini" :disabled="!row.idObject" @click="handleViewRuleManagement(row)" :title="$t('route.rules_management')">
           </el-button>
-          <el-button type="danger" size="mini" @click="handleDelete(row)">
-            {{ $t('table.delete') }}
+          <el-button type="danger" icon="el-icon-delete" size="mini" :title="$t('table.delete')" @click="handleDelete(row)">
           </el-button>
         </template>
       </el-table-column> 
@@ -79,7 +76,7 @@
     <!-- dialog edit, create -->
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" @close="resetError()">
       <el-form ref="dataFormSingle" :model="temp" label-position="left" label-width="120px" style="width: 100%">
-        <el-form-item :label="$t('table.name')" prop="idEnginetype">
+        <el-form-item :label="$t('table.engine_type')" prop="idEnginetype">
           <el-select
                 v-model="temp.idEnginetype"
                 class="filter-item"
@@ -613,7 +610,7 @@ export default {
           webserver: key,
           ruleset: inputValue
         })
-          .then((res) => {
+          .then(() => {
             this.hostCanView[key].push(inputValue);
             this.$notify({
               title: this.$t('notify.success.label'),

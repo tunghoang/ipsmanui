@@ -25,6 +25,10 @@ export default class ContainmentRelRequest extends BaseModelRequest {
     return this.post('/containmentRels/', params);
   }
 
+  getIpsList(params) {
+    return this.get('/objects/ips', params);
+  }
+
   create(params) {
     return this.post('/objects/', params);
   }
