@@ -190,6 +190,7 @@ export default {
     }
   },
   async mounted() {
+    this.params.idEnginetype = this.$route.query.idEnginetype
     await this.loadEngineTypes()
   },
   methods: {

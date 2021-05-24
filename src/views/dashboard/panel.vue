@@ -52,7 +52,7 @@
         </div>
       </div>
     </el-col>
-    <el-col :xs="12" :sm="12" :lg="8" class="card-panel-col" @click.native="$router.push({ name: 'NodeList' })">
+    <el-col :xs="12" :sm="12" :lg="8" class="card-panel-col" @click.native="$router.push({ name: 'IpsList', query: { idEnginetype: 2 } })">
       <div class="card-panel">
         <div class="card-panel-icon-wrapper icon-table">
           <svg-icon icon-class="host" class-name="card-panel-icon" />
@@ -61,11 +61,11 @@
           <div class="card-panel-text">
             {{ $t('route.host_ips') }}
           </div>
-          <span :start-val="0" :duration="2600" class="card-panel-num">0</span>
+          <span :start-val="0" :duration="2600" class="card-panel-num">{{ summary.hostIps }}</span>
         </div>
       </div>
     </el-col>
-    <el-col :xs="12" :sm="12" :lg="8" class="card-panel-col" @click.native="$router.push({ name: 'NodeList' })">
+    <el-col :xs="12" :sm="12" :lg="8" class="card-panel-col" @click.native="$router.push({ name: 'IpsList', query: { idEnginetype: 1 } })">
       <div class="card-panel">
         <div class="card-panel-icon-wrapper icon-net">
           <svg-icon icon-class="netIPS" class-name="card-panel-icon" />
@@ -74,7 +74,7 @@
           <div class="card-panel-text">
             {{ $t('route.net_ips') }}
           </div>
-          <span :start-val="0" :duration="2600" class="card-panel-num">0</span>
+          <span :start-val="0" :duration="2600" class="card-panel-num">{{ summary.netIps }}</span>
         </div>
       </div>
     </el-col>
@@ -91,7 +91,9 @@ import { Message } from 'element-ui'
           users: 0,
           roles: 0,
           engines: 0,
-          enginetypes: 0
+          enginetypes: 0,
+          hostIps: 0,
+          netIps: 0
         }
       }
     },
@@ -124,7 +126,19 @@ import { Message } from 'element-ui'
       getEngines() {
         rf.getRequest('EngineRequest').getList({})
         .then(async response => {
+          this.getIps()
           this.summary.engines = response.length
+        })
+        .catch(error => {
+          this.errors.add({field: 'error', msg: error.response.data.message});
+          Message.error(this.$t(this.errors.first('error')) || this.$t('auth.unknowError'))
+        })
+      },
+      getIps() {
+        rf.getRequest('ContainmentRelRequest').getIpsList({})
+        .then(async response => {
+          this.summary.hostIps = response.filter(item => item.idEnginetype === 2).length
+          this.summary.netIps = response.filter(item => item.idEnginetype === 1).length
         })
         .catch(error => {
           this.errors.add({field: 'error', msg: error.response.data.message});
