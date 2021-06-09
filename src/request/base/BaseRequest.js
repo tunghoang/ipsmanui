@@ -6,11 +6,7 @@ window.axios = require("axios")
 
 window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest'
 
-// window.axios.create({
-//   baseURL: 'http://112.137.129.214:15580',
-//   withCredentials: true,
-//   timeout: 5000
-// })
+window.axios.defaults.timeout = 20000
 
 window.axios.interceptors.request.use(
   config => {
