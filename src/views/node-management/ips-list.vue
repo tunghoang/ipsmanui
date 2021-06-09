@@ -38,7 +38,7 @@
       </el-table-column>
       <el-table-column :label="$t('table.idEnginetype')" prop="idEnginetype" sortable align="center" width="150px">
         <template slot-scope="scope">
-          <span>{{ scope.row.idEnginetype }}</span>
+          <span>{{ scope.row.idEnginetype===1?'NetIPS':'HostIPS'}}</span>
         </template>
       </el-table-column>
       <el-table-column :label="$t('table.name')" sortable prop="name" align="center">

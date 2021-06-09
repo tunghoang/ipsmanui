@@ -119,6 +119,7 @@
 
 <script>
 import rf from 'requestfactory'
+import { statusDeduce } from '../../utils'
 
 export default {
   name: 'DialogDetailIPS',
@@ -148,10 +149,50 @@ export default {
       newDir: null
     }
   },
+  watch: {
+    'objectCanView.online': function() {
+      this.changeOnline();
+    }
+  },
 
   methods: {
     updateNode () {
       this.$emit('updateNode')
+    },
+
+    changeOnline() {
+      if (this.isSubmitting) return
+      const instance = rf.getRequest('ContainmentRelRequest')
+      this.startSubmit()
+      this.onlineLoading = true
+      if (!this.objectCanView.online) {
+        instance.stopHost(this.objectCanView.idContainer)
+          .then((res) => {
+            this.objectCanView.status = statusDeduce(res)
+            this.objectCanView.enabled = res.enabled
+            console.log(this.objectCanView);
+            this.objectCanView.serviceStates = JSON.parse(res.data);
+            this.objectCanView.online = res.online;
+          })
+          .catch(e => console.log(e))
+          .finally(() => {
+            this.endSubmit()
+            this.onlineLoading = false
+          })
+        return
+      }
+      instance.startHost(this.objectCanView.idContainer)
+        .then((res) => {
+          this.objectCanView.status = statusDeduce(res)
+          this.objectCanView.enabled = res.enabled
+          this.objectCanView.serviceStates = JSON.parse(res.data);
+          this.objectCanView.online = res.online;
+        })
+        .catch(e => console.log(e))
+        .finally(() => {
+          this.endSubmit()
+          this.onlineLoading = false
+        })
     },
 
     beforeClose () {

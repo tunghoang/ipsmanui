@@ -396,26 +396,32 @@ export default {
         return;
       }
       await this.$validator.validate('enginetype');
-      await this.$validator.validate('specs');
+      await this.$validator.validate('hostname');
+      await this.$validator.validate('port');
       if (this.errors.any()) {
         return;
       }
-      // rf.getRequest('EngineRequest').create(this.temp)
-      // .then(() => {
-      //   this.dialogFormVisible = false
-      //   this.$notify({
-      //     title: this.$t('notify.success.label'),
-      //     message: this.$t('notify.success.createSuccess'),
-      //     type: 'success',
-      //     duration: 1000,
-      //     showClose: false
-      //   })
-      //   this.handleRefreshTable()
-      // })
-      // .catch(error => {
-      //   this.handleError(error)
-      // })
+      let params = window._.cloneDeep(this.temp)
+      params = {
+        ...params,
+        specs: JSON.stringify(params.specs)
+      }
 
+      rf.getRequest('EngineRequest').create(params)
+      .then(() => {
+        this.dialogFormVisible = false
+        this.$notify({
+          title: this.$t('notify.success.label'),
+          message: this.$t('notify.success.createSuccess'),
+          type: 'success',
+          duration: 1000,
+          showClose: false
+        })
+        this.handleRefreshTable()
+      })
+      .catch(error => {
+        this.handleError(error)
+      })
     },
     resetTemp() {
       this.temp = {
