@@ -116,7 +116,7 @@
                 :class="{ error: errors.has('engine') }"
                 data-vv-validate-on="none"
                 v-validate="'required'">
-            <el-option v-for="item in engines" :key="item.idEngine" :label="item.specs" :value="item.idEngine" />
+            <el-option v-for="item in engines" :key="item.idEngine" :label="JSON.parse(item.specs).hostname" :value="item.idEngine" @click.native="onClickAutoFillNodeName(JSON.parse(item.specs).hostname)" />
           </el-select>
           <div class="el-form-item__error" v-if="errors.has('engine')">
             {{ errors.first('engine') }}
@@ -560,6 +560,9 @@ export default {
     detailIps () {
       this.dialogVisible = false
       this.$router.push({ name: 'HostOverviewECS', params: { hostname: this.objectCanView.specs.hostname } })
+    },
+    onClickAutoFillNodeName (hostname) {
+      this.temp.name = hostname
     }
   }
 }

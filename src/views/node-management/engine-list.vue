@@ -63,7 +63,7 @@
         <template slot-scope="{row}">
           <el-button type="primary" icon="el-icon-edit" size="mini" @click="handleUpdate(row)" :title="$t('table.edit')">
           </el-button>
-          <el-button type="primary" icon="el-icon-edit-outline" class="w-auto" size="mini" :disabled="!row.idObject" @click="handleViewRuleManagement(row)" :title="$t('route.rules_management')">
+          <el-button type="primary" icon="el-icon-edit-outline" class="w-auto" size="mini" :disabled="!row.idObject || row.idEnginetype === 1" @click="handleViewRuleManagement(row)" :title="$t('route.rules_management')">
           </el-button>
           <el-button type="danger" icon="el-icon-delete" size="mini" :title="$t('table.delete')" @click="handleDelete(row)">
           </el-button>

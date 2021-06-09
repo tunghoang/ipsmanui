@@ -69,7 +69,7 @@
       <div class="clearfix"></div>
       <template #footer>
         <span class="dialog-footer">
-          <el-button @click="onclickOpenManagerMonitorDirectories">Manage Monitor Directories</el-button>
+          <el-button @click="onclickOpenManagerMonitorDirectories" v-if="objectCanView.idEnginetype === 2">Manage Monitor Directories</el-button>
           <template v-if="refer === 'node' && objectCanView.idEngine">
             <el-button @click="$emit('updateNode')">Edit</el-button>
           </template>
@@ -97,7 +97,7 @@
           <el-input v-model="newDir" placeholder="New directory"></el-input>
         </el-form-item>
       </el-form>
-      <ul class="list-style-none">
+      <ul class="list-style-none" v-if="Array.isArray(monitorDirectoriesCanView)">
         <li style="margin: 5px 0 0 0" :key="index" v-for="(i, index) in monitorDirectoriesCanView">
           <div class="directory-entry">
             <a style="margin: 0 7px 0 0;" @click="doRemoveDirectory(i, index)"><i class="el-icon-error"></i></a>
