@@ -286,7 +286,7 @@ export default {
         formData.append('application', this.temp.application);
         formData.append('version', this.temp.version);
         formData.append('enginetype', this.temp.idEnginetype);
-        rf.getRequest('EngineTypeRequest').create(formData)
+        rf.getRequest('RulePackageRequest').create(formData)
         .then(() => {
           this.dialogFormVisible = false
           this.$notify({
@@ -329,7 +329,7 @@ export default {
         return;
       }
       let params = window._.cloneDeep(this.temp)
-      rf.getRequest('EngineTypeRequest').update(params.idEnginetype, params)
+      rf.getRequest('RulePackageRequest').update(params.idEnginetype, params)
       .then(() => {
         this.dialogFormVisible = false
         this.$notify({
