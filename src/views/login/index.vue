@@ -87,8 +87,8 @@ export default {
   name: 'Login',
   data() {
     return {
-      username: 'admin',
-      password: 'abc123',
+      username: '',
+      password: '',
       passwordType: 'password',
       capsTooltip: false,
       loading: false,
