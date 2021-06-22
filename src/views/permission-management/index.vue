@@ -115,6 +115,7 @@ import Pagination from '@/components/Pagination' // secondary package based on e
 import rf from 'requestfactory'
 import { Message } from 'element-ui'
 import RemoveErrorsMixin from 'common/RemoveErrorsMixin'
+import { map, isEmpty, cloneDeep } from 'lodash'
 const actionList = [
   {
     name: window.i18n.t('table.create_group'),
@@ -143,6 +144,7 @@ const actionObjectList = [
     value: 'read'
   }
 ]
+
 export default {
   name: 'PermissionOfRole',
   components: { Pagination },
@@ -198,7 +200,7 @@ export default {
       let params = {}
       rf.getRequest('RoleRequest').getList(params)
       .then(async response => {
-        this.roles = window._.map(response, role => {
+        this.roles = map(response, role => {
           return {
             idRole: role.idRole,
             value: role.name,
@@ -216,7 +218,7 @@ export default {
       let params = {}
       rf.getRequest('ContainmentRelRequest').allObjects(params)
       .then(async response => {
-        this.objects = window._.map(response, object => {
+        this.objects = map(response, object => {
           return {
             idObject: object.idObject,
             value: object.idObject,
@@ -296,8 +298,8 @@ export default {
       if (this.errors.any()) {
         return;
       }
-      const params = window._.cloneDeep(this.temp)
-      if(window._.isEmpty(`${this.temp.idObject}`)) {
+      const params = cloneDeep(this.temp)
+      if(isEmpty(`${this.temp.idObject}`)) {
         delete params.idObject
       }
       rf.getRequest('PermissionRequest').create(params)

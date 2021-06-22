@@ -1,5 +1,5 @@
 <template>
-  <div class="app-container student">
+  <div class="app-container">
     <div class="filter-container">
       <el-button style="float: right;" class="filter-item float-right" type="primary" icon="el-icon-plus" @click="handleCreateSingle">
         {{ $t('table.add') }}
@@ -79,6 +79,7 @@ import Pagination from '@/components/Pagination' // secondary package based on e
 import rf from 'requestfactory'
 import { Message } from 'element-ui'
 import RemoveErrorsMixin from 'common/RemoveErrorsMixin'
+import { map } from 'lodash'
 
 export default {
   name: 'UserOfRole',
@@ -126,7 +127,7 @@ export default {
       let params = {}
       rf.getRequest('UserRequest').getList(params)
       .then(async response => {
-        this.users = window._.map(response, user => {
+        this.users = map(response, user => {
           return {
             idUser: user.idUser,
             value: user.idUser,
@@ -257,32 +258,3 @@ export default {
   },
 }
 </script>
-<style lang="scss">
-  .student {
-    .el-dialog {
-        max-width: 500px;
-      }
-    .upload-student {
-      .el-upload.el-upload--text {
-        width: 100%;
-        .el-upload-dragger {
-          width: 100%;
-        }
-      }
-    }
-  }
-  @media screen and (max-width: 768px) {
-    .student {
-      .el-dialog {
-        width: 80%;
-      }
-    }
-  }
-  @media screen and (max-width: 546px) {
-    .student {
-      .el-dialog {
-        width: 96%;
-      }
-    }
-  }
-</style>

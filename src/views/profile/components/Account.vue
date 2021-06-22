@@ -53,6 +53,8 @@
   import RemoveErrorsMixin from 'common/RemoveErrorsMixin';
   import rf from 'requestfactory'
   import { Message } from 'element-ui'
+  import { cloneDeep } from 'lodash'
+
   export default {
     props: {
       user: {
@@ -76,7 +78,7 @@
       }
     },
     mounted() {
-      this.userClone = window._.cloneDeep(this.user)
+      this.userClone = cloneDeep(this.user)
     },
     mixins: [RemoveErrorsMixin],
     methods: {

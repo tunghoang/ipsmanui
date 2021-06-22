@@ -1,5 +1,5 @@
 <template>
-  <div class="app-container student">
+  <div class="app-container">
     <div class="filter-container">
       <el-button style="float: right;" class="filter-item float-right" type="primary" icon="el-icon-plus" @click="handleCreateSingle">
         {{ $t('table.assign_role') }}
@@ -114,6 +114,7 @@ import waves from '@/directive/waves' // waves directive
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 import rf from 'requestfactory'
 import { Message } from 'element-ui'
+import { map } from 'lodash'
 import RemoveErrorsMixin from 'common/RemoveErrorsMixin'
 
 export default {
@@ -165,7 +166,7 @@ export default {
       let params = {}
       rf.getRequest('RoleRequest').getList(params)
       .then(async response => {
-        this.roles = window._.map(response, role => {
+        this.roles = map(response, role => {
           return {
             idRole: role.idRole,
             value: role.name,
@@ -182,11 +183,11 @@ export default {
     getList() {
       rf.getRequest('UserRoleRelRequest').find(this.params)
       .then(async response => {
-        this.list = window._.map(response, (item) => {
+        this.list = map(response, (item) => {
           this.$set(item, 'edit', false)
           return item
         })
-        // this.idRoleAssigned = window._.map(response, (role) => {
+        // this.idRoleAssigned = map(response, (role) => {
         //   return role.idRole
         // })
         this.total = response.length
@@ -313,32 +314,3 @@ export default {
   },
 }
 </script>
-<style lang="scss">
-  .student {
-    .el-dialog {
-        max-width: 500px;
-      }
-    .upload-student {
-      .el-upload.el-upload--text {
-        width: 100%;
-        .el-upload-dragger {
-          width: 100%;
-        }
-      }
-    }
-  }
-  @media screen and (max-width: 768px) {
-    .student {
-      .el-dialog {
-        width: 80%;
-      }
-    }
-  }
-  @media screen and (max-width: 546px) {
-    .student {
-      .el-dialog {
-        width: 96%;
-      }
-    }
-  }
-</style>

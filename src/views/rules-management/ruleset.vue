@@ -131,12 +131,12 @@
 
 <script>
 import waves from '@/directive/waves' // waves directive
-//import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 import rf from 'requestfactory'
 import { Message } from 'element-ui'
 import RemoveErrorsMixin from 'common/RemoveErrorsMixin'
 import JSZip from 'jszip'
+import { map, cloneDeep } from 'lodash'
 
 const component = {
   name: 'Ruleset',
@@ -208,7 +208,7 @@ const component = {
       rf.getRequest('EngineTypeRequest').getList(params)
       .then(async response => {
         await this.getList()
-        this.engineTypes = window._.map(response, engineType => {
+        this.engineTypes = map(response, engineType => {
           return {
             idEnginetype: engineType.idEnginetype,
             name: engineType.name,
@@ -216,7 +216,7 @@ const component = {
             description: engineType.description
           }
         })
-        this.options = window._.cloneDeep(response)
+        this.options = cloneDeep(response)
       })
       .catch(error => {
         this.errors.add({field: 'error', msg: error.response.data.message});
@@ -405,7 +405,7 @@ const component = {
 export default component;
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
   .my-el-upload .el-upload {
     width: 100%;
   }

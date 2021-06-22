@@ -1,4 +1,5 @@
 import moment from 'moment'
+import { trimEnd } from 'lodash'
 
 export const formatBytes = (a, b) => {
   if (a === 0) return "0";
@@ -315,8 +316,8 @@ export function trimEndZero(value) {
   if (strValue.indexOf(dot) === -1) {
     return strValue;
   }
-  const trimEndZero = window._.trimEnd(strValue, '0');
-  return window._.trimEnd(trimEndZero, dot);
+  const trimEndZero = trimEnd(strValue, '0');
+  return trimEnd(trimEndZero, dot);
 }
 
 export function deleteAllCookies() {

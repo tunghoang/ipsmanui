@@ -1,5 +1,6 @@
 import moment from 'moment';
-import i18n from '@/lang'
+import i18n from '@/lang';
+import { chain } from 'lodash'
 
 
 /**
@@ -133,7 +134,7 @@ export function naturalPartOfNumber (number) {
 }
 
 export function sliceChar (value, length = 3) {
-  return window._.chain(`${value}`)
+  return chain(`${value}`)
                  .slice(0, length)
                  .join('')
                  .value();

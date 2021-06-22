@@ -1,9 +1,6 @@
 <template>
   <div class="app-container user-management">
     <div class="filter-container">
-      <el-button v-waves :loading="isSubmitting" style="margin-left: 10px; float: right;" class="filter-item float-right" type="primary" icon="el-icon-download" @click="handleDownload">
-        {{ $t('table.export') }}
-      </el-button>
       <el-button style="float: right;" class="filter-item float-right" type="primary" icon="el-icon-plus" @click="handleCreateSingle">
         {{ $t('table.add') }}
       </el-button>
@@ -143,10 +140,10 @@
 
 <script>
 import waves from '@/directive/waves' // waves directive
-import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 import rf from 'requestfactory'
 import { Message } from 'element-ui'
+import { map, cloneDeep } from 'lodash'
 import RemoveErrorsMixin from 'common/RemoveErrorsMixin'
 import { engineTypeLabel } from '@/misc';
 
@@ -238,7 +235,7 @@ export default {
     engineTypeLabel : engineTypeLabel,
     getList() {
       return rf.getRequest('EngineRequest').getList(this.params).then(response => {
-        this.list = window._.map(response, res => {
+        this.list = map(response, res => {
           return {
             idEngine: res.idEngine,
             idEnginetype: res.idEnginetype,
@@ -259,16 +256,17 @@ export default {
     loadEngineTypes() {
       let params = {}
       return rf.getRequest('EngineTypeRequest').getList(params).then(response => {
-        this.engineTypes = window._.map(response, engineType => {
+        this.engineTypes = map(response, engineType => {
           return {
             idEnginetype: engineType.idEnginetype,
             name: engineType.name,
             value: engineType.name,
             description: engineType.description
           }
-        });
-        this.options = window._.cloneDeep(response)
-      }).catch(error => {
+        })
+        this.options = cloneDeep(response)
+      })
+      .catch(error => {
         this.errors.add({field: 'error', msg: error.response.data.message});
         Message.error(this.$t(this.errors.first('error')) || this.$t('auth.unknowError'))
       });
@@ -329,7 +327,7 @@ export default {
       if (this.errors.any()) {
         return;
       }
-      let params = window._.cloneDeep(this.temp)
+      let params = cloneDeep(this.temp)
       params = {
         ...params,
         specs: JSON.stringify(params.specs)
@@ -381,7 +379,7 @@ export default {
       if (this.errors.any()) {
         return;
       }
-      let params = window._.cloneDeep(this.temp)
+      let params = cloneDeep(this.temp)
       params = {
         ...params,
         specs: JSON.stringify(params.specs)
@@ -399,62 +397,11 @@ export default {
         this.handleRefreshTable()
       })
     },
-    handleDownload() {
-      this.isSubmitting = true
-      rf.getRequest('EngineRequest').export(this.params)
-      .then(async response => {
-        let dataExport = []
-        response.map((item, index) => {
-          item.no = index + 1;
-          item.specs = JSON.stringify(JSON.parse(item.specs));
-          dataExport.push(item)
-        })
-        this.handleExport(dataExport);
+    handleViewRuleManagement(row) {
+      this.selectedRow = row
+      this.queryHost(row.idObject).then(() => {
+        this.ruleManagementVisible = true
       })
-      .catch(error => {
-        this.isSubmitting = false
-        this.errors.add({field: 'error', msg: error});
-        this.$notify({
-          title: this.$t('notify.errors.label'),
-          message: this.$t(this.errors.first('error')) || this.$t('notify.errors.unknow'),
-          type: 'error',
-          duration: 1000,
-          showClose: false
-        })
-      });
-    },
-    handleExport(dataExport) {
-      console.log(dataExport)
-      import('@/vendor/Export2Excel').then(excel => {
-        const tHeader = [this.$t('no'), this.$t('table.id'), this.$t('table.specs')]
-        const filterVal = ['no', 'idEngine', 'specs']
-        const data = this.formatJson(filterVal, dataExport)
-        excel.export_json_to_excel({
-          header: tHeader,
-          data,
-          filename: `${this.$t('route.engine_list')}`
-        })
-        this.isSubmitting = false
-      })
-      .catch(error => {
-        this.isSubmitting = false
-        this.$notify({
-          title: this.$t('notify.errors.label'),
-          message: error,
-          type: 'error',
-          duration: 1000,
-          showClose: false
-        })
-      });
-    },
-    formatJson(filterVal, jsonData) {
-      return jsonData.map(v => filterVal.map(j => {
-        if (j === 'timestamp') {
-          return parseTime(v[j])
-        } else {
-          return v[j]
-        }
-      }))
     },
     handleDelete(row) {
       this.$confirm(this.$t('notify.text.delete'), 'Warning', {

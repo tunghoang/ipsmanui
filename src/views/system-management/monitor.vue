@@ -187,6 +187,7 @@ import { getUptime, formatBytes } from '@/utils'
 import { login } from '@/request/ips/login'
 import { cpuInfo, memStat, diskStat, hostStat, getInterfaces } from '@/request/ips/IpsManagerRequest'
 import CPUPecent from '@/components/CPUPercent'
+import { isEmpty } from 'lodash'
 
 export default {
   name: 'Monitor',
@@ -215,7 +216,7 @@ export default {
     }
   },
   created() {
-      if(!window._.isEmpty(localStorage.getItem('token'))) {
+      if(!isEmpty(localStorage.getItem('token'))) {
         this.getData()
         return
       }
@@ -237,7 +238,7 @@ export default {
           this.errorMessage = this.$t("base.noData");
           return;
         }
-        if (!window._.isEmpty(value[0].data)) {
+        if (!isEmpty(value[0].data)) {
           this.interfaces = value[0].data.data.map(val => {
             return {
               data: val,
@@ -247,16 +248,16 @@ export default {
             };
           });
         }
-        if (!window._.isEmpty(value[1].data)) {
+        if (!isEmpty(value[1].data)) {
           this.hostStat = value[1].data.data;
         }
-        if (!window._.isEmpty(value[2].data)) {
+        if (!isEmpty(value[2].data)) {
           this.diskStat = value[2].data.data;
         }
-        if (!window._.isEmpty(value[3].data)) {
+        if (!isEmpty(value[3].data)) {
           this.memStat = value[3].data.data;
         }
-        if (!window._.isEmpty(value[4].data)) {
+        if (!isEmpty(value[4].data)) {
           this.cpuInfo = value[4].data.data[0]; //TODO fix lay gia tri dau tien lam mau
         }
       });

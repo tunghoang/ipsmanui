@@ -11,6 +11,7 @@
     "svgo": "svgo -f src/icons/svg --config=src/icons/svgo.yml",
     "serve": "vue-cli-service serve --inline=false --disable-host-check --hot",
     "build": "vue-cli-service build",
+    "build-report": "vue-cli-service build --report",
     "lint": "vue-cli-service lint --inline=false",
     "lint:fix": "vue-cli-service lint --fix --inline=false",
     "start": "npm run build",
@@ -31,7 +32,6 @@
     "echarts": "^4.6.0",
     "element-ui": "^2.13.0",
     "es-abstract": "^1.18.0-next.1",
-    "file-saver": "^2.0.2",
     "fuse.js": "^3.4.6",
     "jsonlint": "^1.6.3",
     "jszip": "^3.6.0",
@@ -54,8 +54,7 @@
     "vue-router": "^3.0.2",
     "vue-session": "^1.0.0",
     "vued3tree": "^5.1.0",
-    "vuex": "^3.1.0",
-    "xlsx": "^0.15.3"
+    "vuex": "^3.1.0"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.5.0",

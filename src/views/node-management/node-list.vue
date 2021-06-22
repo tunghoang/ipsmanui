@@ -182,6 +182,7 @@ import NodeIcon from './NodeIcon'
 import { statusDeduce } from '../../utils'
 import RemoveErrorsMixin from 'common/RemoveErrorsMixin'
 import DialogIps from './DialogIps'
+import { cloneDeep } from 'lodash'
 
 export default {
   name: 'NodeManagement',
@@ -544,7 +545,7 @@ export default {
       if (this.errors.any()) {
         return;
       }
-      let params = window._.cloneDeep(this.objectCanView)
+      let params = cloneDeep(this.objectCanView)
       rf.getRequest('ContainmentRelRequest').update(params.idContainer, { name: params.name, description: params.description })
       .then(() => {
         this.dialogFormVisible = false

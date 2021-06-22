@@ -1,7 +1,8 @@
 <script>
-  import {Line} from "vue-chartjs";
+  import { Line } from "vue-chartjs";
   import "chartjs-plugin-streaming";
-  import { cpuPercentage } from '@/request/ips/IpsManagerRequest'
+  import { cpuPercentage } from '@/request/ips/IpsManagerRequest';
+  import { isEmpty, reduce } from 'lodash';
 
   export default {
     name: "CPUPercent",
@@ -57,7 +58,7 @@
     methods: {
       onRefresh(chart) {
         cpuPercentage().then(response => {
-          if (!window._.isEmpty(response.data.data)) {
+          if (!isEmpty(response.data.data)) {
             chart.data.datasets.forEach(dataset => {
               dataset.data.push({
                 x: Date.now(),
@@ -68,7 +69,7 @@
         });
       },
       arrayAvg(array) {
-        const avg = window._.reduce(array, (a, b) => a + b, 0) / array.length;
+        const avg = reduce(array, (a, b) => a + b, 0) / array.length;
         return Math.round(avg * 100) / 100;
       }
     }

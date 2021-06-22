@@ -9,9 +9,6 @@
       <el-button v-waves class="filter-item ml-1" type="primary" icon="el-icon-search" @click="handleRefreshTable">
         {{ $t('table.search') }}
       </el-button>
-      <el-button v-waves :loading="isSubmitting" style="margin-left: 10px; float: right;" class="filter-item float-right" type="primary" icon="el-icon-download" @click="handleDownload">
-        {{ $t('table.export') }}
-      </el-button>
       <el-button style="float: right;" class="filter-item float-right" type="primary" icon="el-icon-plus" @click="handleCreateSingle">
         {{ $t('table.add') }}
       </el-button>
@@ -96,11 +93,11 @@
 
 <script>
 import waves from '@/directive/waves' // waves directive
-import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 import rf from 'requestfactory'
 import { Message } from 'element-ui'
 import RemoveErrorsMixin from 'common/RemoveErrorsMixin'
+import { cloneDeep } from 'lodash'
 
 export default {
   name: 'EngineList',
@@ -259,7 +256,7 @@ export default {
       if (this.errors.any()) {
         return;
       }
-      let params = window._.cloneDeep(this.temp)
+      let params = cloneDeep(this.temp)
       rf.getRequest('EngineTypeRequest').update(params.idEnginetype, params)
       .then(() => {
         this.dialogFormVisible = false
@@ -272,58 +269,6 @@ export default {
         })
         this.handleRefreshTable()
       })
-    },
-    handleDownload() {
-      this.isSubmitting = true
-      rf.getRequest('EngineTypeRequest').export(this.params)
-      .then(async response => {
-        let dataExport = []
-        response.map((item, index) => {item.no = index + 1 ; dataExport.push(item)})
-        this.handleExport(dataExport);
-      })
-      .catch(error => {
-        this.isSubmitting = false
-        this.errors.add({field: 'error', msg: error});
-        this.$notify({
-          title: this.$t('notify.errors.label'),
-          message: this.$t(this.errors.first('error')) || this.$t('notify.errors.unknow'),
-          type: 'error',
-          duration: 1000,
-          showClose: false
-        })
-      });
-    },
-    handleExport(dataExport) {
-      import('@/vendor/Export2Excel').then(excel => {
-        const tHeader = [this.$t('no'), this.$t('table.id'), this.$t('table.name'), this.$t('table.description')]
-        const filterVal = ['no', 'idEnginetype', 'name', 'description']
-        const data = this.formatJson(filterVal, dataExport)
-        excel.export_json_to_excel({
-          header: tHeader,
-          data,
-          filename: `${this.$t('route.engine_type_list')}`
-        })
-        this.isSubmitting = false
-      })
-      .catch(error => {
-        this.isSubmitting = false
-        this.$notify({
-          title: this.$t('notify.errors.label'),
-          message: error,
-          type: 'error',
-          duration: 1000,
-          showClose: false
-        })
-      });
-    },
-    formatJson(filterVal, jsonData) {
-      return jsonData.map(v => filterVal.map(j => {
-        if (j === 'timestamp') {
-          return parseTime(v[j])
-        } else {
-          return v[j]
-        }
-      }))
     },
     handleDelete(row) {
       this.$confirm(this.$t('notify.text.delete'), 'Warning', {

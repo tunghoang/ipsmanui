@@ -13,7 +13,6 @@ import LocalStorage from 'common/LocalStorageUtils'
 
 import i18n from "./lang"
 
-
 import VueBroadcast from 'common/VueBroadcast'
 import VueSession from 'vue-session'
 import ClickOutside from 'vue-click-outside'
@@ -41,13 +40,10 @@ import './utils/error-log'
 import { BForm } from 'bootstrap-vue'
 Vue.component('b-form', BForm)
 
-
-window._ = require('lodash');
-
-
 Object.keys(filters).forEach(key => {
   Vue.filter(key, filters[key])
 })
+
 
 Vue.use(Element, {
   size: LocalStorage.getItem('size') || 'medium',

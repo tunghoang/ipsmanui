@@ -48,6 +48,7 @@
 import { models } from '@/request/ips/IpsManagerRequest'
 import { login } from '@/request/ips/login'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
+import { isEmpty } from 'lodash'
 
 export default {
   name: 'AnomalyModels',
@@ -67,7 +68,7 @@ export default {
     }
   },
   created () {
-    if(!window._.isEmpty(localStorage.getItem('token'))) {
+    if(!isEmpty(localStorage.getItem('token'))) {
       this.getList()
       return
     }

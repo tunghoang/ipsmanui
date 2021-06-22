@@ -1,6 +1,7 @@
 import Vue from 'vue';
 import rf from 'requestfactory'
 import { resetRouter } from '@/router'
+import { map } from 'lodash'
 
 const state = {
   status          : 'pending',
@@ -28,7 +29,7 @@ const actions = {
         if (!res) {
           reject('Verification failed, please Login again.')
         }
-        const roles = window._.map(res.roles, (role) => role.roleName)
+        const roles = map(res.roles, (role) => role.roleName)
         commit('UPDATE_USER', { idUser: res.idUser, username: res.username });
         commit('UPDATE_ROLES', roles)
         resolve(roles);
