@@ -33,7 +33,8 @@
     statistics: 'Statistics',
     anomaly_models: 'Anomaly Models',
     specifics: 'Specifics Data',
-    ruleset: 'Ruleset',
+    hostIPS_ruleset: 'HostIPS Ruleset',
+    netIPS_ruleset: 'NetIPS Ruleset',
     monitoring: 'Monitoring',
     setting: 'Setting',
     net_ips: 'NetIPS',
@@ -42,7 +43,8 @@
     host_overview_ecs_static: 'Host Overview ECS',
     overview_ecs: 'Overview ECS',
     modsecurity: 'ModSecurity',
-    ips_list: 'IPS List'
+    ips_list: 'Node List',
+    nodeRulesetTitle: 'Rules:{idObject}'
   },
   navbar: {
     dashboard: 'Dashboard',
@@ -77,6 +79,12 @@
     button: 'Show Guide'
   },
   table: {
+    hostname: 'Hostname or ipaddress',
+    port: "Port",
+    application: 'AppService',
+    currentVersion: 'Current Version',
+    pendingVersion: 'Pending Version',
+    availableVersion: 'Latest Version',
     group: 'Group',
     description: 'Description',
     engine: 'Engine',
@@ -101,11 +109,12 @@
     actions: 'Actions',
     edit: 'Edit',
     update: 'Update',
+    clearError: 'Clear',
     publish: 'Publish',
     draft: 'Draft',
     delete: 'Delete',
     cancel: 'Cancel',
-    confirm: 'Confirm',
+    confirm: 'Ok',
     updatedAt: 'Updated At',
     username: 'Username',
     email: 'Email',

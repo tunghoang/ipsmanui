@@ -5,7 +5,7 @@ Vue.use(Router)
 
 /* Layout */
 import Layout from '@/layout/index.vue'
-
+import artifactFn from '@/views/rules-management/artifact'
 /* Router Modules */
 // import componentsRouter from './modules/components'
 // import chartsRouter from './modules/charts'
@@ -191,6 +191,16 @@ export const asyncRoutes = [
         }
       },
       {
+        path: 'ips',
+        component: () => import('@/views/node-management/ips-list'),
+        name: 'IpsList',
+        meta: {
+          title: 'ips_list',
+          icon: 'host',
+          roles: ['admin', 'superadmin'] // or you can only set roles in sub nav
+        }
+      },
+      {
         path: 'engine',
         component: () => import('@/views/node-management/engine-list'),
         name: 'EngineList',
@@ -210,16 +220,6 @@ export const asyncRoutes = [
           roles: ['admin', 'superadmin'] // or you can only set roles in sub nav
         }
       },
-      {
-        path: 'ips',
-        component: () => import('@/views/node-management/ips-list'),
-        name: 'IpsList',
-        meta: {
-          title: 'ips_list',
-          icon: 'host',
-          roles: ['admin', 'superadmin'] // or you can only set roles in sub nav
-        }
-      },
     ]
   },
   {
@@ -227,7 +227,7 @@ export const asyncRoutes = [
     component: Layout,
     redirect: '/rules-management/ruleset',
     alwaysShow: true,
-    name: 'RoleManagement',
+    name: 'RuleManagement',
     meta: {
       title: 'rules_management',
       icon: 'rules-management',
@@ -235,22 +235,44 @@ export const asyncRoutes = [
     },
     children: [
       {
-        path: 'ruleset',
-        component: () => import('@/views/rules-management/ruleset'),
-        name: 'Ruleset',
+        path: 'hostips-ruleset',
+        component: artifactFn({idEnginetype: 2, application: 'modsec'}),
+        //component: () => import('@/views/rules-management/artifact'),
+        name: 'HostRuleset',
         meta: {
           icon: 'ruleset',
-          title: 'ruleset',
+          title: 'hostIPS_ruleset',
+          roles: ['admin', 'superadmin']
+        }
+      },
+      {
+        path: 'netips-ruleset',
+        component: artifactFn({idEnginetype:1, application: 'idssystem'}),
+        name: 'NetRuleset',
+        meta: {
+          icon: 'ruleset',
+          title: 'netIPS_ruleset',
           roles: ['admin', 'superadmin']
         }
       },
       {
         path: 'models',
-        component: () => import('@/views/rules-management/anomaly-models'),
+        component: artifactFn({idEnginetype: 1, application: 'idsapi'}),
         name: 'AnomalyModels',
         meta: {
           icon: 'anomalies',
           title: 'anomaly_models',
+          roles: ['admin', 'superadmin']
+        }
+      },
+      {
+        path: 'node/:idObject',
+        hidden: true,
+        name: 'NodeRuleset',
+        props: true,
+        component: () => import('@/views/rules-management/node-ruleset'),
+        meta: {
+          title: 'nodeRulesetTitle',
           roles: ['admin', 'superadmin']
         }
       },

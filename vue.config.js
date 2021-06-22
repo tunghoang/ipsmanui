@@ -7,7 +7,7 @@ const defaultSettings = require('./src/settings.js')
 // https.globalAgent.options.rejectUnauthorized = false
 const backend = {
     //target: 'http://112.137.129.214:34280',
-    target: 'http://ipsman.duckdns.org',
+    target: 'http://ipsman.duckdns.org:34280',
     // target: 'http://10.10.1.155',
     secure: false,
     changeOrigin: true
@@ -26,6 +26,7 @@ function resolve(dir) {
 module.exports = {
   lintOnSave: false,
   runtimeCompiler: true,
+  productionSourceMap: false,
   publicPath: process.env.NODE_ENV === 'production'
     ? '/ipsman-fe/'
     : '/',
@@ -48,7 +49,9 @@ module.exports = {
       '/engines': backend,
       '/permissions': backend,
       '/containmentRels': backend,
-      '/control': backend
+      '/control': backend,
+      '/rulepackages': backend,
+      '/rulepackageObjectRels': backend
     },
     // https: true,
     // key: fs.readFileSync('/home/nnhoa/ca/new/server.key'),

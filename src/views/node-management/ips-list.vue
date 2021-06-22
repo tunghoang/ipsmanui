@@ -1,14 +1,6 @@
 <template>
   <div class="app-container user-management">
     <div class="filter-container">
-      <el-input style="width: 200px;"
-                v-model="params.key"
-                :placeholder="$t('table.key')"
-                class="filter-item" 
-                @keyup.enter.native="handleRefreshTable" />
-      <el-button v-waves class="filter-item ml-1" type="primary" icon="el-icon-search" @click="handleRefreshTable">
-        {{ $t('table.search') }}
-      </el-button>
       <el-select style="width: 130px" 
                 v-model="params.idEnginetype"
                 class="filter-item ml-3"
@@ -43,7 +35,7 @@
       </el-table-column>
       <el-table-column :label="$t('table.name')" sortable prop="name" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.name }}</span>
+          <span class='link-type' @click="handleUpdate(scope.row)">{{ scope.row.name }}</span>
         </template>
       </el-table-column>
       <el-table-column :label="$t('table.description')" sortable prop="description" align="center">
@@ -61,9 +53,9 @@
           <span>{{ scope.row.specs.port }}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('table.actions')" fixed="right" align="center" width="200" class-name="small-padding">
+      <el-table-column :label="$t('table.actions')" fixed="right" align="center" width="250px" class-name="small-padding">
         <template slot-scope="{row}">
-          <el-button type="primary" icon="el-icon-edit" size="mini" @click="handleUpdate(row)" :title="$t('table.edit')">
+          <el-button type="primary" icon="el-icon-edit-outline" class="w-auto" size="mini" :disabled="!row.idObject" @click="$router.push({name: 'NodeRuleset', params: {idObject: row.idObject}})" :title="$t('route.rules_management')">
           </el-button>
           <el-button type="primary" size="mini" @click="handleDetail(row)" :title="$t('table.edit')">
             <svg-icon icon-class="eye-open" />
@@ -304,9 +296,11 @@ export default {
             online: res.online || false,
             enabled: res.enabled || false
           }
-        })
-        .then(() => {
+        }).then(() => {
           this.dialogVisible = true
+        }).catch(error => {
+          this.errors.add({field: 'error', msg: ((error.response || {}).data || {}).message || error.message});
+          Message.error(this.$t(this.errors.first('error')) || this.$t('auth.unknowError'))
         })
     },
     async updateData() {
@@ -330,6 +324,9 @@ export default {
           showClose: false
         })
         this.handleRefreshTable()
+      }).catch(error => {
+        this.errors.add({field: 'error', msg: ((error.response || {}).data || {}).message || error.message});
+        Message.error(this.$t(this.errors.first('error')) || this.$t('auth.unknowError'))
       })
     },
     handleDelete(row) {

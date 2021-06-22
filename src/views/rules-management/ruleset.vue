@@ -5,7 +5,6 @@
         {{ $t('table.add') }}
       </el-button>
     </div>
-
     <el-table
       :key="tableKey"
       v-loading="listLoading"
@@ -20,9 +19,9 @@
           <span>{{ scope.row.idRulepackage }}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('table.engine_type')" prop="idEnginetype" sortable align="center" width="100px">
+      <el-table-column :label="$t('table.engine_type')" prop="idEnginetype" sortable align="center" width="200px">
         <template slot-scope="scope">
-          <span>{{ scope.row.idEnginetype }}</span>
+          <span>{{ getName(engineTypes, scope.row.idEnginetype) }}</span>
         </template>
       </el-table-column>
       <el-table-column :label="$t('table.application')" sortable prop="application" align="center">
@@ -35,7 +34,7 @@
           <span class="link-type" @click="handleUpdate(scope.row)">{{ scope.row.version }}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('table.actions')" fixed="right" align="center" width="150" class-name="small-padding fixed-width">
+      <el-table-column :label="$t('table.actions')" fixed="right" align="center" width="150px" class-name="small-padding fixed-width">
         <template slot-scope="{row}">
           <el-button type="danger" icon="el-icon-delete" size="mini" @click="handleDelete(row)" :title="$t('table.delete')">
             </el-button>
@@ -47,9 +46,10 @@
 
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" @close="resetError()">
       <el-form ref="dataFormSingle" :model="temp" label-position="left" label-width="100px" style="width: 100%">
-        <el-form-item :label="$t('table.engine_type')" prop="idEnginetype">
+        <el-form-item v-if='!idEnginetype' :label="$t('table.engine_type')" label-width="150px" prop="idEnginetype">
           <el-select
                 v-model="temp.idEnginetype"
+                style="width: 100%"
                 class="filter-item"
                 placeholder="Please select"
                 name="enginetype"
@@ -63,7 +63,9 @@
             {{ errors.first('enginetype') }}
           </div>
         </el-form-item>
-        <el-form-item :label="$t('table.application')" prop="application">
+        <el-form-item v-if="!application || !application.length" 
+            :label="$t('table.application')"  
+            label-width="150px" prop="application">
           <el-select
                 v-model="temp.application"
                 class="filter-item"
@@ -71,6 +73,7 @@
                 name="application"
                 @focus="resetError"
                 :class="{ error: errors.has('application') }"
+                style="width: 100%"
                 data-vv-validate-on="none"
                 v-validate="'required'">
             <el-option v-for="item in applicationOptions" :key="item.key" :label="item.label" :value="item.value" />
@@ -79,10 +82,11 @@
             {{ errors.first('application') }}
           </div>
         </el-form-item>
-        <el-form-item :label="$t('table.version')">
+        <el-form-item :label="$t('table.version')" label-width="150px" >
           <el-input v-model="temp.version"
                     tabindex="1"
                     @focus="resetError"
+                    readonly
                     name="version"
                     :placeholder="$t('table.version')"
                     :class="{ error: errors.has('version') }"
@@ -92,16 +96,21 @@
             {{ errors.first('version') }}
           </div>
         </el-form-item>
-        <el-form-item :label="$t('table.rule')">
-          <input
-            type="file"
-            ref="rule"
-            name="rule"
-            :placeholder="$t('table.rule')"
-            :class="{ error: errors.has('rule') }"
-            data-vv-validate-on="none"
-            v-validate="'required|max:255'"
-          >
+        <el-form-item :label="$t('table.rule')" label-width="150px" >
+          <el-upload ref="ruleUpload"
+            :multiple='application==="idssystem"' :drag="!selectedFiles.length"
+            style="width:100%"
+            placeholder="drop files here"
+            action="#"
+            :class="{'my-el-upload': true, 'hide-my-el-upload': selectedFiles.length}"
+            :accept="getAccept(application || temp.application)"
+            :on-change="onUploadFileChanged"
+            :on-remove="onUploadFileRemoved"
+            :auto-upload="false"
+            :file-list="selectedFiles">
+            <i v-if="!selectedFiles.length" class="el-icon-upload"></i>
+            <div v-if="!selectedFiles.length" class="el-upload__text">Drop file here or <em>click to upload</em></div>
+          </el-upload>
           <div class="el-form-item__error" v-if="errors.has('rule')">
             {{ errors.first('rule') }}
           </div>
@@ -111,7 +120,8 @@
         <el-button @click="dialogFormVisible = false">
           {{ $t('table.cancel') }}
         </el-button>
-        <el-button type="primary" @click="dialogStatus==='create'?createData():updateData()">
+        <el-button type="danger" @click="resetFiles">{{$t('dialog.reset')}}</el-button>
+        <el-button type="primary" @click="createData()">
           {{ $t('table.confirm') }}
         </el-button>
       </div>
@@ -121,24 +131,28 @@
 
 <script>
 import waves from '@/directive/waves' // waves directive
-import { parseTime } from '@/utils'
+//import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 import rf from 'requestfactory'
 import { Message } from 'element-ui'
 import RemoveErrorsMixin from 'common/RemoveErrorsMixin'
 import JSZip from 'jszip'
 
-export default {
-  name: 'EngineList',
+const component = {
+  name: 'Ruleset',
   components: { Pagination },
   directives: { waves },
   mixins: [RemoveErrorsMixin],
+  props: [
+    'idEnginetype', 'application'
+  ],
   data() {
     return {
       tableKey: 0,
       list: null,
       total: 0,
       listLoading: true,
+      selectedFiles: [],
       params: {
         page: 1,
         limit: 20,
@@ -185,6 +199,10 @@ export default {
     await this.loadEngineTypes()
   },
   methods: {
+    resetFiles() {
+      this.selectedFiles = [];
+      this.$refs.ruleUpload.clearFiles();
+    },
     loadEngineTypes() {
       let params = {}
       rf.getRequest('EngineTypeRequest').getList(params)
@@ -208,8 +226,19 @@ export default {
     getList() {
       rf.getRequest('RulePackageRequest').getList(this.params)
       .then(async response => {
-        this.list = response
-        this.total = response.length
+        let list = response.filter(item => {
+          if (!this.idEnginetype && !this.application) return true;
+
+          if (this.idEnginetype && this.application) 
+            return item.idEnginetype === this.idEnginetype && item.application === this.application;
+
+          if (this.idEnginetype) 
+            return item.idEnginetype === this.idEnginetype;
+
+          return item.application === this.application;
+        });
+        this.list = list;
+        this.total = list.length;
       })
       .catch(error => {
         this.errors.add({field: 'error', msg: error.response.data.message});
@@ -258,50 +287,66 @@ export default {
       this.resetTemp()
       this.dialogStatus = 'create'
       this.dialogFormVisible = true
+      this.temp.version = Date.now();
       this.$nextTick(() => {
         this.$refs['dataFormSingle'].clearValidate()
       })
     },
+    onUploadFileChanged: function(file, fileList) {
+      console.log(file);
+      this.selectedFiles = fileList;
+    },
+    onUploadFileRemoved: function(file, fileList) {
+      this.selectedFiles = fileList;
+    },
     async createData() {
+      console.log(this.selectedFiles)
       this.resetError();
       if (this.isSubmitting) {
         return;
       }
-      await this.$validator.validate('application');
+      console.log(this.idEnginetype, this.application)
+      if (!this.application || !this.application.length)
+        await this.$validator.validate('application');
       await this.$validator.validate('version');
-      await this.$validator.validate('enginetype');
-      await this.$validator.validate('rule');
-      if (this.errors.any()) {
+      if (!this.idEnginetype)
+        await this.$validator.validate('enginetype');
+      //await this.$validator.validate('rule');
+      if (this.errors.any() || !this.selectedFiles || !this.selectedFiles.length) {
         return;
       }
-      const zip = new JSZip()
-      console.log(this.$refs.rule.files[0])
-      zip.file('zipfile', this.$refs.rule.files[0])
-      zip.generateAsync({type:"blob", compression:"default"}).then(function(content){
+      let file = null;
+      if (this.application === 'idssystem') {
+        const zipper = new JSZip()
+        for (let f of this.selectedFiles) {
+          zipper.file(f.name, f.raw);
+        }
+        let zip = await zipper.generateAsync({type:"blob", compression:"DEFLATE"});
+        file = new File([zip], "name.zip");
+      }
+      else {
+        console.log(this.selectedFiles);
+        file = this.selectedFiles[0].raw;
+      }
 
-        let file = new File([content], "name.zip");
-
-        let formData = new FormData();
-        formData.append('zipfile', file);
-        formData.append('application', this.temp.application);
-        formData.append('version', this.temp.version);
-        formData.append('enginetype', this.temp.idEnginetype);
-        rf.getRequest('RulePackageRequest').create(formData)
-        .then(() => {
-          this.dialogFormVisible = false
-          this.$notify({
-            title: this.$t('notify.success.label'),
-            message: this.$t('notify.success.createSuccess'),
-            type: 'success',
-            duration: 1000,
-            showClose: false
-          })
-          this.handleRefreshTable()
+      let formData = new FormData();
+      formData.append('zipfile', file);
+      formData.append('application', this.application || this.temp.application);
+      formData.append('version', this.temp.version);
+      formData.append('idEnginetype', this.idEnginetype || this.temp.idEnginetype);
+      rf.getRequest('RulePackageRequest').create(formData).then(() => {
+        this.dialogFormVisible = false
+        this.$notify({
+          title: this.$t('notify.success.label'),
+          message: this.$t('notify.success.createSuccess'),
+          type: 'success',
+          duration: 1000,
+          showClose: false
         })
-        .catch(error => {
-          this.handleError(error)
-        })
-      })
+        this.handleRefreshTable()
+      }).catch(error => {
+        this.handleError(error)
+      });
     },
     resetTemp() {
       this.temp = {
@@ -317,30 +362,6 @@ export default {
       this.temp = Object.assign({}, row) // copy obj
       this.dialogStatus = 'update'
       this.dialogFormVisible = true
-    },
-    async updateData() {
-      this.resetError();
-      if (this.isSubmitting) {
-        return;
-      }
-      await this.$validator.validate('name');
-      await this.$validator.validate('description');
-      if (this.errors.any()) {
-        return;
-      }
-      let params = window._.cloneDeep(this.temp)
-      rf.getRequest('RulePackageRequest').update(params.idEnginetype, params)
-      .then(() => {
-        this.dialogFormVisible = false
-        this.$notify({
-          title: this.$t('notify.success.label'),
-          message: this.$t('notify.success.updateSuccess'),
-          type: 'success',
-          duration: 1000,
-          showClose: false
-        })
-        this.handleRefreshTable()
-      })
     },
     handleDelete(row) {
       this.$confirm(this.$t('notify.text.delete'), 'Warning', {
@@ -363,7 +384,39 @@ export default {
           message: this.$t('notify.info.cancel'),
         });
       });
+    },
+    getName(engineTypes, idEnginetype) {
+      console.log(engineTypes, idEnginetype);
+      let engineTypeObj = engineTypes.find(obj => obj.idEnginetype === idEnginetype);
+      return (engineTypeObj || {}).name;
+    },
+    getAccept(application) {
+      switch(application) {
+        case 'idssystem':
+          return ".rules"
+        case 'idsapi':
+        case 'modsec':
+          return ".zip";
+      }
+      return "";
     }
   },
 }
+export default component;
 </script>
+
+<style lang="scss">
+  .my-el-upload .el-upload {
+    width: 100%;
+  }
+  .my-el-upload .el-upload-dragger {
+    width: 100%;
+  }
+  .hide-my-el-upload .el-upload {
+    display: none;
+  }
+  .hide-my-el-upload .el-upload-list {
+    height: 150px;
+    overflow-y: scroll;
+  }
+</style>

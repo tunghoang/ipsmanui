@@ -36,6 +36,9 @@ export default class ContainmentRelRequest extends BaseModelRequest {
   detail(objectId) {
     return this.get(`/objects/${objectId}`);
   }
+  nodeDetails(objectId) {
+    return this.get(`/objects/details/${objectId}`)
+  }
 
   update(objectId, params) {
     return this.put(`/objects/${objectId}`, params);
@@ -65,8 +68,9 @@ export default class ContainmentRelRequest extends BaseModelRequest {
     return this.get(`/control/ansStop/${objectId}`);
   }
 
-  queryHost(objectId) {
-    return this.get(`/control/query/modsec-rules/${objectId}`)
+  queryHost(objectId, idEnginetype) {
+    //return this.get(`/control/query/modsec-rules/${objectId}`)
+    return this.post(`/control/query/rules/${objectId}`, {idEnginetype})
   }
 
   addRuleset(objectId, params) {

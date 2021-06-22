@@ -1,22 +1,6 @@
 <template>
   <div class="app-container user-management">
     <div class="filter-container">
-      <el-autocomplete
-                v-model="engineTypeSelect"
-                class="filter-item"
-                value="name"
-                clearable
-                @select="handleAutocomplete"
-                :fetch-suggestions="querySearchAsync"
-                @keyup.enter.native="handleAutocomplete"
-                :placeholder="$t('table.engine_type')">
-        <template slot-scope="{ item }">
-          <span class="value">{{ item.name }}</span>
-        </template>
-      </el-autocomplete>
-      <el-button v-waves class="filter-item ml-1" type="primary" icon="el-icon-search" @click="handleRefreshTable">
-        {{ $t('table.search') }}
-      </el-button>
       <el-button v-waves :loading="isSubmitting" style="margin-left: 10px; float: right;" class="filter-item float-right" type="primary" icon="el-icon-download" @click="handleDownload">
         {{ $t('table.export') }}
       </el-button>
@@ -46,7 +30,7 @@
       </el-table-column>
       <el-table-column :label="$t('table.idEnginetype')" sortable prop="idEnginetype" align="center">
         <template slot-scope="scope">
-          <span class="link-type" @click="handleUpdate(scope.row)">{{ scope.row.idEnginetype }}</span>
+          <span class="link-type" @click="handleUpdate(scope.row)">{{ engineTypeLabel(scope.row.idEnginetype, engineTypes) }}</span>
         </template>
       </el-table-column>
       <el-table-column :label="$t('table.hostname')" sortable prop="specs" align="center">
@@ -63,7 +47,8 @@
         <template slot-scope="{row}">
           <el-button type="primary" icon="el-icon-edit" size="mini" @click="handleUpdate(row)" :title="$t('table.edit')">
           </el-button>
-          <el-button type="primary" icon="el-icon-edit-outline" class="w-auto" size="mini" :disabled="!row.idObject || row.idEnginetype === 1" @click="handleViewRuleManagement(row)" :title="$t('route.rules_management')">
+          <!--<el-button type="primary" icon="el-icon-edit-outline" class="w-auto" size="mini" :disabled="!row.idObject" @click="handleViewRuleManagement(row)" :title="$t('route.rules_management')">-->
+          <el-button type="primary" icon="el-icon-edit-outline" class="w-auto" size="mini" :disabled="!row.idObject" @click="$router.push({name: 'NodeRuleset', params: {idObject: row.idObject}})" :title="$t('route.rules_management')">
           </el-button>
           <el-button type="danger" icon="el-icon-delete" size="mini" :title="$t('table.delete')" @click="handleDelete(row)">
           </el-button>
@@ -74,7 +59,7 @@
     <pagination v-show="total>0" :total="total" :page.sync="params.page" :limit.sync="params.limit" @pagination="getList" />
 
     <!-- dialog edit, create -->
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" @close="resetError()">
+    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" @close="resetError()" width="30%">
       <el-form ref="dataFormSingle" :model="temp" label-position="left" label-width="120px" style="width: 100%">
         <el-form-item :label="$t('table.engine_type')" prop="idEnginetype">
           <el-select
@@ -85,6 +70,7 @@
                 @focus="resetError"
                 :class="{ error: errors.has('enginetype') }"
                 data-vv-validate-on="none"
+                style="width:100%"
                 v-validate="'required'">
             <el-option v-for="item in engineTypes" :key="item.idEnginetype" :label="item.name" :value="item.idEnginetype" />
           </el-select>
@@ -129,59 +115,6 @@
       </div>
     </el-dialog>
 
-    <!-- dialog rule -->
-    <el-dialog
-      title="Application Firewall Rule Management"
-      :visible.sync="ruleManagementVisible"
-      @close="closeRuleManagementModal()"
-      v-loading="submitRulesetLoading"
-      element-loading-text="Loading..."
-      element-loading-spinner="el-icon-loading"
-      element-loading-background="rgba(0, 0, 0, 0.8)"
-    >
-      <div class="clearfix"></div>
-      <div>
-        <div v-for="(value, key) in hostCanView" :key="key">
-          <strong>
-            {{ key }}:
-          </strong>
-          <el-tag
-            :key="item"
-            v-for="item in hostCanView[key]"
-            closable
-            :disable-transitions="false"
-            @close="handleClose(key, item)">
-            {{ item }}
-          </el-tag>
-          <el-select
-            class="input-new-tag"
-            v-if="inputVisible"
-            v-model="inputValue"
-            ref="rulesetInput"
-            size="mini"
-            placeholder="Ruleset"
-            @change="handleInputConfirm(key)"
-          >
-            <el-option
-              v-for="item in rulesetOptions"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value">
-            </el-option>
-          </el-select>
-          <el-button v-else class="button-new-tag" size="small" @click="showInput">+ New ruleset</el-button>
-        </div>
-<!--         <div>
-          <el-button class="button-new-tag" size="small" @click="add">+ New Server Type</el-button>
-        </div> -->
-      </div>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="closeRuleManagementModal()">
-          {{ $t('table.cancel') }}
-        </el-button>
-      </div>
-    </el-dialog>
-
     <!-- dialog upload -->
     <el-dialog title="Upload Rule" :visible.sync="uploadModalVisible" @close="resetError()" width="400px">
       <el-form ref="uploadFromFile" :model="rule" label-position="left" label-width="70px" style="width: 100%;">
@@ -215,6 +148,7 @@ import Pagination from '@/components/Pagination' // secondary package based on e
 import rf from 'requestfactory'
 import { Message } from 'element-ui'
 import RemoveErrorsMixin from 'common/RemoveErrorsMixin'
+import { engineTypeLabel } from '@/misc';
 
 export default {
   name: 'EngineList',
@@ -255,6 +189,7 @@ export default {
       fileList: [],
       isSubmitting: false,
       ruleManagementVisible: false,
+      rulePackages: [],
       uploadModalVisible: false,
       rule: {},
       hostCanView: {},
@@ -282,13 +217,28 @@ export default {
     }
   },
   async mounted() {
-    await this.loadEngineTypes()
+    await this.loadEngineTypes();
+    await this.loadRulePackages();
+    await this.getList();
   },
   methods: {
+    loadRulePackages() {
+      return rf.getRequest('RulePackageRequest').getList(this.params).then(async response => {
+        this.rulePackages = response.map((item) => ({
+          value: item.application,
+          version: item.version,
+          label: `${item.application}-${item.version}`,
+          type: [item.application]
+        }));
+      }).catch(error => {
+        this.errors.add({field: 'error', msg: error.response.data.message});
+        Message.error(this.$t(this.errors.first('error')) || this.$t('auth.unknowError'))
+      });
+    },
+    engineTypeLabel : engineTypeLabel,
     getList() {
-      rf.getRequest('EngineRequest').getList(this.params)
-      .then(async response => {
-         this.list = window._.map(response, res => {
+      return rf.getRequest('EngineRequest').getList(this.params).then(response => {
+        this.list = window._.map(response, res => {
           return {
             idEngine: res.idEngine,
             idEnginetype: res.idEnginetype,
@@ -296,21 +246,19 @@ export default {
             idObject: res.idObject,
             specs: JSON.parse(res.specs)
           }
-        })
+        });
         this.total = response.length
-      })
-      .catch(error => {
+      }).catch(error => {
         console.log(error)
         this.errors.add({field: 'error', msg: error.response.data.message});
         Message.error(this.$t(this.errors.first('error')) || this.$t('auth.unknowError'))
-      })
-      .finally(() => this.listLoading = false)
+      }).finally( () => {
+        this.listLoading = false;
+      });
     },
     loadEngineTypes() {
       let params = {}
-      rf.getRequest('EngineTypeRequest').getList(params)
-      .then(async response => {
-        await this.getList()
+      return rf.getRequest('EngineTypeRequest').getList(params).then(response => {
         this.engineTypes = window._.map(response, engineType => {
           return {
             idEnginetype: engineType.idEnginetype,
@@ -318,32 +266,12 @@ export default {
             value: engineType.name,
             description: engineType.description
           }
-        })
+        });
         this.options = window._.cloneDeep(response)
-      })
-      .catch(error => {
+      }).catch(error => {
         this.errors.add({field: 'error', msg: error.response.data.message});
         Message.error(this.$t(this.errors.first('error')) || this.$t('auth.unknowError'))
       });
-    },
-    querySearchAsync(queryString, cb) {
-      var roles = this.engineTypes;
-      var results = queryString ? roles.filter(this.createFilter(queryString)) : roles;
-
-      clearTimeout(this.timeout);
-      this.timeout = setTimeout(() => {
-        cb(results);
-      }, 1000 * Math.random());
-    },
-    createFilter(queryString) {
-      return (link) => {
-        return (link.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0);
-      };
-    },
-    handleAutocomplete (value) {
-      console.log(value)
-      this.params.idEnginetype = value.idEnginetype
-      this.handleRefreshTable()
     },
     handleRefreshTable() {
       this.listLoading = true
@@ -528,12 +456,6 @@ export default {
         }
       }))
     },
-    handleViewRuleManagement(row) {
-      this.selectedRow = row
-      this.queryHost(row.idObject).then(() => {
-        this.ruleManagementVisible = true
-      })
-    },
     handleDelete(row) {
       this.$confirm(this.$t('notify.text.delete'), 'Warning', {
         confirmButtonText: this.$t('action.ok'),
@@ -557,8 +479,8 @@ export default {
       });
     },
 
-    queryHost (objectId) {
-      return rf.getRequest('ContainmentRelRequest').queryHost(objectId)
+    queryHost (objectId, idEnginetype) {
+      return rf.getRequest('ContainmentRelRequest').queryHost(objectId, idEnginetype)
       .then((res) => {
         this.hostCanView = res.data || {}
       })
@@ -595,18 +517,13 @@ export default {
         })
     },
 
-    showInput() {
-      this.inputVisible = true;
-      this.$nextTick(() => {
+    showInput(value) {
+      value.inputVisible = true;
+      /*this.$nextTick(() => {
         this.$refs.rulesetInput[0].focus();
-      });
+      });*/
     },
 
-    closeRuleManagementModal() {
-      this.ruleManagementVisible = false
-      this.selectedRow = {}
-      this.resetError()
-    },
 
     handleInputConfirm(key) {
       let inputValue = this.inputValue;
@@ -644,6 +561,13 @@ export default {
       }
       this.inputVisible = false;
       this.inputValue = '';
+    },
+    getRulesetOptions(node) {
+      console.log(node);
+      switch(node.idEnginetype) {
+        case 1: return this.rulePackages;
+        default: return this.rulesetOptions;
+      }
     }
   },
 }
@@ -663,6 +587,5 @@ export default {
   .input-new-tag {
     width: 90px;
     margin-left: 10px;
-    vertical-align: bottom;
   }
 </style>

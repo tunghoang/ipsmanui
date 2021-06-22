@@ -8,6 +8,7 @@ import EngineRequest from './EngineRequest';
 import EngineTypeRequest from './EngineTypeRequest';
 import PermissionRequest from './PermissionRequest';
 import RulePackageRequest from './RulePackageRequest';
+import RulePackageObjectRelRequest from './RulePackageObjectRelRequest';
 
 const requestMap = {
   MasterdataRequest,
@@ -19,7 +20,8 @@ const requestMap = {
   EngineTypeRequest,
   EngineRequest,
   PermissionRequest,
-  RulePackageRequest
+  RulePackageRequest,
+  RulePackageObjectRelRequest
 };
 
 const instances = {};
