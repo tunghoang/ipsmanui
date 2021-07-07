@@ -48,7 +48,7 @@
     <pagination v-show="total>0" :total="total" :page.sync="params.page" :limit.sync="params.limit" @pagination="getList" />
 
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" @close="resetError()">
-      <el-form ref="dataFormSingle" :model="temp" label-position="left" label-width="100px" style="width: 100%">
+      <el-form ref="dataFormSingle" :model="temp" label-position="left" label-width="150px" style="width: 100%">
         <el-form-item :label="$t('table.username')" prop="username">
           <el-input v-model="temp.username"
                     tabindex="1"
@@ -283,19 +283,23 @@ export default {
         type: 'warning',
         center: true
       }).then(() => {
-        rf.getRequest('UserRequest').delete(row.idUser)
-          .then(() => {
-            this.$message({
-              type: 'success',
-              message: this.$t('notify.success.deleteSuccess')
-            })
-            this.handleRefreshTable()
-          })
-      }).catch(() => {
+        return rf.getRequest('UserRequest').delete(row.idUser);
+      }).then((res) => {
+        console.log(res);
         this.$message({
-          type: 'info',
-          message: this.$t('notify.info.cancel'),
+          type: 'success',
+          message: this.$t('notify.success.deleteSuccess')
         });
+        this.handleRefreshTable()
+      }).catch((error) => {
+        console.log("Error in delete");
+        console.log(error);
+        this.$message({
+          type: 'error',
+          message: ((error.response || {}).data || {}).message || error.message,
+        });
+        /*this.errors.add({field: 'error', msg: error.response.data.message});
+        Message.error(this.$t(this.errors.first('error')) || this.$t('auth.unknowError'))*/
       });
     }
   },

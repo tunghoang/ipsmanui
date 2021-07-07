@@ -117,6 +117,7 @@
     confirm: 'Ok',
     updatedAt: 'Updated At',
     username: 'Username',
+    password: 'Password',
     email: 'Email',
     name: 'Name',
     create: 'Create',

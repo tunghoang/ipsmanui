@@ -23,12 +23,16 @@ function resolve(dir) {
   return path.join(__dirname, dir)
 }
 
+const outdir = 'frontend';
+//const outdir = 'ipsman-fe';
+
 module.exports = {
+  outputDir: outdir,
   lintOnSave: false,
   runtimeCompiler: true,
   productionSourceMap: false,
   publicPath: process.env.NODE_ENV === 'production'
-    ? '/ipsman-fe/'
+    ? "/" + outdir + "/"
     : '/',
   devServer: {
     disableHostCheck: true,

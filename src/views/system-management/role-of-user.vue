@@ -72,10 +72,10 @@
 
     <pagination v-show="total>0" :total="total" :page.sync="params.page" :limit.sync="params.limit" @pagination="getList" />
 
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" @close="resetError()">
+    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" @close="resetError()" width="30%">
       <el-form ref="dataFormSingle" :model="temp" label-position="left" label-width="100px" style="width: 100%">
         <el-form-item :label="$t('table.role')" prop="idRole">
-          <el-select
+          <el-select style="width: 100%"
             data-vv-validate-on="none"
             v-validate="'required'"
             :class="{ error: errors.has('role') }"
