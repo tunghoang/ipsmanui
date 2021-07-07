@@ -5,8 +5,8 @@
         <keep-alive :include="cachedViews">
           <router-view :key="key" />
         </keep-alive>
-        <!--
         <Intrusion v-show="checkShow(1)" />
+        <!--
         <Alarm v-show="checkShow(2)" />
         <Anomalies v-show="checkShow(3)" />
         <Search v-show="checkShow(4)" />
@@ -21,7 +21,7 @@
 </template>
 
 <script>
-// import Intrusion from "../../views/intrusion-management/intrusion-monitoring";
+ import Intrusion from "../../views/intrusion-management/intrusion-monitoring";
 // import Alarm from "../../views/intrusion-management/alarm";
 // import Anomalies from "../../views/intrusion-management/anomaly-events";
 // import Search from "../../views/intrusion-management/search";
@@ -33,7 +33,7 @@
 export default {
   name: "AppMain",
   components: {
-    // Intrusion,
+    Intrusion,
     // Alarm,
     // Anomalies,
     // Search,
@@ -54,15 +54,15 @@ export default {
     checkShow(type) {
       switch (type) {
         case 1:
-          return this.$route.path === "/intrusion-management/intrusion";
+          return this.$route.path === "/net-ips/intrusion";
         case 2:
-          return this.$route.path === "/intrusion-management/alarm";
+          return this.$route.path === "/alarm";
         case 3:
-          return this.$route.path === "/intrusion-management/anomalies";
+          return this.$route.path === "/anomalies";
         case 4:
-          return this.$route.path === "/intrusion-management/search";
+          return this.$route.path === "/search";
         case 5:
-          return this.$route.path === "/intrusion-management/statistics";
+          return this.$route.path === "/statistics";
         case 6:
           return this.$route.path === "/host-overview-ecs";
         case 7:

@@ -7,6 +7,7 @@
 
 import Vue from 'vue';
 
+Vue.config.devtools = true;
 import AuthenticationUtils from "common/AuthenticationUtils"
 
 import LocalStorage from 'common/LocalStorageUtils'

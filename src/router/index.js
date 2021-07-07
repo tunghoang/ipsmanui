@@ -338,7 +338,7 @@ export const asyncRoutes = [
   {
     path: '/net-ips',
     component: Layout,
-    redirect: '/net-ips/',
+    redirect: '/net-ips/intrusion',
     alwaysShow: true, // will always show the root menu
     name: 'SystemManagement',
     meta: {
@@ -347,7 +347,7 @@ export const asyncRoutes = [
       roles: ['admin', 'superadmin'] // you can set roles in root nav
     },
     children: [
-      {
+      /*{
         path: '/intrusion-management',
         redirect: '/intrusion-management/intrusion',
         name: 'IntrusionManagement',
@@ -357,73 +357,71 @@ export const asyncRoutes = [
           roles: ['admin', 'superadmin'] // you can set roles in root nav
         },
         children: [
-          {
-            path: 'intrusion',
-            component: () => import('@/views/intrusion-management/intrusion-monitoring'),
-            name: 'IntrusionMonitoring',
-            meta: {
-              noCache: false,
-              title: 'intrusion_monitoring',
-              icon: 'intrusion-monitoring',
-              roles: ['superadmin'] // or you can only set roles in sub nav
-            }
-          },
-          {
-            path: 'alarm',
-            component: () => import('@/views/intrusion-management/alarm'),
-            name: 'Alarm',
-            meta: {
-              noCache: false,
-              title: 'alarm',
-              icon: 'alarm',
-              roles: ['superadmin'] // or you can only set roles in sub nav
-            }
-          },
-          {
-            path: 'anomalies',
-            component: () => import('@/views/intrusion-management/anomaly-events'),
-            name: 'Anomalies',
-            meta: {
-              noCache: false,
-              title: 'anomaly_vents',
-              icon: 'anomalies',
-              roles: ['superadmin'] // or you can only set roles in sub nav
-            }
-          },
-          {
-            path: 'impact-analysis',
-            component: () => import('@/views/intrusion-management/impact-analysis'),
-            name: 'ImpactAnalysis',
-            meta: {
-              noCache: false,
-              title: 'impact_analysis',
-              icon: 'impact-analysis',
-              roles: ['superadmin'] // or you can only set roles in sub nav
-            }
-          },
-          {
-            path: 'search',
-            component: () => import('@/views/intrusion-management/search'),
-            name: 'Search',
-            meta: {
-              noCache: false,
-              title: 'search',
-              icon: 'search',
-              roles: ['superadmin'] // or you can only set roles in sub nav
-            }
-          },
-          {
-            path: 'statistics',
-            component: () => import('@/views/intrusion-management/statistics'),
-            name: 'Statistics',
-            meta: {
-              noCache: false,
-              title: 'statistics',
-              icon: 'statistics',
-              roles: ['superadmin'] // or you can only set roles in sub nav
-            }
-          },
         ]
+      },*/
+      {
+        path: 'intrusion',
+        // component: () => import('@/views/intrusion-management/intrusion-monitoring'),
+        name: 'IntrusionMonitoring',
+        meta: {
+          title: 'intrusion_monitoring',
+          icon: 'intrusion-monitoring',
+          roles: ['superadmin'] // or you can only set roles in sub nav
+        }
+      },
+      {
+        path: 'alarm',
+        component: () => import('@/views/intrusion-management/alarm'),
+        name: 'Alarm',
+        meta: {
+          title: 'alarm',
+          icon: 'alarm',
+          roles: ['superadmin'] // or you can only set roles in sub nav
+        }
+      },
+      {
+        path: 'anomalies',
+        component: () => import('@/views/intrusion-management/anomaly-events'),
+        name: 'Anomalies',
+        meta: {
+          noCache: false,
+          title: 'anomaly_vents',
+          icon: 'anomalies',
+          roles: ['superadmin'] // or you can only set roles in sub nav
+        }
+      },
+      {
+        path: 'impact-analysis',
+        component: () => import('@/views/intrusion-management/impact-analysis'),
+        name: 'ImpactAnalysis',
+        meta: {
+          noCache: false,
+          title: 'impact_analysis',
+          icon: 'impact-analysis',
+          roles: ['superadmin'] // or you can only set roles in sub nav
+        }
+      },
+      {
+        path: 'search',
+        component: () => import('@/views/intrusion-management/search'),
+        name: 'Search',
+        meta: {
+          noCache: false,
+          title: 'search',
+          icon: 'search',
+          roles: ['superadmin'] // or you can only set roles in sub nav
+        }
+      },
+      {
+        path: 'statistics',
+        component: () => import('@/views/intrusion-management/statistics'),
+        name: 'Statistics',
+        meta: {
+          noCache: false,
+          title: 'statistics',
+          icon: 'statistics',
+          roles: ['superadmin'] // or you can only set roles in sub nav
+        }
       },
       {
         path: 'monitor',
